@@ -1,0 +1,33 @@
+import * as React from 'react';
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+
+export default function AyahSelect({ surah , ayah , setter , label , numberSetter , mushaf }) {
+
+  const ayahs = mushaf !== ("" && undefined) ? mushaf.data.surahs.filter((s) => s.name === surah)[0].ayahs : 0;
+
+  const handleChange = (event) => {
+    setter(event.target.value);
+    numberSetter(mushaf !== ("" && undefined) ? ayahs.filter(({text}) => `...${text.substring(0, 40)}` === event.target.value)[0].numberInSurah : 0)
+  };
+
+  return (
+    <Box>
+      <FormControl fullWidth>
+        <InputLabel id="ayah-select-label">{label}</InputLabel>
+        <Select
+          labelId="ayah-select-label"
+          id="ayah-select"
+          value={ayah}
+          label="Ayah"
+          onChange={handleChange}
+        >
+        {surah !== "" && ayahs.map(({text , number}) => <MenuItem key={number} value={`...${text.substring(0, 40)}`}>{`...${text.substring(0, 40)}`}</MenuItem>)}
+        </Select>
+      </FormControl>
+    </Box>
+  );
+}
