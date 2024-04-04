@@ -4,7 +4,7 @@ import $ from "jquery";
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { editPassword, editPic } from "../../actions/user";
+import { handleEditPassword, handleEditPic } from "../../actions/user";
 import eye from "../../Resources/eye.png";
 import showPass from "../../helpers/showpass";
 import readURL from "../../helpers/getPic";
@@ -37,9 +37,9 @@ function EditUser({ users , authedUser , widthSet}) {
         readURL(e.target, $('#editedPic'), $('#edited-get-pic'), {'width': '2rem',
         'height': '2rem',
         'position': 'absolute',
-        'margin': '-35px 0 auto 170px'})
+        'margin': '55px 0 auto 65px'})
         newPic.current = e.target.files[0]
-        dispatch(editPic(authedUser, e.target.files[0]))
+        dispatch(handleEditPic(authedUser, e.target.files[0]))
     }
 
     function submitPassEditer(e) {
@@ -48,7 +48,7 @@ function EditUser({ users , authedUser , widthSet}) {
             if (ePass.current === users[authedUser].password) {
                 AlertShow($('#edit-pass-alert') , setPassAlert, "Password did not change!");
             } else {
-            dispatch(editPassword(authedUser, ePass.current));
+            dispatch(handleEditPassword(authedUser, ePass.current));
             setPass('');
             handleClose();
             }
@@ -58,9 +58,10 @@ function EditUser({ users , authedUser , widthSet}) {
     };
 
     return (
-        <Container component="div" 
-        id="edited-user-container"
-        sx={{ width: widthSet }}
+        <Container
+            component="div" 
+            id="edited-user-container"
+            sx={{ width: widthSet }}
         >
             <Button
                 id="edited-positioned-button"
@@ -96,38 +97,38 @@ function EditUser({ users , authedUser , widthSet}) {
                 <MenuItem id="edited-pass-button">Edit user</MenuItem>
                     <MenuItem sx={{ justifyContent: "center" }}>
                         <img 
-                        id="editedPic" 
-                        src={users[authedUser].avatar !== "" ? URL.createObjectURL(users[authedUser].avatar) : (users[authedUser].gender === 'male' ? male : female)}
-                        alt="no internet :(" 
-                        style={{ borderRadius: '50%',
-                        width: 80,
-                        height: 80,
-                        marginBottom: 2
-                        }}
+                            id="editedPic" 
+                            src={users[authedUser].avatar !== "" ? URL.createObjectURL(users[authedUser].avatar) : (users[authedUser].gender === 'male' ? male : female)}
+                            alt="no internet :(" 
+                            style={{ borderRadius: '50%',
+                            width: 80,
+                            height: 80,
+                            marginBottom: 2
+                            }}
                         />
-                    </MenuItem>
-                    <Box
-                    variant="contained"
-                    component="label"
-                    id='edited-get-pic'
-                    sx={{
-                        width: '2rem',
-                        height: '2rem',
-                        position: 'absolute',
-                        margin: '-35px 0 auto 6.2rem',
-                        borderRadius: '50%',
-                        backgroundImage: `url(${cam})`,
-                        backgroundSize: 'cover',
-                        backgroundRepeat: 'no-repeat',
-                        cursor: 'pointer',
-                    }}
-                    > 
-                    <input
-                        type="file"
-                        hidden
-                        onChange={handleChange}
-                    />
+                        <Box
+                            variant="contained"
+                            component="label"
+                            id='edited-get-pic'
+                            sx={{
+                                width: '2rem',
+                                height: '2rem',
+                                position: 'absolute',
+                                margin: '55px 0 auto 65px',
+                                borderRadius: '50%',
+                                backgroundImage: `url(${cam})`,
+                                backgroundSize: 'cover',
+                                backgroundRepeat: 'no-repeat',
+                                cursor: 'pointer',
+                            }}
+                            > 
+                            <input
+                                type="file"
+                                hidden
+                                onChange={handleChange}
+                            />
                     </Box>
+                    </MenuItem>
                     <MenuItem id="pass-change">
                         <img
                         src={eye}
@@ -139,8 +140,6 @@ function EditUser({ users , authedUser , widthSet}) {
                             height: '15px',
                             cursor: 'pointer',
                             position: 'absolute',
-                            marginTop: '0.9rem',
-                            marginLeft: '14.5rem',
                             display: 'none'
                         }}/>
                         <TextField
@@ -159,20 +158,6 @@ function EditUser({ users , authedUser , widthSet}) {
                             e.target.value === '' && $('#edited-pass-show').hide()
                             return setPass(e.target.value)}}
                         />
-                        <Button 
-                        id="submit-edited-pass"
-                        color="primary"
-                        variant="contained"
-                        sx={{
-                            mr: 2
-                        }}
-                        onClick={(e) => {
-                            submitPassEditer(e);
-                            $('#edited-new-pass').val('');
-                            $('#edited-pass-show').hide();
-                        }}>
-                            Edit
-                        </Button>
                     </MenuItem>
                     <MenuItem
                         sx={{ 
@@ -184,15 +169,22 @@ function EditUser({ users , authedUser , widthSet}) {
                         text={passAlert}
                         />
                     </MenuItem>
-                    <MenuItem
-                        sx={{ 
-                            display: "none"
-                        }}
-                        id="edit-pass-alert"
-                        >
-                        <BasicAlerts
-                        text={passAlert}
-                        />
+                    <MenuItem>
+                            <Button 
+                                id="submit-edited-pass"
+                                color="primary"
+                                variant="contained"
+                                fullWidth
+                                sx={{
+                                    mr: 2
+                                }}
+                                onClick={(e) => {
+                                    submitPassEditer(e);
+                                    $('#edited-new-pass').val('');
+                                    $('#edited-pass-show').hide();
+                                }}>
+                                Edit
+                            </Button>
                     </MenuItem>
             </Menu>
         </Container>

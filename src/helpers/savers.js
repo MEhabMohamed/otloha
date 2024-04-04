@@ -147,17 +147,30 @@ export function saveRecitations({verse, narration, playback, authed}) {
             authed
         })
         setTimeout(() => {
+
             recitations = {
                 ...recitations,
                 [formattedRecitation.id]: formattedRecitation
             }
 
-            users = {
-                ...users,
+            users[authed].description === "teacher" ?
+            teachers = {
+                ...teachers,
                 [authed]: {
-                    ...users[authed],
-                    recitations: users[authed].recitations.concat([formattedRecitation.id])
+                    ...teachers[authed],
+                    recitations: teachers[authed].recitations.concat([formattedRecitation.id])
                 }
+            } : students = {
+                ...students,
+                [authed]: {
+                    ...students[authed],
+                    recitations: students[authed].recitations.concat([formattedRecitation.id])
+                }
+            };
+
+            users = {
+                ...teachers,
+                ...students
             }
 
             res(formattedRecitation)
@@ -245,3 +258,62 @@ export function saveAdmins ({email}) {
     })
 }
 
+export function savePasses ({id , password}) {
+    return new Promise((res,rej) => {
+        
+        setTimeout(() => {
+
+            users[id].description === "teacher" ?
+            teachers = {
+                ...teachers,
+                [id]: {
+                    ...teachers[id],
+                    password: password
+                }
+            } : students = {
+                ...students,
+                [id]: {
+                    ...students[id],
+                    password: password
+                }
+            };
+
+            users = {
+                ...teachers,
+                ...students
+            }
+
+            res(password)
+        }, 1000)
+    })
+}
+
+export function savePics ({id , pic}) {
+    return new Promise((res,rej) => {
+        
+        setTimeout(() => {
+
+            users[id].description === "teacher" ?
+            teachers = {
+                ...teachers,
+                [id]: {
+                    ...teachers[id],
+                    avatar: pic
+                }
+            } : students = {
+                ...students,
+                [id]: {
+                    ...students[id],
+                    avatar: pic
+                }
+            };
+
+            users = {
+                ...teachers,
+                ...students
+            }
+
+            res(pic)
+        }, 1000)
+    })
+}

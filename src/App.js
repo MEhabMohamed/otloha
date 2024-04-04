@@ -17,6 +17,7 @@ import light from './Resources/light-bg.jpg';
 import Recitation from './Component Libraries/Recitation/Recitation';
 import StudentDashboard from './components/StudentDashboard';
 import HomePage from './components/HomePage';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 const PrivateWrapper = ({ auth: isAuthenticated }) => {
   if (isAuthenticated !== null) {
@@ -40,7 +41,7 @@ function App({ authedUser , initial , recitations }) {
   checkAuth.current = auth;
   const [mode, setMode] = useState('light');
   const LPtheme = createTheme(getLPTheme(mode));
-
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const toggleColorMode = () => {
     setMode((prev) => (prev === 'dark' ? 'light' : 'dark'));
   };
@@ -48,12 +49,13 @@ function App({ authedUser , initial , recitations }) {
   useEffect(() => {
 
       setAuth(isAuthed);
+      prefersDarkMode ? setMode('dark') : setMode('light');
       
       return () => {
         initial();
       }
       
-  }, [isAuthed, initial])
+  }, [isAuthed, initial, prefersDarkMode])
   
   return (
     <ThemeProvider theme={LPtheme}>

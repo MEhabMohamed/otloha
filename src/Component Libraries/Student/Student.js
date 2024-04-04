@@ -40,12 +40,12 @@ function Student({users, authedUser , id , recites , recitations}) {
         </Grid>
         }
         <Grid item container md={11.5}>
-          <Grid item xs={12} md={1.5}>
+          <Grid item xs={12} md={2}>
             <ButtonBase sx={{ width: 70, height: 70, cursor: "default", marginLeft: authedUser !== id ? "auto" : "1rem" }}>
               <Img sx={{ width: 70, height: 70 }} alt="student-pic" src={users[id].avatar !== "" ? URL.createObjectURL(users[id].avatar) : (users[id].gender === 'male' ? male : female)} />
             </ButtonBase>
           </Grid>
-          <Grid item xs={12} sm={12} md={7} container spacing={0}>
+          <Grid item xs={12} sm={12} md={6.5} container spacing={0}>
               <Grid item md={12} sm={12} xs={12}>
                 <Typography variant="body2">
                   {users[id].name}
@@ -118,20 +118,20 @@ function Student({users, authedUser , id , recites , recitations}) {
                   Recitations Statistics
                 </Typography>
               </Grid>
-                <Grid container sm={12} md={12}>
-                  <Grid item xs={3} sm={2.4} md={2.4}>
+                <Grid item container sm={12} md={12}>
+                  <Grid item xs={3} sm={2} md={2.2}>
                     <StatsFormer image={total} num={recites.length} text="Total" />
                   </Grid>
-                  <Grid item xs={3} sm={2.4} md={2.4}>
+                  <Grid item xs={3} sm={2} md={2.2}>
                     <StatsFormer image={pending} num={recites.map((recite) => recitations[recite].status).filter((i) => i === "Pending").length} text="Pending" />
                   </Grid>
-                  <Grid item xs={3} sm={2.4} md={2.4}>
+                  <Grid item xs={3} sm={2} md={2.2}>
                     <StatsFormer image={accept} num={recites.map((recite) => recitations[recite].status).filter((i) => i === "Accepted").length} text="Accepted" />
                   </Grid>
-                  <Grid item xs={3} sm={2.4} md={2.4}>
+                  <Grid item xs={3} sm={2} md={2.2}>
                     <StatsFormer image={reject} num={recites.map((recite) => recitations[recite].status).filter((i) => i === "Rejected").length} text="Rejected" />
                   </Grid>
-                  <Grid item xs={3} sm={2.4} md={2.4}>
+                  <Grid item xs={3} sm={2} md={2.2}>
                     <StatsFormer image={report} num={recites.map((recite) => recitations[recite].status).filter((i) => i === "Reported").length} text="Reported" />
                   </Grid>
                 </Grid>

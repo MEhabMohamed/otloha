@@ -1,4 +1,4 @@
-import { saveStudent, saveTeacher } from "../helpers/savers"
+import { savePasses, savePics, saveStudent, saveTeacher } from "../helpers/savers"
 
 export const ADD_USER = 'ADD_USER'
 export const RECEIVE_USERS = 'RECEIVE_USERS'
@@ -59,7 +59,7 @@ export function receiveUsers(users) {
     }
 }
 
-export function editPassword(id , password) {
+function editPassword(id , password) {
     return {
         type: EDIT_PASSWORD,
         id,
@@ -67,10 +67,28 @@ export function editPassword(id , password) {
     }
 }
 
-export function editPic(id , pic) {
+export function handleEditPassword(id, password) {
+    return (dispatch) => {
+        return savePasses({
+            id,
+            password
+        }).then(() => dispatch(editPassword(id, password)))
+    }
+}
+
+function editPic(id , pic) {
     return {
         type: EDIT_PIC,
         id,
         pic
+    }
+}
+
+export function handleEditPic(id, pic) {
+    return (dispatch) => {
+        return savePics({
+            id,
+            pic
+        }).then(() => dispatch(editPic(id, pic)))
     }
 }

@@ -2,24 +2,32 @@ import { Grid, Typography } from "@mui/material";
 
 export default function StatsFormer({ image , num, text}) {
     return (
-        <Grid container textAlign="left" spacing={0} py={1} pl={2} maxWidth={60}>
-            <Grid item xs={12} sm={12} md={10}>
+        <Grid
+            container
+            textAlign="left"
+            spacing={0}
+            sx={{
+                px: 1,
+                py: '1px',
+                maxWidth: 60
+            }}>
+            <Grid item xs={6} sm={6} md={6}>
                 <img 
                 src={image}
                 alt={text}
                 style={{
-                    width: '25px',
-                    height: '25px',
+                    width: '18px',
+                    height: '18px',
                 }}
                 />
             </Grid>
-            <Grid item xs={12} sm={12} md={2}>
-                <Typography variant="body2" fontWeight="bolder">
+            <Grid item xs={6} sm={6} md={6}>
+                <Typography variant="caption" fontWeight="bolder">
                 {num}
                 </Typography>
             </Grid>
-            <Grid item>
-                <Typography variant='body2' fontWeight="bolder">
+            <Grid item md={12}>
+                <Typography variant='caption' fontWeight="bolder">
                 {text}
                 </Typography>
             </Grid>
