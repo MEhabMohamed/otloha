@@ -19,7 +19,13 @@ function RecitationDashboard ({ recitations }) {
                     </Grid>
                 )).slice(firstIndex, lastIndex)}
                 <Grid item>
-                    <PaginationLink showing={Math.ceil(recitations.length/10)} pageSet={setCurrentPage} />
+                    <PaginationLink
+                        showing={Math.ceil(recitations.length/10)}
+                        pageSet={setCurrentPage}
+                        firstIndex={firstIndex}
+                        lastIndex={lastIndex}
+                        total={recitations.length}
+                        />
                 </Grid>
             </Grid>
         </Grid>

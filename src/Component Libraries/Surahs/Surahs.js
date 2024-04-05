@@ -14,7 +14,10 @@ export default function SurahSelect({ surah , setter , mushaf}) {
 
   return (
     <Box sx={{ minWidth: 120 }}>
-      <FormControl fullWidth>
+      <FormControl
+        fullWidth
+        required
+        >
         <InputLabel id="surah-select-label">Surah</InputLabel>
         <Select
           labelId="surah-select-label"

@@ -20,7 +20,13 @@ function TeacherDashboard ({ users , authedUser , teachers }) {
                     </Grid>
                 )).slice(firstIndex, lastIndex)}
                 <Grid item>
-                    <PaginationLink showing={Math.ceil(teachers.length/10)} pageSet={setCurrentPage} />
+                <PaginationLink
+                        showing={Math.ceil(teachers.length/10)}
+                        pageSet={setCurrentPage}
+                        firstIndex={firstIndex}
+                        lastIndex={lastIndex}
+                        total={teachers.length}
+                        />
                 </Grid>
             </Grid>
         </Grid>

@@ -16,7 +16,10 @@ export default function AyahSelect({ surah , ayah , setter , label , numberSette
 
   return (
     <Box>
-      <FormControl fullWidth>
+      <FormControl
+        fullWidth
+        required
+      >
         <InputLabel id="ayah-select-label">{label}</InputLabel>
         <Select
           labelId="ayah-select-label"

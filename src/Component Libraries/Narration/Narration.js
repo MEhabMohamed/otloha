@@ -13,7 +13,10 @@ export default function NarrationSelect({ narrate , setter }) {
 
   return (
     <Box sx={{ minWidth: 120 }}>
-      <FormControl fullWidth>
+      <FormControl
+          fullWidth
+          required
+        >
         <InputLabel id="narration-select-label">Narration</InputLabel>
         <Select
           labelId="narration-select-label"

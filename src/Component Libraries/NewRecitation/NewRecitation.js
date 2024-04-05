@@ -8,12 +8,15 @@ import NarrationSelect from "../Narration/Narration";
 import { Box, Button, Container, Grid, Paper, Typography } from "@mui/material";
 import qu from "../../Resources/quran.png";
 import plus from "../../Resources/plus.png";
+import AlertShow from "../Alert/AlertShow";
+import BasicAlerts from "../Alert/Alert";
 
 function NewRecitation({ authedUser }) {
 
     let verse = useRef('');
     let [narration, setNarration] = useState('');
     let [playback, setPlayback] = useState('');
+    let [alarm, setAlarm] = useState('');
     let [mushaf, setMushaf] = React.useState('');
     let [surah, setSurah] = useState('');
     let [fromAyah, setFromAyah] = useState('');
@@ -38,7 +41,7 @@ function NewRecitation({ authedUser }) {
             dispatch(handleAddRecitation(verse.current, narration,
             playback, authedUser));
         } else {
-            alert('رجاء إكمال البيانات!')
+            AlertShow($('#recitation-alert'), setAlarm, "Please choose all required!")
         }
     }
 
@@ -108,6 +111,9 @@ function NewRecitation({ authedUser }) {
                         </Grid>
                         <Grid item xs={12} textAlign="center">
                             <Typography variant="body1" id="file-name"></Typography>
+                        </Grid>
+                        <Grid item xs={12} sx={{ display: "none"}} id="recitation-alert">
+                            <BasicAlerts text={alarm} />
                         </Grid>
                         <Grid item xs={12}>
                             <SurahSelect surah={surah} setter={setSurah} mushaf={mushaf}/>
