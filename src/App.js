@@ -82,8 +82,8 @@ function App({ authedUser , initial , recitations }) {
                 <Route path='/new-recitation' element={<NewRecitation />} />
                 <Route path='/teacher-dashboard' element={<TeacherDashboard />} />
                 <Route path='/student-dashboard' element={<StudentDashboard />} />
-                <Route path='/recitations' element={<RecitationDashboard theme={LPtheme}/>} />
-                {recitations.map((id => <Route path={`/recitations/${id}`} key={id} element={<Recitation />} />))}
+                <Route path='/recitations' element={<RecitationDashboard />} />
+                {recitations.map((id => <Route path={`/recitations/${id}`} key={id} element={<Recitation id={id}/>} />))}
             </Route>
           </Routes>
           </Box>

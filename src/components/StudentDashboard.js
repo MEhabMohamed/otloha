@@ -1,28 +1,39 @@
-import React from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
 import Student from "../Component Libraries/Student/Student";
 import { Grid } from "@mui/material";
+import PaginationLink from "../Component Libraries/Pagination/Pagination";
 
-function StudentDashboard ({ users }) {
+function StudentDashboard ({ users , authedUser , students }) {
+
+    let [currentPage, setCurrentPage] = useState(1);
+    let lastIndex = currentPage * 10;
+    let firstIndex = lastIndex - 10;
 
     return (
         <Grid container id="former-user-container" sx={{ pt: 12}}>
             <Grid item id="users-container" xs={12} sm={8}>
-                {users.map(({id}) => (
-                    <Grid key={id} id={`${id}-li`} item xs={12}>
+                {students.map(({id}) => (
+                    !users[authedUser].blockList.includes(id) &&
+                    <Grid key={id} id={`${id}-li`} item>
                         <Student id={id}/>
                     </Grid>
-                ))}
+                )).slice(firstIndex, lastIndex)}
+                <Grid item>
+                    <PaginationLink showing={students.length/10} pageSet={setCurrentPage} />
+                </Grid>
             </Grid>
         </Grid>
     )
 };
 
-function mapStateToProps ({ users }) {
+function mapStateToProps ({ users , authedUser }) {
     let userStudents = Object.values(users);
     let students = userStudents.length > 0 ? userStudents.filter(({description}) => description === 'student') : ['']
     return {
-        users: students
+        students,
+        authedUser: authedUser !== null ? authedUser[0] : null,
+        users
     }
 };
 

@@ -1,4 +1,4 @@
-import { savePasses, savePics, saveStudent, saveTeacher } from "../helpers/savers"
+import { saveBlocks, savePasses, savePics, saveStudent, saveTeacher } from "../helpers/savers"
 
 export const ADD_USER = 'ADD_USER'
 export const RECEIVE_USERS = 'RECEIVE_USERS'
@@ -6,6 +6,7 @@ export const EDIT_PASSWORD = 'EDIT_PASSWORD'
 export const EDIT_PIC = 'EDIT_PIC'
 export const RECEIVE_TEACHERS = 'RECEIVE_TEACHERS'
 export const RECEIVE_STUDENTS = 'RECEIVE_STUDENTS'
+export const ADD_BLOCK = 'ADD_BLOCK'
 
 function addUser(user) {
     return {
@@ -90,5 +91,22 @@ export function handleEditPic(id, pic) {
             id,
             pic
         }).then(() => dispatch(editPic(id, pic)))
+    }
+}
+
+function addBlock(id , authed) {
+    return {
+        type: ADD_BLOCK,
+        id,
+        authed
+    }
+}
+
+export function handleAddBlock(id, authed) {
+    return (dispatch) => {
+        return saveBlocks({
+            id,
+            authed
+        }).then(() => dispatch(addBlock(id, authed)))
     }
 }

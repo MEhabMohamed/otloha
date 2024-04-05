@@ -1,5 +1,5 @@
 import { ADD_RECITATION } from "../actions/recitation"
-import { ADD_USER , EDIT_PASSWORD, EDIT_PIC, RECEIVE_USERS } from "../actions/user"
+import { ADD_BLOCK, ADD_USER , EDIT_PASSWORD, EDIT_PIC, RECEIVE_USERS } from "../actions/user"
 
 export default function users(state={}, action) {
     switch (action.type) {
@@ -35,6 +35,14 @@ export default function users(state={}, action) {
                 [action.authed]: {
                     ...state[action.authed],
                     recitations: state[action.authed].recitations.concat([action.recitation.id])
+                }
+            }
+        case ADD_BLOCK:
+            return {
+                ...state,
+                [action.authed]: {
+                    ...state[action.authed],
+                    blockList: state[action.authed].blockList.concat([action.id])
                 }
             }
         default: 

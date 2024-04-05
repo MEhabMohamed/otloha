@@ -317,3 +317,34 @@ export function savePics ({id , pic}) {
         }, 1000)
     })
 }
+
+export function saveBlocks({ id , authed }) {
+    return new Promise((res,rej) => {
+
+        setTimeout(() => {
+
+            users[authed].description === "teacher" ?
+            teachers = {
+                ...teachers,
+                [authed]: {
+                    ...teachers[authed],
+                    blockList: teachers[authed].blockList.concat([id])
+                }
+            } : students = {
+                ...students,
+                [authed]: {
+                    ...students[authed],
+                    blockList: students[authed].blockList.concat([id])
+                }
+            };
+
+            users = {
+                ...teachers,
+                ...students
+            }
+
+            res(id)
+        }, 1000)
+    })
+}
+

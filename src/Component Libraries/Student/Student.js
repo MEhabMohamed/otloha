@@ -17,6 +17,7 @@ import pending from '../../Resources/waiting.png';
 import reject from '../../Resources/reject.png';
 import report from '../../Resources/report.png';
 import StatsFormer from '../StatsFormer/StatsFormer';
+import LongMenu from '../DottedMenu/DottedMenu';
 
 const Img = styled('img')({
   margin: 'auto',
@@ -33,23 +34,81 @@ function Student({users, authedUser , id , recites , recitations}) {
         maxWidth: "100%"
       }}
     >
-      <Grid container spacing={2} textAlign="left" className='teacher-container'>
+      <Grid
+        container
+        spacing={0}
+        textAlign="left"
+        className='teacher-container'
+        sx={{
+          mx: 1
+        }}
+      >
         {authedUser !== id &&
-        <Grid item md={0.25}>
+        <Grid item xs={0.25} sm={0.25} md={0.25} sx={{
+          textAlign: "center",
+        }}>
             <Input id={`choose-${id}`} type="checkbox" value={id} className="choose-user" disableUnderline/>
         </Grid>
         }
-        <Grid item container md={11.5}>
-          <Grid item xs={12} md={2}>
+        <Grid  item
+          container
+          sm={10.75}
+          md={10.75}
+          xs={10.25}
+        >
+          <Grid item xs={12} md={2} sx={{
+          height: 75,
+          textAlign: "center"
+        }}>
             <ButtonBase sx={{ width: 70, height: 70, cursor: "default", marginLeft: authedUser !== id ? "auto" : "1rem" }}>
               <Img sx={{ width: 70, height: 70 }} alt="student-pic" src={users[id].avatar !== "" ? URL.createObjectURL(users[id].avatar) : (users[id].gender === 'male' ? male : female)} />
             </ButtonBase>
           </Grid>
-          <Grid item xs={12} sm={12} md={6.5} container spacing={0}>
-              <Grid item md={12} sm={12} xs={12}>
+          <Grid item
+            xs={12}
+            sm={12}
+            md={10}
+            container
+            spacing={0}
+          >
+            <Grid item container>
+              <Grid item md={4}>
                 <Typography variant="body2">
                   {users[id].name}
                 </Typography>
+              </Grid>
+              <Grid
+                variant="subtitle1"
+                item
+                md={8}
+                textAlign="right"
+                sx={{
+                    border: '2px inset transparent',
+                    borderRradius: '5px',
+                    font: 'bold 13px Helvetica, serif'
+                  }}
+                >
+                    {users[id].gender === "male" ?
+                    <Container component="div">
+                      <img src={maleSymbol}
+                      alt="male"
+                      style={{
+                        width: 13,
+                        height: 13,
+                        mx: 5,
+                      }} /> 
+                      &nbsp;Male
+                    </Container> : <Container component="div">
+                      <img src={femaleSymbol}
+                      alt="female"
+                      style={{
+                        width: 15,
+                        height: 15,
+                        mx: 5,
+                      }} /> 
+                      &nbsp;Female
+                    </Container>}
+                </Grid>
               </Grid>
               <Grid item>
                 <Typography
@@ -62,7 +121,13 @@ function Student({users, authedUser , id , recites , recitations}) {
                   {users[id].email}
                 </Typography>
               </Grid>
-              <Grid item container>
+              <Grid
+                item
+                container
+                sx={{
+                  mb: 1
+                }}
+              >
                   {users[id].verified ? 
                   <Typography variant="body2" gutterBottom sx={{
                     background: 'rgba(10, 204, 211, 0.63)',
@@ -136,39 +201,18 @@ function Student({users, authedUser , id , recites , recitations}) {
                   </Grid>
                 </Grid>
             </Grid>
-            <Grid item textAlign="right" md={3.5}>
-              <Grid
-              variant="subtitle1"
-              sx={{
-                  padding: '0.25rem',
-                  border: '2px inset transparent',
-                  borderRradius: '5px',
-                  font: 'bold 13px Helvetica, serif'
-              }}
-              item>
-                  {users[id].gender === "male" ?
-                  <Container component="div">
-                    <img src={maleSymbol}
-                    alt="male"
-                    style={{
-                      width: 13,
-                      height: 13,
-                      mx: 5,
-                    }} /> 
-                    &nbsp;Male
-                  </Container> : <Container component="div">
-                    <img src={femaleSymbol}
-                    alt="female"
-                    style={{
-                      width: 15,
-                      height: 15,
-                      mx: 5,
-                    }} /> 
-                    &nbsp;Female
-                  </Container>}
-              </Grid>
-            </Grid>
           </Grid>
+          {authedUser !== id &&
+              <Grid
+                item
+                md={1}
+                sm={1}
+                xs={1.5}
+                textAlign="right"
+              >
+                <LongMenu id={id} authed={authedUser} />
+              </Grid>
+              }
         </Grid>
     </Paper>
   );
