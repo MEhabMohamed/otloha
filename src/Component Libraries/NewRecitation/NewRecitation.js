@@ -10,6 +10,7 @@ import qu from "../../Resources/quran.png";
 import plus from "../../Resources/plus.png";
 import AlertShow from "../Alert/AlertShow";
 import BasicAlerts from "../Alert/Alert";
+import { useNavigate } from 'react-router-dom';
 
 function NewRecitation({ authedUser }) {
 
@@ -24,14 +25,17 @@ function NewRecitation({ authedUser }) {
     let [toAyah, setToAyah] = useState('');
     let [toAyahNumber, setToAyahNumber] = useState(0);
     verse.current = {
-        from: fromAyah,
-        to: toAyah,
+        from: `...${fromAyah.substring(0, 40)}`,
+        to: `...${toAyah.substring(0, 40)}`,
         fromNumber: fromAyahNumber,
         toNumber: toAyahNumber,
+        fullFrom: fromAyah,
+        fullTo: toAyah,
         surah
     };
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     $.getJSON('http://api.alquran.cloud/v1/quran/quran-uthmani', (data) => setMushaf(data));
 
@@ -40,6 +44,7 @@ function NewRecitation({ authedUser }) {
         if (verse.current && narration && playback !== "") {
             dispatch(handleAddRecitation(verse.current, narration,
             playback, authedUser));
+            navigate('../recitations')
         } else {
             AlertShow($('#recitation-alert'), setAlarm, "Please choose all required!")
         }

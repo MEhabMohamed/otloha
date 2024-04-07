@@ -76,7 +76,7 @@ function SignUp({ usermails }) {
       'position': 'absolute',
       'margin': '4rem 0 2rem -1.5rem'
   })
-    newPic.current = e.target.files[0]
+    newPic.current = e.target.files[0].name.slice(-4) === (".jpg" || ".png" || "jpeg") ? e.target.files[0] : "";
   }
 
   return (

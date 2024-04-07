@@ -15,21 +15,20 @@ const audioControlsStyle = {
 	padding: 0,
 	border: 0,
 	background: 'transparent',
-	cursor: 'pointer'
+	cursor: 'pointer',
 }
 
 const volumeStyle = {
     margin: 'auto 2.5%',
 	width: '20%',
     py: 0.5,
-    height: '2px'
 }
 
 const audioStyle = {
-    position: 'relative',
-    padding: '2px',
     background: '#0d88c242',
-    borderRadius: '25px'
+    borderRadius: '25px',
+    border: "1px solid white",
+    maxHeight: 130,
 }
 
 const timeStyle = {
@@ -53,6 +52,7 @@ function Player ({ quran , id , recitations }) {
 
     let [volume, setVolume] = useState(100);
     let [playBackTime, setPlayBackTime] = useState(0);
+    let [max, setMax] = useState(100);
 
     const handleVolumeChange = (_, newValue) => {
         setVolume(newValue);
@@ -140,6 +140,7 @@ function Player ({ quran , id , recitations }) {
                 stop();
             }} 
             onLoadedMetadata={() => {
+                setMax(document.querySelector(`#${id.slice(-6)}-audio`).duration);
                 displayDuration();
                 setSliderMax();
             }}/>
@@ -152,7 +153,7 @@ function Player ({ quran , id , recitations }) {
             style={audioControlsStyle}
             onClick={() => {
                 recitations.filter((id) => {
-                    document.querySelector(`#${id.slice(-6)}-audio`).pause()
+                    document.querySelector(`#${id.slice(-6)}-audio`) !== null && document.querySelector(`#${id.slice(-6)}-audio`).pause()
                     $(`#${id.slice(-6)}-pauseItem`).hide();
                     $(`#${id.slice(-6)}-play`).show();
                     return id
@@ -205,10 +206,10 @@ function Player ({ quran , id , recitations }) {
             aria-label="time-indicator" 
             min={0} 
             step={1} 
-            max={document.querySelector(`#${id.slice(-6)}-audio`) !== null ? document.querySelector(`#${id.slice(-6)}-audio`).duration : 100} 
+            max={max} 
             value={playBackTime} 
             onChange={handlePlayer}
-            sx={{ width: '25%', padding: '2px', mx: 0.5}} 
+            sx={{ width: '25%', py: '2px', mx: 0.5}} 
             />
 
             <span 

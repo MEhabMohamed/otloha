@@ -31,7 +31,8 @@ function Student({users, authedUser , id , recites , recitations}) {
   return (
     <Paper
       sx={{
-        maxWidth: "100%"
+        maxWidth: "100%",
+        pt: "3px"
       }}
     >
       <Grid
@@ -89,7 +90,9 @@ function Student({users, authedUser , id , recites , recitations}) {
                   }}
                 >
                     {users[id].gender === "male" ?
-                    <Container component="div">
+                    <Container component="div" sx={{
+                      font: 'bold 15px "Monotype Corsiva", cursive'
+                    }}>
                       <img src={maleSymbol}
                       alt="male"
                       style={{
@@ -98,7 +101,9 @@ function Student({users, authedUser , id , recites , recitations}) {
                         mx: 5,
                       }} /> 
                       &nbsp;Male
-                    </Container> : <Container component="div">
+                    </Container> : <Container component="div" sx={{
+                      font: 'bold 15px "Monotype Corsiva", cursive'
+                    }}>
                       <img src={femaleSymbol}
                       alt="female"
                       style={{

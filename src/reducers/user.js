@@ -1,4 +1,4 @@
-import { ADD_RECITATION } from "../actions/recitation"
+import { ADD_RECITATION, EVALUATE_RECITATION } from "../actions/recitation"
 import { ADD_BLOCK, ADD_USER , EDIT_PASSWORD, EDIT_PIC, RECEIVE_USERS } from "../actions/user"
 
 export default function users(state={}, action) {
@@ -43,6 +43,14 @@ export default function users(state={}, action) {
                 [action.authed]: {
                     ...state[action.authed],
                     blockList: state[action.authed].blockList.concat([action.id])
+                }
+            }
+        case EVALUATE_RECITATION:
+            return {
+                ...state,
+                [action.authed]: {
+                    ...state[action.authed],
+                    evaluatedRecitations: state[action.authed].evaluatedRecitations.concat([action.id])
                 }
             }
         default: 

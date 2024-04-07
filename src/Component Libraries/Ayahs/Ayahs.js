@@ -11,7 +11,7 @@ export default function AyahSelect({ surah , ayah , setter , label , numberSette
 
   const handleChange = (event) => {
     setter(event.target.value);
-    numberSetter(mushaf !== ("" && undefined) ? ayahs.filter(({text}) => `...${text.substring(0, 40)}` === event.target.value)[0].numberInSurah : 0)
+    numberSetter(mushaf !== ("" && undefined) ? ayahs.filter(({text}) => text === event.target.value)[0].numberInSurah : 0)
   };
 
   return (
@@ -28,7 +28,7 @@ export default function AyahSelect({ surah , ayah , setter , label , numberSette
           label="Ayah"
           onChange={handleChange}
         >
-        {surah !== "" && ayahs.map(({text , number}) => <MenuItem key={number} value={`...${text.substring(0, 40)}`}>{`...${text.substring(0, 40)}`}</MenuItem>)}
+        {surah !== "" && ayahs.map(({text , number}) => <MenuItem key={number} value={text}>{`...${text.substring(0, 40)}`}</MenuItem>)}
         </Select>
       </FormControl>
     </Box>

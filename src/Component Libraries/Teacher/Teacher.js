@@ -34,6 +34,7 @@ function Teacher({ users, authedUser , id , recitations , recites , earnings , d
     <Paper
       sx={{
         width: "100%",
+        pt: "3px"
       }}
     >
       <Grid
@@ -59,10 +60,14 @@ function Teacher({ users, authedUser , id , recitations , recites , earnings , d
           md={10.75}
           xs={10.25}
         >
-          <Grid item xs={12} md={1.6} sx={{
-          height: 75,
-          textAlign: "center"
-        }}>
+          <Grid
+            item
+            xs={12}
+            md={1.6}
+            sx={{
+            height: 75,
+            textAlign: "center"
+          }}>
             <ButtonBase sx={{ cursor: "default" }}>
               <Img sx={{ width: 70, height: 70 }} alt="teacher-pic" src={users[id].avatar !== "" ? URL.createObjectURL(users[id].avatar) : (users[id].gender === 'male' ? male : female)} />
             </ButtonBase>
@@ -71,7 +76,7 @@ function Teacher({ users, authedUser , id , recitations , recites , earnings , d
             item
             xs={12}
             sm={12}
-            md={6.5}
+            md={users[id].due === "paid" ? 6.5 : 10.15}
             container
             spacing={0}
             >
@@ -92,7 +97,9 @@ function Teacher({ users, authedUser , id , recitations , recites , earnings , d
                     font: 'bold 13px Helvetica, serif'
                 }}>
                   {users[id].gender === "male" ?
-                  <Container component="div">
+                  <Container component="div" sx={{
+                      font: 'bold 15px "Monotype Corsiva", cursive'
+                    }}>
                     <img src={maleSymbol}
                     alt="male"
                     style={{
@@ -100,7 +107,9 @@ function Teacher({ users, authedUser , id , recitations , recites , earnings , d
                       height: 13,
                     }} /> 
                     &nbsp;Male
-                  </Container> : <Container component="div">
+                  </Container> : <Container component="div" sx={{
+                      font: 'bold 15px "Monotype Corsiva", cursive'
+                    }}>
                     <img src={femaleSymbol}
                     alt="female"
                     style={{

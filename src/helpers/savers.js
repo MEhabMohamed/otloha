@@ -79,7 +79,12 @@ function formatRecitation ({verse, narration, playback, authed}) {
         status: "Pending",
         rating: 0,
         createdAt: Date.now(),
-        evaluatedAt: ""
+        evaluatedAt: "",
+        teacher: {
+            name: "",
+            avatar: ""
+        },
+        remarkable: false
     }
 }
 
@@ -97,6 +102,7 @@ function formatTeacher ({id, name, password, country, description, email, gender
         lang,
         bDate,
         recitations: [],
+        evaluatedRecitations: [],
         joiningDate: Date.now(),
         verified: false,
         level: 'Beginner',
@@ -337,6 +343,42 @@ export function saveBlocks({ id , authed }) {
                     blockList: students[authed].blockList.concat([id])
                 }
             };
+
+            users = {
+                ...teachers,
+                ...students
+            }
+
+            res(id)
+        }, 1000)
+    })
+}
+
+export function saveEvaluations({ id , authed , status , name , avatar }) {
+    return new Promise((res,rej) => {
+
+        setTimeout(() => {
+
+            recitations = {
+                ...recitations,
+                [id]: {
+                    ...recitations[id],
+                    evaluatedAt: Date.now(),
+                    status: status,
+                    teacher: {
+                        name: name,
+                        avatar: avatar
+                    }
+                }
+            }
+
+            teachers = {
+                ...teachers,
+                [authed]: {
+                    ...teachers[authed],
+                    evaluatedRecitations: teachers[authed].evaluatedRecitations.concat([id])
+                }
+            }
 
             users = {
                 ...teachers,

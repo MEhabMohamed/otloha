@@ -15,7 +15,7 @@ function TeacherDashboard ({ users , authedUser , teachers }) {
             <Grid item id="users-container" xs={12} sm={8}>
                 {teachers.map(({id}) => (
                     !users[authedUser].blockList.includes(id) &&
-                    <Grid key={id} id={`${id}-li`} item>
+                    <Grid key={id} id={`${id}-li`} item mb={1}>
                         <Teacher id={id}/>
                     </Grid>
                 )).slice(firstIndex, lastIndex)}

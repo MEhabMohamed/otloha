@@ -14,10 +14,10 @@ import AppAppBar from './Component Libraries/AppBar/AppAppBar';
 import getLPTheme from './helpers/getLPTheme';
 import dark from './Resources/dark-bg.jpg';
 import light from './Resources/light-bg.jpg';
-import Recitation from './Component Libraries/Recitation/Recitation';
 import StudentDashboard from './components/StudentDashboard';
 import HomePage from './components/HomePage';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import RecitationProfile from './Component Libraries/Recitation/RecitationProfile';
 
 const PrivateWrapper = ({ auth: isAuthenticated }) => {
   if (isAuthenticated !== null) {
@@ -83,7 +83,7 @@ function App({ authedUser , initial , recitations }) {
                 <Route path='/teacher-dashboard' element={<TeacherDashboard />} />
                 <Route path='/student-dashboard' element={<StudentDashboard />} />
                 <Route path='/recitations' element={<RecitationDashboard />} />
-                {recitations.map((id => <Route path={`/recitations/${id}`} key={id} element={<Recitation id={id}/>} />))}
+                {recitations.map((id => <Route path={`/recitations/${id}`} key={id} element={<RecitationProfile id={id}/>} />))}
             </Route>
           </Routes>
           </Box>

@@ -32,9 +32,7 @@ function LongMenu({ id , authed }) {
         aria-haspopup="true"
         onClick={handleClick}
       >
-        <MoreVertIcon iconStyle={{
-          width: "5px"
-        }}/>
+        <MoreVertIcon />
       </IconButton>
       <Menu
         id="long-menu"

@@ -13,9 +13,9 @@ function RecitationDashboard ({ recitations }) {
     return (
         <Grid container id="recites-container" sx={{ pt: 12}}>
             <Grid item id="users-container" xs={12} sm={8}>
-                {recitations.map((id) => (
-                    <Grid key={id} id={id} item>
-                        <Recitation id={id}/>
+                {recitations.map((id, index) => (
+                    <Grid key={id} id={id} item mb={1}>
+                        <Recitation id={id} index={recitations.length - index} />
                     </Grid>
                 )).slice(firstIndex, lastIndex)}
                 <Grid item>
@@ -34,6 +34,7 @@ function RecitationDashboard ({ recitations }) {
 
 function mapStateToProps ({ users , authedUser , recitations }) {
     let recites = Object.keys(recitations)
+    .sort((a, b,) => recitations[b].createdAt - recitations[a].createdAt)
     return {
         users,
         authedUser: authedUser !== null ? authedUser[0] : null,

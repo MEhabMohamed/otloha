@@ -12,10 +12,17 @@ export default function PaginationLink({ showing, pageSet, firstIndex, lastIndex
   const page = parseInt(query.get('page') || '1', showing);
   
   return (
-    <Stack spacing={2}>
-      <Typography>Showing {total !== 0 ? firstIndex + 1 : 0}-{lastIndex} of total {total}</Typography>
+    <Stack spacing={0} sx={{
+      background: '#0d88c242',
+      alignItems: "center",
+      borderRadius: "25px"
+    }}>
+      <Typography variant="subtitle1" sx={{
+        fontWeight: "bolder",
+      }}>Showing {total !== 0 ? firstIndex + 1 : 0}-{lastIndex} of total {total}</Typography>
       <Pagination
-        page={page}
+        color="primary"
+        page={isNaN(page) ? 1 : page}
         count={showing}
         onChange={(e, value) => pageSet(value)}
         renderItem={(item) => (

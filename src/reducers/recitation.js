@@ -1,4 +1,4 @@
-import { ADD_RECITATION , RECEIVE_RECITATIONS , DELETE_RECITATION } from "../actions/recitation"
+import { ADD_RECITATION , RECEIVE_RECITATIONS , EVALUATE_RECITATION } from "../actions/recitation"
 
 export default function recitations (state=[], action) {
     switch (action.type) {
@@ -12,10 +12,18 @@ export default function recitations (state=[], action) {
                 ...state,
                 ...action.recitations,
             }
-        case DELETE_RECITATION:
-            let remaining = state.filter((id) => action.id !== id)
+        case EVALUATE_RECITATION:
             return {
-                ...remaining
+                ...state,
+                [action.id]: {
+                    ...state[action.id],
+                    evaluatedAt: Date.now(),
+                    status: action.status,
+                    teacher: {
+                        name: action.name,
+                        avatar: action.avatar
+                    }
+                }
             }
         default: 
             return state

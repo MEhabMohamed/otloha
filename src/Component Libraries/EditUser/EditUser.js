@@ -38,8 +38,10 @@ function EditUser({ users , authedUser , widthSet}) {
         'height': '2rem',
         'position': 'absolute',
         'margin': '55px 0 auto 65px'})
-        newPic.current = e.target.files[0]
-        dispatch(handleEditPic(authedUser, e.target.files[0]))
+        if (e.target.files[0] !== (undefined && "")) {
+        newPic.current = e.target.files[0].name.slice(-4) === (".jpg" || ".png" || "jpeg") ? e.target.files[0] : "";
+        e.target.files[0].name.slice(-4) === (".jpg" || ".png" || "jpeg") && dispatch(handleEditPic(authedUser, e.target.files[0]))
+        }
     }
 
     function submitPassEditer(e) {

@@ -1,8 +1,8 @@
-import { saveRecitations } from "../helpers/savers"
+import { saveEvaluations, saveRecitations } from "../helpers/savers"
 
 export const ADD_RECITATION = 'ADD_RECITATION'
 export const RECEIVE_RECITATIONS = 'RECEIVE_RECITATIONS'
-export const DELETE_RECITATION = 'DELETE_RECITATION'
+export const EVALUATE_RECITATION = 'EVALUATE_RECITATION'
 
 function addRecitation (recitation , authed) {
     return {
@@ -31,9 +31,26 @@ export function receiveRecitations(recitations) {
     }
 }
 
-export function deleteRecitation(id) {
+function evaluateRecitation(id, authed, status, name, avatar) {
     return {
-        type: DELETE_RECITATION,
-        id
+        type: EVALUATE_RECITATION,
+        id,
+        authed,
+        status,
+        name,
+        avatar
+    }
+}
+
+export function handleEvaluateRecitation(id, authed, status, name, avatar) {
+    return (dispatch) => {
+        return saveEvaluations({
+            id,
+            authed,
+            status,
+            name,
+            avatar
+        })
+        .then(() => dispatch(evaluateRecitation(id, authed, status, name, avatar)))
     }
 }
