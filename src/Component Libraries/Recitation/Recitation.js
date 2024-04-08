@@ -84,7 +84,11 @@ function Recitation({users, recitation , id, index , authedUser}) {
                 </Link>
               </Grid>
             </Grid>
-            <Grid item>
+            <Grid item sx={{
+              mt: {
+                md: recitation.teacher.name !== "" && -8
+              }
+            }}>
               <Typography variant="body2">
                 Created at:{formatDate(recitation.createdAt)}
               </Typography>
@@ -103,6 +107,7 @@ function Recitation({users, recitation , id, index , authedUser}) {
             textAlign='center'
           >
             <MediaPlayer id={id} />
+            {recitation.teacher.name !== "" &&
             <Grid item container mt={1}>
                 <Grid item xs={12} md={4} sx={{
                   height: 75,
@@ -112,7 +117,13 @@ function Recitation({users, recitation , id, index , authedUser}) {
                     <Img sx={{ width: 70, height: 70 }} alt="teacher-pic" src={recitation.teacher.avatar !== "" ? URL.createObjectURL(recitation.teacher.avatar) : (users[Object.keys(users).filter((id) => users[id].name === recitation.teacher.name).toString()].gender === 'male' ? male : female)} />
                   </ButtonBase>
                 </Grid>
-                <Grid item md={8} xs={12} textAlign="left">
+                <Grid item md={8} xs={12} sx={{
+                  textAlign: {
+                    md: "left",
+                    xs: "center",
+                    sm: "center"
+                  }
+                }}>
                 <Typography variant="subtitle2" gutterBottom>
                   Teacher
                 </Typography>
@@ -120,7 +131,7 @@ function Recitation({users, recitation , id, index , authedUser}) {
                   {recitation.teacher.name}
                 </Typography>
                 </Grid>
-            </Grid>
+            </Grid>}
           </Grid>
         </Grid>
       </Paper>

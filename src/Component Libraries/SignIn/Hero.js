@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { Link } from 'react-router-dom';
 
 export default function Hero() {
   return (
@@ -65,7 +66,7 @@ export default function Hero() {
             useFlexGap
             sx={{ pt: 2, width: { xs: '100%', sm: 'auto' } }}
           >
-          Sign up now to join the team!
+          <Link to="./createuser">Sign up</Link> now to join the team!
           </Stack>
         </Stack>
       </Container>

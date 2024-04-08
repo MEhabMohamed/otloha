@@ -16,6 +16,7 @@ import report from '../../Resources/report.png';
 import star from '../../Resources/star.png';
 import earning from '../../Resources/earning.png';
 import due from '../../Resources/due.png';
+import heart from '../../Resources/heart.png';
 import total from '../../Resources/blue-circle.png';
 import maleSymbol from '../../Resources/male-symbol.png';
 import femaleSymbol from '../../Resources/female-symbol.png';
@@ -40,10 +41,17 @@ function Teacher({ users, authedUser , id , recitations , recites , earnings , d
       <Grid
         container
         spacing={0}
-        textAlign="left"
         className='teacher-container'
         sx={{
-          mx: 1
+          mx: 1,
+          textAlign: {
+            md: "left",
+            sm: "center"
+          },
+          justifyContent: {
+            md: "left",
+            sm: "center"
+          }
         }}
         >
         {authedUser !== id &&
@@ -76,7 +84,7 @@ function Teacher({ users, authedUser , id , recitations , recites , earnings , d
             item
             xs={12}
             sm={12}
-            md={users[id].due === "paid" ? 6.5 : 10.15}
+            md={6.5}
             container
             spacing={0}
             >
@@ -90,11 +98,20 @@ function Teacher({ users, authedUser , id , recitations , recites , earnings , d
                 variant="subtitle1"
                 item
                 md={8}
-                textAlign="right"
                 sx={{
-                    border: '2px inset transparent',
-                    borderRradius: '5px',
-                    font: 'bold 13px Helvetica, serif'
+                  px: {
+                    md: authedUser !== id && 2
+                  },
+                  textAlign: {
+                    md: "right",
+                    sm: "left",
+                    xs: "left"
+                  },
+                  justifyContent: {
+                    md: "right",
+                    sm: "left",
+                    xs: "left"
+                  }
                 }}>
                   {users[id].gender === "male" ?
                   <Container component="div" sx={{
@@ -176,7 +193,18 @@ function Teacher({ users, authedUser , id , recitations , recites , earnings , d
                 Teacher Recitations Corrections
                 </Typography>
             </Grid>
-            <Grid item container sm={12} md={12}>
+            <Grid item container sm={12} md={12} sx={{
+              textAlign: {
+                  md: "left",
+                  sm: "center",
+                  xs: "center"
+                },
+                justifyContent: {
+                  md: "left",
+                  sm: "center",
+                  xs: "center"
+                }
+            }}>
               <Grid item xs={3} sm={2} md={2.2}>
                 <StatsFormer image={total} num={recites.length} text="Total" />
               </Grid>
@@ -194,22 +222,43 @@ function Teacher({ users, authedUser , id , recitations , recites , earnings , d
               </Grid>
             </Grid>
           </Grid>
-          <Grid item container textAlign="right" xs={12} md={3.65} sx={{
+          <Grid item container xs={12} md={3.65} sx={{
+            textAlign: {
+            md: "left",
+            sm: "center",
+            xs: "center"
+          },
+          justifyContent: {
+            md: "left",
+            sm: "center",
+            xs: "center"
+          }
           }}>
             <Grid item>
-              { users[id].due === "paid" && 
+              { users[id].due === "paid" ?
               <Grid item xs={12} md={12}>
                 <Container
                   component="div"
                   sx={{
-                    mt: 5
+                    mt: {md: 5}
                   }}
                 >
                   <Typography variant="body2" sx={{ font: 'bold 12px Helvetica, serif'}}>
                     Teacher Accounting
                   </Typography>
                 </Container>
-                <Grid item container sm={12} md={11} justifyContent="right">
+                <Grid item container sm={12} md={11} sx={{
+                  textAlign: {
+                  md: "right",
+                  sm: "center",
+                  xs: "center"
+                },
+                justifyContent: {
+                  md: "right",
+                  sm: "center",
+                  xs: "center"
+                }
+                }}>
                   <Grid item xs={4.5} sm={4.5} md={4.5}>
                     <StatsFormer image={earning} num={earnings[0].toFixed(2)} text="Earnings" />
                   </Grid>
@@ -217,7 +266,18 @@ function Teacher({ users, authedUser , id , recitations , recites , earnings , d
                     <StatsFormer image={due} num={dues[0].toFixed(2)} text="Dues" />
                   </Grid>
                 </Grid>
-              </Grid>}
+              </Grid> : <Container component="div" sx={{
+                      font: 'bold 15px "Monotype Corsiva", cursive',
+                       mt: {md: 5}
+                    }}>
+                    <img src={heart}
+                    alt="heart"
+                    style={{
+                      width: 30,
+                      height: 30,
+                    }} /> 
+                    &nbsp;Volunteer
+                  </Container>}
             </Grid>
           </Grid>
         </Grid>

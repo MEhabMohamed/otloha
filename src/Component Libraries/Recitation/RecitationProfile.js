@@ -112,7 +112,15 @@ function RecitationProfile({ users, recitation , id , index , authedUser }) {
             <Typography variant="subtitle1" gutterBottom>
               From Verse {recitation.verse.fromNumber} To Verse {recitation.verse.toNumber}
             </Typography>
-            <Stack sx={{ mb: 2}}>
+            <Stack sx={{ 
+              mb: 2,
+              maxWidth: {
+                md: 300
+              },
+              ml: {
+                md: 10
+              }
+            }} >
               <MediaPlayer id={id} />
             </Stack>
             {recitation.status === "Pending" ?
@@ -150,7 +158,13 @@ function RecitationProfile({ users, recitation , id , index , authedUser }) {
                     <Img sx={{ width: 70, height: 70 }} alt="teacher-pic" src={recitation.teacher.avatar !== "" ? URL.createObjectURL(recitation.teacher.avatar) : (users[Object.keys(users).filter((id) => users[id].name === recitation.teacher.name).toString()].gender === 'male' ? male : female)} />
                   </ButtonBase>
                 </Grid>
-                <Grid item md={8} xs={12} textAlign="left">
+                <Grid item md={8} xs={12} sx={{
+                  textAlign: {
+                    md: "left",
+                    xs: "center",
+                    sm: "center"
+                  }
+                }}>
                 <Typography variant="subtitle2" gutterBottom>
                   Teacher
                 </Typography>

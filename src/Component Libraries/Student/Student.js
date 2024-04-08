@@ -188,7 +188,18 @@ function Student({users, authedUser , id , recites , recitations}) {
                   Recitations Statistics
                 </Typography>
               </Grid>
-                <Grid item container sm={12} md={12}>
+                <Grid item container sm={12} md={10} sx={{
+                    textAlign: {
+                        md: "left",
+                        sm: "center",
+                        xs: "center"
+                      },
+                      justifyContent: {
+                        md: "left",
+                        sm: "center",
+                        xs: "center"
+                      }
+                  }}>
                   <Grid item xs={3} sm={2} md={2.2}>
                     <StatsFormer image={total} num={recites.length} text="Total" />
                   </Grid>

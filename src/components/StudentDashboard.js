@@ -13,8 +13,7 @@ function StudentDashboard ({ users , authedUser , students }) {
     return (
         <Grid container id="former-user-container" sx={{ pt: 12}}>
             <Grid item id="users-container" xs={12} sm={8}>
-                {students.map(({id}) => (
-                    !users[authedUser].blockList.includes(id) &&
+                {students.filter((student) => !users[authedUser].blockList.includes(student.id)).map(({id}) => (
                     <Grid key={id} id={`${id}-li`} item mb={1}>
                         <Student id={id}/>
                     </Grid>
@@ -25,7 +24,7 @@ function StudentDashboard ({ users , authedUser , students }) {
                         pageSet={setCurrentPage}
                         firstIndex={firstIndex}
                         lastIndex={lastIndex}
-                        total={students.length}
+                        total={students.filter((student) => !users[authedUser].blockList.includes(student.id)).length}
                         />
                 </Grid>
             </Grid>
