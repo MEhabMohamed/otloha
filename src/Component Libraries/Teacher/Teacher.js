@@ -90,7 +90,7 @@ function Teacher({ users, authedUser , id , recitations , recites , earnings , d
             >
             <Grid item container>
               <Grid item md={4}>
-                <Typography variant="body2">
+                <Typography variant="body2" fontWeight="bolder">
                   {users[id].name}
                 </Typography>
               </Grid>

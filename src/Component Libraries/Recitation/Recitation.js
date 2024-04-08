@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import ButtonBase from '@mui/material/ButtonBase';
 import male from '../../Resources/male.jpg';
@@ -26,7 +27,7 @@ function Recitation({users, recitation , id, index , authedUser}) {
         sx={{
           maxWidth: "auto",
           pr: 0.5,
-          pt: "3px"
+          pt: "3px",
         }}
       >
         <Grid
@@ -58,19 +59,49 @@ function Recitation({users, recitation , id, index , authedUser}) {
           >
             <Grid item container>
               <Grid item md={4}>
-                <Typography variant="body2">
+                <Typography variant="body1" fontWeight="bolder">
                   {users[recitation.authed].name}
                 </Typography>
               </Grid>
               <Grid item container md={8}>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body1" color="text.secondary">
                   ID {index}
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{
+                <Stack variant="body2" sx={{
                   mx: 2,
                 }}>
-                  {recitation.status === "Pending" ? "Not Evaluated yet!" : recitation.status}
-                </Typography>
+                  {recitation.status === "Pending" ?
+                   "Not Evaluated yet!" : 
+                   (recitation.status === "Accepted" ?
+                  <Typography
+                  sx={{
+                    background: "rgba(20, 121, 40, 0.55)",
+                    font: "bold 12px Georgia, serif",
+                    p: 0.5,
+                    borderRadius: "25px"
+                  }}>
+                    {recitation.status}
+                  </Typography> : 
+                  (recitation.status === "Rejected" ? 
+                  <Typography sx={{
+                    background: "rgba(134, 8, 19, 0.58)",
+                    font: "bold 12px Georgia, serif",
+                    p: 0.5,
+                    borderRadius: "25px"
+                  }}>
+                    {recitation.status}
+                  </Typography> : 
+                  (recitation.status === "Reported" &&
+                  <Typography sx={{
+                    background: "rgba(242, 8, 8, 0.66)",
+                    font: "bold 12px Georgia, serif",
+                    p: 0.5,
+                    borderRadius: "25px"
+                  }}>
+                    {recitation.status}
+                  </Typography>
+                  )))}
+                </Stack>
                 <Link to={`./${id}`}>
                   <img
                   src={mushaf}
@@ -86,23 +117,35 @@ function Recitation({users, recitation , id, index , authedUser}) {
             </Grid>
             <Grid item sx={{
               mt: {
-                md: recitation.teacher.name !== "" && -8
+                md: recitation.status !== "Pending" ? (recitation.status === "Reported" ? -4 : -9) : -2
               }
             }}>
-              <Typography variant="body2">
+              <Typography variant="body2" color="text.secondary">
                 Created at:{formatDate(recitation.createdAt)}
               </Typography>
               {recitation.evaluatedAt !== "" &&
-                <Typography variant="body2">
+                <Typography variant="body2" color="text.secondary">
                   Evaluated at:{formatDate(recitation.evaluatedAt)}
                 </Typography>
               }
-              <Typography variant="body2" gutterBottom>
+              <Typography variant="body2" gutterBottom color="text.secondary">
                 From {recitation.verse.from} To {recitation.verse.to}
               </Typography>
               <Typography variant="body2" sx={{ font: 'bold 12px Helvetica, serif'}}>
                 {recitation.narration} - {recitation.verse.surah} - From Verse {recitation.verse.fromNumber} To Verse {recitation.verse.toNumber}
               </Typography>
+              {recitation.status === "Reported" && 
+                <Typography variant="body2" sx={{
+                    background: "rgba(242, 8, 8, 0.66)",
+                    textAlign: "center",
+                    mt: 1,
+                    fontWeight: "bold",
+                    p: 1,
+                    borderRadius: "25px"
+                  }}>
+                  {recitation.report}
+                </Typography>
+              }
             </Grid>
           </Grid>
           <Grid
@@ -119,7 +162,7 @@ function Recitation({users, recitation , id, index , authedUser}) {
                   textAlign: "center"
                 }}>
                   <ButtonBase sx={{ width: 70, height: 70, cursor: "default", marginLeft: authedUser !== id ? "auto" : "1rem" }}>
-                    <Img sx={{ width: 70, height: 70 }} alt="teacher-pic" src={recitation.teacher.avatar !== "" ? URL.createObjectURL(recitation.teacher.avatar) : (users[Object.keys(users).filter((id) => users[id].name === recitation.teacher.name).toString()].gender === 'male' ? male : female)} />
+                    <Img sx={{ width: 70, height: 70 }} alt="teacher-pic" src={recitation.teacher.name !== "" ? URL.createObjectURL(users[Object.keys(users).filter((id) => users[id].name === recitation.teacher.name).toString()].avatar) : (users[Object.keys(users).filter((id) => users[id].name === recitation.teacher.name).toString()].gender === 'male' ? male : female)} />
                   </ButtonBase>
                 </Grid>
                 <Grid item md={8} xs={12} sx={{
@@ -129,10 +172,10 @@ function Recitation({users, recitation , id, index , authedUser}) {
                     sm: "center"
                   }
                 }}>
-                <Typography variant="subtitle2" gutterBottom>
+                <Typography variant="subtitle2" gutterBottom fontWeight="bolder">
                   Teacher
                 </Typography>
-                <Typography variant="subtitle2" gutterBottom>
+                <Typography variant="subtitle2" gutterBottom fontWeight="bolder">
                   {recitation.teacher.name}
                 </Typography>
                 </Grid>

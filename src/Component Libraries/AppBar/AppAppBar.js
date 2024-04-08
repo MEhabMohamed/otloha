@@ -88,7 +88,7 @@ function AppAppBar({ mode, toggleColorMode, auth }) {
                   onClick={() => navigate('./teacher-dashboard')}
                   sx={{ py: '6px', px: '12px' }}
                 >
-                  <Typography variant="body2" color="text.primary">
+                  <Typography variant="body2" color="text.primary" fontWeight="bolder">
                     Teachers
                   </Typography>
                 </MenuItem>
@@ -96,7 +96,7 @@ function AppAppBar({ mode, toggleColorMode, auth }) {
                   onClick={() => navigate('./student-dashboard')}
                   sx={{ py: '6px', px: '12px' }}
                 >
-                  <Typography variant="body2" color="text.primary">
+                  <Typography variant="body2" color="text.primary" fontWeight="bolder">
                     Students
                   </Typography>
                 </MenuItem>
@@ -104,7 +104,7 @@ function AppAppBar({ mode, toggleColorMode, auth }) {
                   onClick={() => navigate('./recitations')}
                   sx={{ py: '6px', px: '12px' }}
                 >
-                  <Typography variant="body2" color="text.primary">
+                  <Typography variant="body2" color="text.primary" fontWeight="bolder">
                     Recitations
                   </Typography>
                 </MenuItem>
@@ -112,7 +112,7 @@ function AppAppBar({ mode, toggleColorMode, auth }) {
                   onClick={() => navigate('./new-recitation')}
                   sx={{ py: '6px', px: '12px' }}
                 >
-                  <Typography variant="body2" color="text.primary">
+                  <Typography variant="body2" color="text.primary" fontWeight="bolder">
                     New recitation
                   </Typography>
                 </MenuItem>

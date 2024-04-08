@@ -84,7 +84,8 @@ function formatRecitation ({verse, narration, playback, authed}) {
             name: "",
             avatar: ""
         },
-        remarkable: false
+        remarkable: false,
+        report: ""
     }
 }
 
@@ -354,7 +355,7 @@ export function saveBlocks({ id , authed }) {
     })
 }
 
-export function saveEvaluations({ id , authed , status , name , avatar }) {
+export function saveEvaluations({ id , authed , status , name , report }) {
     return new Promise((res,rej) => {
 
         setTimeout(() => {
@@ -367,8 +368,8 @@ export function saveEvaluations({ id , authed , status , name , avatar }) {
                     status: status,
                     teacher: {
                         name: name,
-                        avatar: avatar
-                    }
+                    },
+                    report
                 }
             }
 

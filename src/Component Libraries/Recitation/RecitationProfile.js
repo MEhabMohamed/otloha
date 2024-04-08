@@ -37,9 +37,9 @@ function RecitationProfile({ users, recitation , id , index , authedUser }) {
       e.preventDefault();
       if (evaluation !== "") {
         if (evaluation === "Reported") {
-          report !== "" ? dispatch(handleEvaluateRecitation(id, authedUser, [evaluation, report], users[authedUser].name, users[authedUser].avatar)) : AlertShow($('#evaluation-alert'), setEvaluationAlert, "Please add report details!")
+          report !== "" ? dispatch(handleEvaluateRecitation(id, authedUser, evaluation, users[authedUser].name, report)) : AlertShow($('#evaluation-alert'), setEvaluationAlert, "Please add report details!")
         } else {
-          dispatch(handleEvaluateRecitation(id, authedUser, evaluation, users[authedUser].name, users[authedUser].avatar))
+          dispatch(handleEvaluateRecitation(id, authedUser, evaluation, users[authedUser].name, report))
         }
       } else {
         AlertShow($('#evaluation-alert'), setEvaluationAlert, "Please choose an Evaluation!")
@@ -59,7 +59,7 @@ function RecitationProfile({ users, recitation , id , index , authedUser }) {
            <Grid
             item
             xs={12}
-            md={6}
+            md={4}
             sx={{
               textAlign: "center"
             }}
@@ -86,6 +86,16 @@ function RecitationProfile({ users, recitation , id , index , authedUser }) {
             {recitation.evaluatedAt !== "" &&
             <Typography variant="body2">
                Evaluated at:{formatDate(recitation.evaluatedAt)}
+            </Typography>
+            }
+            {recitation.status === "Reported" &&
+            <Typography variant="body2" sx={{
+              background: "rgba(134, 56, 8, 0.58)",
+              font: "bold 18px Georgia, serif",
+              py: 0.5,
+              borderRadius: "25px"
+            }}>
+               {recitation.report}
             </Typography>
             }
             <Typography variant="body2" sx={{ font: 'bold 12px Helvetica, serif'}}>
@@ -126,7 +136,7 @@ function RecitationProfile({ users, recitation , id , index , authedUser }) {
             {recitation.status === "Pending" ?
             <Grid item>
               {((users[authedUser].description === "teacher") && (users[recitation.authed].description === "student")) && <Evaluate evaluate={evaluation} setter={setEvaluation} />}
-              {evaluation === "Report" && <TextField
+              {evaluation === "Reported" && <TextField
                     required
                     fullWidth
                     id={`${id.slice(-6)}-recitation-report`}
@@ -155,7 +165,7 @@ function RecitationProfile({ users, recitation , id , index , authedUser }) {
                   textAlign: "center"
                 }}>
                   <ButtonBase sx={{ width: 70, height: 70, cursor: "default", marginLeft: authedUser !== id ? "auto" : "1rem" }}>
-                    <Img sx={{ width: 70, height: 70 }} alt="teacher-pic" src={recitation.teacher.avatar !== "" ? URL.createObjectURL(recitation.teacher.avatar) : (users[Object.keys(users).filter((id) => users[id].name === recitation.teacher.name).toString()].gender === 'male' ? male : female)} />
+                    <Img sx={{ width: 70, height: 70 }} alt="teacher-pic" src={recitation.teacher.name !== "" ? URL.createObjectURL(users[Object.keys(users).filter((id) => users[id].name === recitation.teacher.name).toString()].avatar) : (users[Object.keys(users).filter((id) => users[id].name === recitation.teacher.name).toString()].gender === 'male' ? male : female)} />
                   </ButtonBase>
                 </Grid>
                 <Grid item md={8} xs={12} sx={{
@@ -165,10 +175,10 @@ function RecitationProfile({ users, recitation , id , index , authedUser }) {
                     sm: "center"
                   }
                 }}>
-                <Typography variant="subtitle2" gutterBottom>
+                <Typography variant="subtitle2" gutterBottom fontWeight="bolder">
                   Teacher
                 </Typography>
-                <Typography variant="subtitle2" gutterBottom>
+                <Typography variant="subtitle2" gutterBottom fontWeight="bolder">
                   {recitation.teacher.name}
                 </Typography>
                 </Grid>
