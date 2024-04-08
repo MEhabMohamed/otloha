@@ -92,6 +92,11 @@ function Recitation({users, recitation , id, index , authedUser}) {
               <Typography variant="body2">
                 Created at:{formatDate(recitation.createdAt)}
               </Typography>
+              {recitation.evaluatedAt !== "" &&
+                <Typography variant="body2">
+                  Evaluated at:{formatDate(recitation.evaluatedAt)}
+                </Typography>
+              }
               <Typography variant="body2" gutterBottom>
                 From {recitation.verse.from} To {recitation.verse.to}
               </Typography>
