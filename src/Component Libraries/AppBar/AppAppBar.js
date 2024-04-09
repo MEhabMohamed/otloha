@@ -85,7 +85,7 @@ function AppAppBar({ mode, toggleColorMode, auth }) {
               />
               <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                 <MenuItem
-                  onClick={() => navigate('./teacher-dashboard')}
+                  onClick={() => navigate('./teachers')}
                   sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography variant="body2" color="text.primary" fontWeight="bolder">
@@ -93,7 +93,7 @@ function AppAppBar({ mode, toggleColorMode, auth }) {
                   </Typography>
                 </MenuItem>
                 <MenuItem
-                  onClick={() => navigate('./student-dashboard')}
+                  onClick={() => navigate('./students')}
                   sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography variant="body2" color="text.primary" fontWeight="bolder">
@@ -114,6 +114,14 @@ function AppAppBar({ mode, toggleColorMode, auth }) {
                 >
                   <Typography variant="body2" color="text.primary" fontWeight="bolder">
                     New recitation
+                  </Typography>
+                </MenuItem>
+                <MenuItem
+                  onClick={() => navigate('./blocked')}
+                  sx={{ py: '6px', px: '12px' }}
+                >
+                  <Typography variant="body2" color="text.primary" fontWeight="bolder">
+                    Block List
                   </Typography>
                 </MenuItem>
               </Box>
@@ -182,7 +190,7 @@ function AppAppBar({ mode, toggleColorMode, auth }) {
                     <ToggleColorMode mode={mode} toggleColorMode={toggleColorMode} />
                   </Box>
                   <MenuItem
-                      onClick={() => navigate('./teacher-dashboard')}
+                      onClick={() => navigate('./teachers')}
                       sx={{ py: '6px', px: '12px' }}
                     >
                       <Typography variant="body2" color="text.primary">
@@ -190,7 +198,7 @@ function AppAppBar({ mode, toggleColorMode, auth }) {
                       </Typography>
                   </MenuItem>
                   <MenuItem
-                    onClick={() => navigate('./student-dashboard')}
+                    onClick={() => navigate('./students')}
                     sx={{ py: '6px', px: '12px' }}
                     >
                     <Typography variant="body2" color="text.primary">
@@ -213,6 +221,14 @@ function AppAppBar({ mode, toggleColorMode, auth }) {
                       New recitation
                     </Typography>
                   </MenuItem>
+                  <MenuItem
+                  onClick={() => navigate('./blocked')}
+                  sx={{ py: '6px', px: '12px' }}
+                >
+                  <Typography variant="body2" color="text.primary" fontWeight="bolder">
+                    Block List
+                  </Typography>
+                </MenuItem>
                   <Divider />
                   <MenuItem>
                     { auth !== null && <EditUser widthSet="xs"/>}

@@ -355,7 +355,37 @@ export function saveBlocks({ id , authed }) {
     })
 }
 
-export function saveEvaluations({ id , authed , status , name , report }) {
+export function saveUnblocks({ id , authed }) {
+    return new Promise((res,rej) => {
+
+        setTimeout(() => {
+
+            users[authed].description === "teacher" ?
+            teachers = {
+                ...teachers,
+                [authed]: {
+                    ...teachers[authed],
+                    blockList: teachers[authed].blockList.filter((i) => i !== id)
+                }
+            } : students = {
+                ...students,
+                [authed]: {
+                    ...students[authed],
+                    blockList: students[authed].blockList.filter((i) => i !== id)
+                }
+            };
+
+            users = {
+                ...teachers,
+                ...students
+            }
+
+            res(id)
+        }, 1000)
+    })
+}
+
+export function saveEvaluations({ id , authed , status , name , avatar , report }) {
     return new Promise((res,rej) => {
 
         setTimeout(() => {
@@ -365,9 +395,10 @@ export function saveEvaluations({ id , authed , status , name , report }) {
                 [id]: {
                     ...recitations[id],
                     evaluatedAt: Date.now(),
-                    status: status,
+                    status,
                     teacher: {
-                        name: name,
+                        name,
+                        avatar
                     },
                     report
                 }

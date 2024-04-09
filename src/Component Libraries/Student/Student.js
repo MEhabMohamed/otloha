@@ -226,7 +226,7 @@ function Student({users, authedUser , id , recites , recitations}) {
                 xs={1.5}
                 textAlign="right"
               >
-                <LongMenu id={id} authed={authedUser} />
+                <LongMenu id={id} />
               </Grid>
               }
         </Grid>

@@ -37,9 +37,9 @@ function RecitationProfile({ users, recitation , id , index , authedUser }) {
       e.preventDefault();
       if (evaluation !== "") {
         if (evaluation === "Reported") {
-          report !== "" ? dispatch(handleEvaluateRecitation(id, authedUser, evaluation, users[authedUser].name, report)) : AlertShow($('#evaluation-alert'), setEvaluationAlert, "Please add report details!")
+          report !== "" ? dispatch(handleEvaluateRecitation(id, authedUser, evaluation, users[authedUser].name, users[authedUser].avatar, report)) : AlertShow($('#evaluation-alert'), setEvaluationAlert, "Please add report details!")
         } else {
-          dispatch(handleEvaluateRecitation(id, authedUser, evaluation, users[authedUser].name, report))
+          dispatch(handleEvaluateRecitation(id, authedUser, evaluation, users[authedUser].name, users[authedUser].avatar, report))
         }
       } else {
         AlertShow($('#evaluation-alert'), setEvaluationAlert, "Please choose an Evaluation!")
@@ -124,12 +124,7 @@ function RecitationProfile({ users, recitation , id , index , authedUser }) {
             </Typography>
             <Stack sx={{ 
               mb: 2,
-              maxWidth: {
-                md: 300
-              },
-              ml: {
-                md: 10
-              }
+              alignItems: "center",
             }} >
               <MediaPlayer id={id} />
             </Stack>
@@ -159,13 +154,29 @@ function RecitationProfile({ users, recitation , id , index , authedUser }) {
                 Evaluate
               </Button>}
             </Grid>
-            : <Grid item container>
+            : <Grid item container alignItems="center">
                 <Grid item xs={12} md={4} sx={{
                   height: 75,
-                  textAlign: "center"
+                  textAlign: {
+                    md: "right",
+                    sm: "center",
+                    xs: "center"
+                  },
                 }}>
-                  <ButtonBase sx={{ width: 70, height: 70, cursor: "default", marginLeft: authedUser !== id ? "auto" : "1rem" }}>
-                    <Img sx={{ width: 70, height: 70 }} alt="teacher-pic" src={recitation.teacher.name !== "" ? URL.createObjectURL(users[Object.keys(users).filter((id) => users[id].name === recitation.teacher.name).toString()].avatar) : (users[Object.keys(users).filter((id) => users[id].name === recitation.teacher.name).toString()].gender === 'male' ? male : female)} />
+                  <ButtonBase sx={{ width: 70, height: 70, cursor: "default" }}>
+                    <Img
+                      sx={{ width: 70, height: 70 }}
+                      alt="teacher-pic"
+                      src={(recitation.teacher.name && 
+                        users[Object.keys(users)
+                       .filter((id) => users[id].name === recitation.teacher.name).toString()].avatar) !== "" ?
+                       URL.createObjectURL(users[Object.keys(users)
+                       .filter((id) => users[id].name === recitation.teacher.name).toString()].avatar) :
+                        (recitation.teacher.avatar !== "" ? recitation.teacher.avatar : 
+                        (users[Object.keys(users)
+                       .filter((id) => users[id].name === recitation.teacher.name).toString()]
+                       .gender === 'male' ? male : female))} 
+                    />
                   </ButtonBase>
                 </Grid>
                 <Grid item md={8} xs={12} sx={{

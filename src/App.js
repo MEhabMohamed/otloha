@@ -18,6 +18,7 @@ import StudentDashboard from './components/StudentDashboard';
 import HomePage from './components/HomePage';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import RecitationProfile from './Component Libraries/Recitation/RecitationProfile';
+import BlockList from './Component Libraries/BlockList/BlockList';
 
 const PrivateWrapper = ({ auth: isAuthenticated }) => {
   if (isAuthenticated !== null) {
@@ -80,9 +81,10 @@ function App({ authedUser , initial , recitations }) {
                 <Route path='/' element={<HomePage />} />
                 <Route path='/createuser' element={<SignUp />} />
                 <Route path='/new-recitation' element={<NewRecitation />} />
-                <Route path='/teacher-dashboard' element={<TeacherDashboard />} />
-                <Route path='/student-dashboard' element={<StudentDashboard />} />
+                <Route path='/teachers' element={<TeacherDashboard />} />
+                <Route path='/students' element={<StudentDashboard />} />
                 <Route path='/recitations' element={<RecitationDashboard />} />
+                <Route path='/blocked' element={<BlockList />} />
                 {recitations.map((id => <Route path={`/recitations/${id}`} key={id} element={<RecitationProfile id={id}/>} />))}
             </Route>
           </Routes>

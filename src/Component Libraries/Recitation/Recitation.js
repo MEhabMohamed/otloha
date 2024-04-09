@@ -157,15 +157,27 @@ function Recitation({users, recitation , id, index , authedUser}) {
             <MediaPlayer id={id} />
             {recitation.teacher.name !== "" &&
             <Grid item container mt={1}>
-                <Grid item xs={12} md={4} sx={{
+                <Grid item xs={12} md={5} sx={{
                   height: 75,
                   textAlign: "center"
                 }}>
                   <ButtonBase sx={{ width: 70, height: 70, cursor: "default", marginLeft: authedUser !== id ? "auto" : "1rem" }}>
-                    <Img sx={{ width: 70, height: 70 }} alt="teacher-pic" src={recitation.teacher.name !== "" ? URL.createObjectURL(users[Object.keys(users).filter((id) => users[id].name === recitation.teacher.name).toString()].avatar) : (users[Object.keys(users).filter((id) => users[id].name === recitation.teacher.name).toString()].gender === 'male' ? male : female)} />
+                    <Img
+                      sx={{ width: 70, height: 70 }}
+                      alt="teacher-pic"
+                      src={(recitation.teacher.name && 
+                        users[Object.keys(users)
+                       .filter((id) => users[id].name === recitation.teacher.name).toString()].avatar) !== "" ?
+                       URL.createObjectURL(users[Object.keys(users)
+                       .filter((id) => users[id].name === recitation.teacher.name).toString()].avatar) :
+                        (recitation.teacher.avatar !== "" ? recitation.teacher.avatar : 
+                        (users[Object.keys(users)
+                       .filter((id) => users[id].name === recitation.teacher.name).toString()]
+                       .gender === 'male' ? male : female))}
+                    />
                   </ButtonBase>
                 </Grid>
-                <Grid item md={8} xs={12} sx={{
+                <Grid item md={7} xs={12} sx={{
                   textAlign: {
                     md: "left",
                     xs: "center",

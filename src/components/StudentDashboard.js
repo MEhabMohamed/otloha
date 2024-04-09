@@ -34,7 +34,8 @@ function StudentDashboard ({ users , authedUser , students }) {
 
 function mapStateToProps ({ users , authedUser }) {
     let userStudents = Object.values(users);
-    let students = userStudents.length > 0 ? userStudents.filter(({description}) => description === 'student') : ['']
+    let students = userStudents.length > 1 ? userStudents.filter(({description}) => description === 'student')
+    .sort((a, b) => b.joiningDate - a.joiningDate) : ['']
     return {
         students,
         authedUser: authedUser !== null ? authedUser[0] : null,

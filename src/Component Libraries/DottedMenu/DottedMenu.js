@@ -4,11 +4,11 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { connect, useDispatch } from 'react-redux';
-import { handleAddBlock } from '../../actions/user';
+import { handleAddBlock, handleUnblock } from '../../actions/user';
 
 const ITEM_HEIGHT = 48;
 
-function LongMenu({ id , authed }) {
+function LongMenu({ id , authedUser , users }) {
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -51,15 +51,28 @@ function LongMenu({ id , authed }) {
             }
         }}
       >
+        {users[authedUser].blockList.includes(id) ? <MenuItem key={"unblock"} onClick={() => {
+            dispatch(handleUnblock(id, authedUser));
+            return setAnchorEl(null)
+            }}>
+            Unblock
+          </MenuItem> : 
           <MenuItem key={"block"} onClick={() => {
-            dispatch(handleAddBlock(id, authed));
+            dispatch(handleAddBlock(id, authedUser));
             return setAnchorEl(null)
             }}>
             Block
-          </MenuItem>
+          </MenuItem>}
       </Menu>
     </div>
   );
 }
 
-export default connect()(LongMenu)
+function mapStateToProps ({users , authedUser}) {
+  return {
+      users,
+      authedUser: authedUser !== null ? authedUser[0] : null,
+  }
+};
+
+export default connect(mapStateToProps)(LongMenu)

@@ -31,26 +31,28 @@ export function receiveRecitations(recitations) {
     }
 }
 
-function evaluateRecitation(id, authed, status, name, report) {
+function evaluateRecitation(id, authed, status, name, avatar, report) {
     return {
         type: EVALUATE_RECITATION,
         id,
         authed,
         status,
         name,
+        avatar,
         report
     }
 }
 
-export function handleEvaluateRecitation(id, authed, status, name, report) {
+export function handleEvaluateRecitation(id, authed, status, name, avatar, report) {
     return (dispatch) => {
         return saveEvaluations({
             id,
             authed,
             status,
             name,
+            avatar,
             report
         })
-        .then(() => dispatch(evaluateRecitation(id, authed, status, name, report)))
+        .then(() => dispatch(evaluateRecitation(id, authed, status, name, avatar, report)))
     }
 }

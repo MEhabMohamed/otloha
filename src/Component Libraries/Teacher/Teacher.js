@@ -30,7 +30,7 @@ const Img = styled('img')({
   borderRadius: '50%',
 });
 
-function Teacher({ users, authedUser , id , recitations , recites , earnings , dues}) {
+function Teacher({ users, authedUser , id , recitations , recites , earnings , dues , pendingRecites}) {
   return (
     <Paper
       sx={{
@@ -209,7 +209,7 @@ function Teacher({ users, authedUser , id , recitations , recites , earnings , d
                 <StatsFormer image={total} num={recites.length} text="Total" />
               </Grid>
               <Grid item xs={3} sm={2} md={2.2}>
-                <StatsFormer image={pending} num={recites.map((recite) => recitations[recite].status).filter((i) => i === "Pending").length} text="Pending" />
+                <StatsFormer image={pending} num={pendingRecites.map((recite) => recitations[recite].status).filter((i) => i === "Pending").length} text="Pending" />
               </Grid>
               <Grid item xs={3} sm={2} md={2.2}>
                 <StatsFormer image={accept} num={recites.map((recite) => recitations[recite].status).filter((i) => i === "Accepted").length} text="Accepted" />
@@ -299,7 +299,8 @@ function mapStateToProps ({users , authedUser , recitations}, {id}) {
       id,
       authedUser: authedUser !== null ? authedUser[0] : null,
       recitations,
-      recites: users[id].recitations,
+      recites: users[id].evaluatedRecitations,
+      pendingRecites: Object.keys(recitations).filter((i) => users[recitations[i].authed].description === "student"),
       earnings: users[id].earnings.map((i) => i++),
       dues: users[id].dues.map((i) => i++)
   }

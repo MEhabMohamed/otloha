@@ -21,6 +21,7 @@ export default function recitations (state=[], action) {
                     status: action.status,
                     teacher: {
                         name: action.name,
+                        avatar: action.avatar
                     },
                     report: action.report
                 }
