@@ -67,7 +67,7 @@ function Recitation({users, recitation , id, index , authedUser}) {
                 <Typography variant="body1" color="text.secondary">
                   ID {index}
                 </Typography>
-                <Stack variant="body2" sx={{
+                {users[recitation.authed].description === "student" && <Stack variant="body2" sx={{
                   mx: 2,
                 }}>
                   {recitation.status === "Pending" ?
@@ -101,7 +101,7 @@ function Recitation({users, recitation , id, index , authedUser}) {
                     {recitation.status}
                   </Typography>
                   )))}
-                </Stack>
+                </Stack>}
                 <Link to={`./${id}`}>
                   <img
                   src={mushaf}

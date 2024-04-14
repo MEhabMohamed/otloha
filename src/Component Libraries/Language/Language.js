@@ -5,31 +5,39 @@ import TextField from '@mui/material/TextField';
 import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles';
 import * as locales from '@mui/material/locale';
 
-export default function Locales({ select }) {
-  const [locale, setLocale] = React.useState('arEG');
+export default function Locales({ value , select }) {
 
   const theme = useTheme();
 
   const themeWithLocale = React.useMemo(
-    () => createTheme(theme, locales[locale]),
-    [locale, theme],
+    () => createTheme(theme, locales[value]),
+    [value, theme],
   );
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{
+      minWidth: 100,
+    }}>
       <ThemeProvider theme={themeWithLocale}>
         <Autocomplete
           options={Object.keys(locales)}
           getOptionLabel={(key) => `${key.substring(0, 2)}-${key.substring(2, 4)}`}
-          style={{ width: "100%" }}
-          value={locale}
+          value={value}
           disableClearable
+          sx={{
+            height: "100%"
+          }}
           onChange={(event, newValue) => {
-            setLocale(newValue);
-            select(newValue.slice(0, 2));
+            select(newValue);
           }}
           renderInput={(params) => (
-            <TextField {...params} label="Language" fullWidth />
+            <TextField
+              {...params}
+              label="Language"
+              fullWidth
+              sx={{
+                height: "100%"
+              }}/>
           )}
         />
       </ThemeProvider>

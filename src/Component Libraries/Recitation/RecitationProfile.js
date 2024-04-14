@@ -75,11 +75,11 @@ function RecitationProfile({ users, recitation , id , index , authedUser }) {
             <Typography variant="body2" color="text.secondary">
               ID {index}
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{
+            {users[recitation.authed].description === "student" && <Typography variant="body2" color="text.secondary" sx={{
                   mx: 2
                 }}>
               {recitation.status === "Pending" ? "Not Evaluated yet!" : recitation.status}
-            </Typography>
+            </Typography>}
             <Typography variant="body2">
               Created at:{formatDate(recitation.createdAt)}
             </Typography>

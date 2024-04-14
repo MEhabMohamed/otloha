@@ -8,11 +8,14 @@
 # To activate the app with no errors you need to install:
 
 npm --save i redux react-redux redux-thunk react-router-dom jquery
-npm install @mui/material @emotion/react @emotion/styled
-npm install @mui/material @mui/styled-engine-sc styled-components
-npm install @fontsource/roboto
-npm install @mui/icons-material
-npm install --save-dev @babel/plugin-proposal-private-property-in-object --legacy-peer-deps
+npm i @mui/material @emotion/react @emotion/styled
+npm i @mui/material @mui/styled-engine-sc styled-components
+npm i @fontsource/roboto
+npm i @mui/icons-material
+npm i react-svg-worldmap --save
+npm i geojson
+npm i @mui/x-charts
+npm i --save-dev @babel/plugin-proposal-private-property-in-object --legacy-peer-deps
 
 # If you face this issue:
 

@@ -30,7 +30,16 @@ const Img = styled('img')({
   borderRadius: '50%',
 });
 
-function Teacher({ users, authedUser , id , recitations , recites , earnings , dues , pendingRecites}) {
+function Teacher({ users, authedUser , id , recitations , recites , earnings , dues , pendingRecites , type , setter , setValue}) {
+
+  const handleCheck = () => {
+    if (setValue === false) {
+        setter(true)
+    } else {
+        setter(false)
+    }
+  }
+
   return (
     <Paper
       sx={{
@@ -58,7 +67,14 @@ function Teacher({ users, authedUser , id , recitations , recites , earnings , d
         <Grid item xs={0.25} sm={0.25} md={0.25} sx={{
           textAlign: "center",
         }}>
-            <Input id={`choose-${id}`} type="checkbox" value={id} className="choose-user" disableUnderline/>
+            <Input
+              id={`choose-${type}-${id}`}
+              type="checkbox"
+              value={setValue}
+              className="choose-user"
+              disableUnderline
+              onChange={handleCheck}
+              />
         </Grid>
         }
         <Grid

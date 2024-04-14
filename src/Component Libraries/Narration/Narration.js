@@ -5,7 +5,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-export default function NarrationSelect({ narrate , setter }) {
+export default function NarrationSelect({ narrate , setter , identify }) {
 
   const handleChange = (event) => {
     setter(event.target.value);
@@ -17,10 +17,10 @@ export default function NarrationSelect({ narrate , setter }) {
           fullWidth
           required
         >
-        <InputLabel id="narration-select-label">Narration</InputLabel>
+        <InputLabel id={`${identify}-narration-select-label`}>Narration</InputLabel>
         <Select
-          labelId="narration-select-label"
-          id="narration-select"
+          labelId={`${identify}-narration-select-label`}
+          id={`${identify}-narration-select`}
           value={narrate}
           label="Narration"
           onChange={handleChange}

@@ -130,7 +130,7 @@ function NewRecitation({ authedUser }) {
                             <AyahSelect id="to-ayah-select" surah={surah} ayah={toAyah} setter={setToAyah} label="Ayah To" numberSetter={setToAyahNumber} mushaf={mushaf} />
                         </Grid>}
                         <Grid item xs={12}>
-                            <NarrationSelect narrate={narration} setter={setNarration} />
+                            <NarrationSelect narrate={narration} setter={setNarration} identify="new-recitation"/>
                         </Grid>
                         <Grid item xs={12}>
                             <Button

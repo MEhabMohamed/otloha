@@ -47,10 +47,10 @@ function SignUp({ usermails }) {
     let [newPass, setnewPass] = React.useState('');
     let [newEmail, setnewEmail] = React.useState('');
     let newPic = React.useRef('');
-    let [newCountry, setnewCountry] = React.useState('');
+    let [newCountry, setnewCountry] = React.useState(null);
     let [narration, setNarration] = React.useState('');
-    let [lang, setLang] = React.useState('ar');
-    let [bDate, setBDate] = React.useState('');
+    let [lang, setLang] = React.useState('arEG');
+    let [bDate, setBDate] = React.useState(null);
     let [emailAlert, setEmailAlert] = React.useState('');
     let [passAlert, setPassAlert] = React.useState('');
     const dispatch = useDispatch();
@@ -130,6 +130,7 @@ function SignUp({ usermails }) {
                   autoComplete="given-name"
                   name="firstName"
                   required
+                  fullWidth
                   id="firstName"
                   label="First Name"
                   autoFocus
@@ -138,6 +139,7 @@ function SignUp({ usermails }) {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
+                  fullWidth
                   required
                   id="lastName"
                   label="Last Name"
@@ -185,16 +187,16 @@ function SignUp({ usermails }) {
                 <Input type="radio" name="due" value="volunteer" disableUnderline sx={{ mr: 1 , ml: 5 }}/><Typography>Volunteer</Typography>
               </Grid>
               <Grid item xs={12} sx={{ display: "none"}} id="narrate">
-                <NarrationSelect narrate={narration} setter={setNarration} />
+                <NarrationSelect narrate={narration} setter={setNarration} identify="signup"/>
               </Grid>
               <Grid item xs={12}>
-                <CountrySelector select={setnewCountry}/>
+                <CountrySelector value={newCountry} select={setnewCountry} identify="signup"/>
               </Grid>
               <Grid item xs={12}>
-                <Locales select={setLang}/>
+                <Locales value={lang} select={setLang}/>
               </Grid>
               <Grid item xs={12} textAlign="center">
-                <DatePick choose={setBDate} label="Birth Date:"/>
+                <DatePick value={bDate} choose={setBDate} label="Birth Date:" setWidth="100%"/>
               </Grid>
               <Grid item xs={12}>
                 <img 

@@ -1,13 +1,8 @@
 import * as React from 'react';
 import { PieChart } from '@mui/x-charts/PieChart';
 
-const data = [
-  { id: 0, value: 10, label: 'series A' },
-  { id: 1, value: 15, label: 'series B' },
-  { id: 2, value: 20, label: 'series C' },
-];
+export default function PieActiveArc({ data }) {
 
-export default function PieActiveArc() {
   return (
     <PieChart
       series={[
@@ -17,7 +12,21 @@ export default function PieActiveArc() {
           faded: { innerRadius: 30, additionalRadius: -30, color: 'gray' },
         },
       ]}
-      height={200}
+      height={110}
+      width={200}
+      slotProps={{
+        legend: {
+          padding: 0,
+          labelStyle: {
+            fontSize: 14,
+            fontWeight: "bold"
+          },
+          itemMarkWidth: 10,
+          itemMarkHeight: 10,
+          itemGap: 5,
+          markGap: 10
+        },
+      }}
     />
   );
 }

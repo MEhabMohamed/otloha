@@ -27,7 +27,16 @@ const Img = styled('img')({
   borderRadius: '50%',
 });
 
-function Student({users, authedUser , id , recites , recitations}) {
+function Student({users , type , authedUser , id , recites , recitations , setter , setValue}) {
+
+  const handleCheck = () => {
+    if (setValue === false) {
+        setter(true)
+    } else {
+        setter(false)
+    }
+  }
+
   return (
     <Paper
       sx={{
@@ -48,7 +57,14 @@ function Student({users, authedUser , id , recites , recitations}) {
         <Grid item xs={0.25} sm={0.25} md={0.25} sx={{
           textAlign: "center",
         }}>
-            <Input id={`choose-${id}`} type="checkbox" value={id} className="choose-user" disableUnderline/>
+            <Input
+              id={`choose-${type}-${id}`}
+              type="checkbox"
+              className="choose-user"
+              disableUnderline
+              onChange={handleCheck}
+              value={setValue}
+              />
         </Grid>
         }
         <Grid  item
@@ -84,7 +100,6 @@ function Student({users, authedUser , id , recites , recitations}) {
                 md={8}
                 textAlign="right"
                 sx={{
-                    border: '2px inset transparent',
                     borderRradius: '5px',
                     font: 'bold 13px Helvetica, serif'
                   }}
@@ -130,11 +145,11 @@ function Student({users, authedUser , id , recites , recitations}) {
                 item
                 container
                 sx={{
-                  mb: 1
+                  mb: 0.25
                 }}
               >
                   {users[id].verified ? 
-                  <Typography variant="body2" gutterBottom sx={{
+                  <Typography variant="body2" sx={{
                     background: 'rgba(10, 204, 211, 0.63)',
                     color: 'whitesmoke',
                     padding: 0.5,
@@ -224,7 +239,7 @@ function Student({users, authedUser , id , recites , recitations}) {
                 md={1}
                 sm={1}
                 xs={1.5}
-                textAlign="right"
+                textAlign="center"
               >
                 <LongMenu id={id} />
               </Grid>

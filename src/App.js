@@ -71,14 +71,14 @@ function App({ authedUser , initial , recitations }) {
                   : `url(${dark})`,
               backgroundRepeat: 'no-repeat',
               backgroundAttachment: 'fixed',
-              backgroundSize: '100%'
+              backgroundSize: 'cover'
             })}>
           <Routes>
             {isAuthed === null && <Route path='/createuser' element={<SignUp />} />}
             {isAuthed === null && <Route path='/' element={<SignInSide />} />}
             <Route element={<PrivateWrapper auth={isAuthed}/>}>
               <Route path='*' element={<NotFound />} />
-                <Route path='/' element={<HomePage />} />
+                <Route path='/' element={<HomePage theme={mode} />} />
                 <Route path='/createuser' element={<SignUp />} />
                 <Route path='/new-recitation' element={<NewRecitation />} />
                 <Route path='/teachers' element={<TeacherDashboard />} />
