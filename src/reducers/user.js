@@ -34,7 +34,8 @@ export default function users(state={}, action) {
                 ...state,
                 [action.authed]: {
                     ...state[action.authed],
-                    recitations: state[action.authed].recitations.concat([action.recitation.id])
+                    recitations: state[action.authed].recitations
+                    .concat([action.recitation.id])
                 }
             }
         case ADD_BLOCK:
@@ -50,7 +51,8 @@ export default function users(state={}, action) {
                 ...state,
                 [action.authed]: {
                     ...state[action.authed],
-                    blockList: state[action.authed].blockList.filter((i) => i !== action.id)
+                    blockList: state[action.authed].blockList
+                    .filter((i) => i !== action.id)
                 }
             }
         case EVALUATE_RECITATION:

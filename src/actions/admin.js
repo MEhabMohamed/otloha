@@ -1,4 +1,4 @@
-import { saveAdmins } from "../helpers/savers"
+import { deleteAdmins, saveAdmins } from "../helpers/savers"
 
 export const ADD_ADMIN = 'ADD_ADMIN'
 export const RECEIVE_ADMINS = 'RECEIVE_ADMINS'
@@ -27,10 +27,17 @@ export function receiveAdmins(admins) {
     }
 }
 
-export function deleteAdmin( id , admins) {
+function deleteAdmin(id) {
     return {
         type: DELETE_ADMIN,
         id,
-        admins
+    }
+}
+
+export function handleDeleteAdmin(id) {
+    return (dispatch) => {
+        return deleteAdmins({
+            id
+        }).then(() => dispatch(deleteAdmin(id)))
     }
 }

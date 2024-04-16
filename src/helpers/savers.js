@@ -69,7 +69,12 @@ export function formatDate (timestamp) {
     return time.replace(0, 5) + ' | ' + d.toLocaleDateString()
 }
 
-function formatRecitation ({verse, narration, playback, authed}) {
+function formatRecitation ({
+        verse,
+        narration,
+        playback,
+        authed
+    }) {
     return {
         verse,
         narration,
@@ -85,11 +90,25 @@ function formatRecitation ({verse, narration, playback, authed}) {
             avatar: ""
         },
         remarkable: false,
-        report: ""
+        report: "",
+        reviewed: false,
+        closed: false
     }
 }
 
-function formatTeacher ({id, name, password, country, description, email, gender, avatar, due, lang, bDate}) {
+function formatTeacher ({
+        id,
+        name,
+        password,
+        country,
+        description,
+        email,
+        gender,
+        avatar,
+        due,
+        lang,
+        bDate
+    }) {
     return {
         id,
         name,
@@ -116,7 +135,19 @@ function formatTeacher ({id, name, password, country, description, email, gender
     }
 }
 
-function formatStudent ({id, name, password, country, description, narration, email, gender, avatar, lang, bDate}) {
+function formatStudent ({
+        id,
+        name,
+        password,
+        country,
+        description,
+        narration,
+        email,
+        gender,
+        avatar,
+        lang,
+        bDate
+    }) {
     return {
         id,
         name,
@@ -147,7 +178,12 @@ function formatAdmin({email}) {
     }
 }
 
-export function saveRecitations({verse, narration, playback, authed}) {
+export function saveRecitations({
+        verse,
+        narration,
+        playback,
+        authed
+    }) {
     return new Promise((res,rej) => {
         const formattedRecitation = formatRecitation({
             verse,
@@ -167,13 +203,15 @@ export function saveRecitations({verse, narration, playback, authed}) {
                 ...teachers,
                 [authed]: {
                     ...teachers[authed],
-                    recitations: teachers[authed].recitations.concat([formattedRecitation.id])
+                    recitations: teachers[authed].recitations
+                    .concat([formattedRecitation.id])
                 }
             } : students = {
                 ...students,
                 [authed]: {
                     ...students[authed],
-                    recitations: students[authed].recitations.concat([formattedRecitation.id])
+                    recitations: students[authed].recitations
+                    .concat([formattedRecitation.id])
                 }
             };
 
@@ -187,7 +225,19 @@ export function saveRecitations({verse, narration, playback, authed}) {
     })
 }
 
-export function saveStudent({id, name, password, country, narration, description, email, gender, avatar, lang, bDate}) {
+export function saveStudent({
+        id,
+        name,
+        password,
+        country,
+        narration,
+        description,
+        email,
+        gender,
+        avatar,
+        lang,
+        bDate
+    }) {
     return new Promise((res, rej) => {
         const formattedUser = formatStudent({
             id,
@@ -219,7 +269,19 @@ export function saveStudent({id, name, password, country, narration, description
     })
 }
 
-export function saveTeacher({id, name, password, country, description, email, gender, avatar, due, lang, bDate}) {
+export function saveTeacher({
+        id,
+        name,
+        password,
+        country,
+        description,
+        email,
+        gender,
+        avatar,
+        due,
+        lang,
+        bDate
+    }) {
     return new Promise((res,rej) => {
             const formattedUser = formatTeacher({
                 id,
@@ -267,7 +329,22 @@ export function saveAdmins ({email}) {
     })
 }
 
-export function savePasses ({id , password}) {
+export function deleteAdmins ({id}) {
+    return new Promise((res,rej) => {
+        setTimeout(() => {
+
+            admins = Object
+            .fromEntries(Object.entries(admins).filter(e => e[0] !== id))
+
+            res(id)
+        }, 1000)
+    })
+}
+
+export function savePasses ({
+        id,
+        password
+    }) {
     return new Promise((res,rej) => {
         
         setTimeout(() => {
@@ -297,7 +374,10 @@ export function savePasses ({id , password}) {
     })
 }
 
-export function savePics ({id , pic}) {
+export function savePics({
+        id,
+        pic
+    }) {
     return new Promise((res,rej) => {
         
         setTimeout(() => {
@@ -327,7 +407,10 @@ export function savePics ({id , pic}) {
     })
 }
 
-export function saveBlocks({ id , authed }) {
+export function saveBlocks({
+        id,
+        authed
+    }) {
     return new Promise((res,rej) => {
 
         setTimeout(() => {
@@ -357,7 +440,10 @@ export function saveBlocks({ id , authed }) {
     })
 }
 
-export function saveUnblocks({ id , authed }) {
+export function saveUnblocks({
+        id,
+        authed
+    }) {
     return new Promise((res,rej) => {
 
         setTimeout(() => {
@@ -387,7 +473,14 @@ export function saveUnblocks({ id , authed }) {
     })
 }
 
-export function saveEvaluations({ id , authed , status , name , avatar , report }) {
+export function saveEvaluations({
+        id,
+        authed,
+        status,
+        name,
+        avatar,
+        report
+    }) {
     return new Promise((res,rej) => {
 
         setTimeout(() => {
@@ -410,7 +503,8 @@ export function saveEvaluations({ id , authed , status , name , avatar , report 
                 ...teachers,
                 [authed]: {
                     ...teachers[authed],
-                    evaluatedRecitations: teachers[authed].evaluatedRecitations.concat([id])
+                    evaluatedRecitations: teachers[authed].evaluatedRecitations
+                    .concat([id])
                 }
             }
 

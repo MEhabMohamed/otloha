@@ -21,16 +21,65 @@ function RecitationDashboard ({ recitations , evals , users , recites }) {
     let firstIndex = lastIndex - 10;
 
     return (
-        <Grid container id="recites-container" sx={{ pt: 12, px: 1}} spacing={1}>
-            <Grid item container spacing={1} md={12}>
-                <DataBlock size={3} pic={mushaf} text="All Recitations" counter={evals.length}/>
-                <DataBlock size={3} pic={accept} text="Corrected" counter={evals.filter(({status}) => status !== "Pending").length}/>
-                <DataBlock size={3} pic={star} text="Remarkable" counter={evals.filter(({remarkable}) => remarkable).length}/>
-                <DataBlock size={3} pic={reject} text="Rejected" counter={evals.filter(({status}) => status === "Rejected").length}/>
+        <Grid
+            container
+            sx={{
+                pt: 12,
+                px: 1
+            }}
+            spacing={1}
+        >
+            <Grid
+                item
+                container
+                spacing={1}
+                md={12}
+            >
+                <DataBlock
+                    size={3}
+                    pic={mushaf}
+                    text="All Recitations"
+                    counter={evals.length}
+                />
+                <DataBlock
+                    size={3}
+                    pic={accept}
+                    text="Corrected"
+                    counter={evals.filter(({status}) => status !== "Pending").length}
+                />
+                <DataBlock
+                    size={3}
+                    pic={star}
+                    text="Remarkable"
+                    counter={evals.filter(({remarkable}) => remarkable).length}
+                />
+                <DataBlock
+                    size={3}
+                    pic={reject}
+                    text="Rejected"
+                    counter={evals.filter(({status}) => status === "Rejected").length}
+                />
             </Grid>
-            <Grid item id="users-container" xs={12} sm={9} container spacing={1} direction="column">
-                <Grid item container sx={{ gap: 1 }}>
-                    <Grid item sm={5.3}>
+            <Grid
+                item
+                xs={12}
+                sm={9}
+                container
+                spacing={1}
+                direction="column"
+            >
+                <Grid
+                    item
+                    container
+                    sx={{
+                        gap: 1
+                    }}
+                    justifyContent="right"
+                >
+                    <Grid
+                        item
+                        md={4.6}
+                    >
                         <TextField
                         id="recitation-search"
                         label="search"
@@ -40,33 +89,66 @@ function RecitationDashboard ({ recitations , evals , users , recites }) {
                         onChange={(e) => setSearch(e.target.value)}
                         />
                     </Grid>
-                    <DatePick value={fromDate} choose={setFromDate} label="Created at..." setWidth={160}/>
-                    <DatePick value={toDate} choose={setToDate} label="Up to..." setWidth={160}/>
-                    <Button
-                    variant="contained"
-                    type="submit"
-                    size="medium"
-                    onClick={() => {
-                        setFromDate(null);
-                        setToDate(null);
-                        setSearch('');
-                        $("#recitation-search").val('')
-                    }}
-                        >
-                        Reset
-                    </Button>
+                    <Grid
+                        item
+                        md={3}
+                    >
+                        <DatePick
+                            value={fromDate}
+                            choose={setFromDate}
+                            label="Created at..."
+                            setWidth="auto"
+                        />
+                    </Grid>
+                    <Grid
+                        item
+                        md={3}
+                    >
+                        <DatePick
+                            value={toDate}
+                            choose={setToDate}
+                            label="Up to..."
+                            setWidth="auto"
+                        />
+                    </Grid>
+                    <Grid
+                        item
+                        md={1}
+                    >
+                        <Button
+                        variant="contained"
+                        type="submit"
+                        size="medium"
+                        onClick={() => {
+                            setFromDate(null);
+                            setToDate(null);
+                            setSearch('');
+                            $("#recitation-search").val('')
+                        }}
+                            >
+                            Reset
+                        </Button>
+                    </Grid>
                 </Grid>
                 {recites.filter((id) => search !== null ? 
                 users[recitations[id].authed].name.toLowerCase().includes(search) 
                 : id)
                 .filter((id) => fromDate !== null ?
-                 Date.parse(fromDate) <= recitations[id].createdAt 
-                 : id)
-                 .filter((id) => toDate !== null ? recitations[id].createdAt <= Date.parse(toDate)
-                 : id)
+                Date.parse(fromDate) <= recitations[id].createdAt 
+                : id)
+                .filter((id) => toDate !== null
+                ? recitations[id].createdAt <= Date.parse(toDate)
+                : id)
                 .map((id, index) => (
-                    <Grid key={id} id={id} item>
-                        <Recitation id={id} index={recites.length - index} />
+                    <Grid
+                        key={id}
+                        id={id}
+                        item
+                    >
+                        <Recitation
+                            id={id}
+                            index={recites.length - index}
+                        />
                     </Grid>
                 )).slice(firstIndex, lastIndex)
                 }

@@ -30,7 +30,19 @@ const Img = styled('img')({
   borderRadius: '50%',
 });
 
-function Teacher({ users, authedUser , id , recitations , recites , earnings , dues , pendingRecites , type , setter , setValue}) {
+function Teacher({
+    users,
+    authedUser,
+    id,
+    recitations,
+    recites,
+    earnings,
+    dues,
+    pendingRecites,
+    type,
+    setter,
+    setValue
+  }) {
 
   const handleCheck = () => {
     if (setValue === false) {
@@ -92,8 +104,19 @@ function Teacher({ users, authedUser , id , recitations , recites , earnings , d
             height: 75,
             textAlign: "center"
           }}>
-            <ButtonBase sx={{ cursor: "default" }}>
-              <Img sx={{ width: 70, height: 70 }} alt="teacher-pic" src={users[id].avatar !== "" ? URL.createObjectURL(users[id].avatar) : (users[id].gender === 'male' ? male : female)} />
+            <ButtonBase
+              sx={{ cursor: "default" }}
+            >
+              <Img
+                sx={{
+                  width: 70,
+                  height: 70
+                }}
+                alt="teacher-pic"
+                src={users[id].avatar !== ""
+                ? URL.createObjectURL(users[id].avatar)
+                : (users[id].gender === 'male' ? male : female)}
+              />
             </ButtonBase>
           </Grid>
           <Grid
@@ -140,15 +163,21 @@ function Teacher({ users, authedUser , id , recitations , recites , earnings , d
                       height: 13,
                     }} /> 
                     &nbsp;Male
-                  </Container> : <Container component="div" sx={{
-                      font: 'bold 15px "Monotype Corsiva", cursive'
-                    }}>
-                    <img src={femaleSymbol}
-                    alt="female"
-                    style={{
-                      width: 15,
-                      height: 15,
-                    }} /> 
+                  </Container>
+                  : <Container
+                      component="div"
+                      sx={{
+                        font: 'bold 15px "Monotype Corsiva", cursive'
+                      }}
+                    >
+                    <img
+                      src={femaleSymbol}
+                      alt="female"
+                      style={{
+                        width: 15,
+                        height: 15,
+                      }}
+                    /> 
                     &nbsp;Female
                   </Container>}
               </Grid>
@@ -205,12 +234,22 @@ function Teacher({ users, authedUser , id , recitations , recites , earnings , d
                 </Typography>
             </Grid>
             <Grid item>
-                <Typography variant="body2" sx={{ font: 'bold 12px Helvetica, serif'}}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    font: 'bold 12px Helvetica, serif'
+                  }}
+                >
                 Teacher Recitations Corrections
                 </Typography>
             </Grid>
-            <Grid item container sm={12} md={12} sx={{
-              textAlign: {
+            <Grid
+              item
+              container
+              sm={12}
+              md={12}
+              sx={{
+                textAlign: {
                   md: "left",
                   sm: "center",
                   xs: "center"
@@ -221,86 +260,186 @@ function Teacher({ users, authedUser , id , recitations , recites , earnings , d
                   xs: "center"
                 }
             }}>
-              <Grid item xs={3} sm={2} md={2.2}>
-                <StatsFormer image={total} num={recites.length} text="Total" />
+              <Grid
+                item
+                xs={3}
+                sm={2}
+                md={2.2}
+              >
+                <StatsFormer
+                  image={total}
+                  num={recites.length}
+                  text="Total"
+                />
               </Grid>
-              <Grid item xs={3} sm={2} md={2.2}>
-                <StatsFormer image={pending} num={pendingRecites.map((recite) => recitations[recite].status).filter((i) => i === "Pending").length} text="Pending" />
+              <Grid
+                item
+                xs={3}
+                sm={2}
+                md={2.2}
+              >
+                <StatsFormer
+                  image={pending}
+                  num={pendingRecites.map((recite) => recitations[recite].status)
+                  .filter((i) => i === "Pending").length}
+                  text="Pending"
+                />
               </Grid>
-              <Grid item xs={3} sm={2} md={2.2}>
-                <StatsFormer image={accept} num={recites.map((recite) => recitations[recite].status).filter((i) => i === "Accepted").length} text="Accepted" />
+              <Grid
+                item
+                xs={3}
+                sm={2}
+                md={2.2}
+              >
+                <StatsFormer
+                  image={accept}
+                  num={recites.map((recite) => recitations[recite].status)
+                  .filter((i) => i === "Accepted").length}
+                  text="Accepted"
+                />
               </Grid>
-              <Grid item xs={3} sm={2} md={2.2}>
-                <StatsFormer image={reject} num={recites.map((recite) => recitations[recite].status).filter((i) => i === "Rejected").length} text="Rejected" />
+              <Grid
+                item
+                xs={3}
+                sm={2}
+                md={2.2}
+              >
+                <StatsFormer
+                  image={reject}
+                  num={recites.map((recite) => recitations[recite].status)
+                  .filter((i) => i === "Rejected").length}
+                  text="Rejected"
+                />
               </Grid>
-              <Grid item xs={3} sm={2} md={2.2}>
-                <StatsFormer image={report} num={recites.map((recite) => recitations[recite].status).filter((i) => i === "Reported").length} text="Reported" />
+              <Grid
+                item
+                xs={3}
+                sm={2}
+                md={2.2}
+              >
+                <StatsFormer
+                  image={report}
+                  num={recites.map((recite) => recitations[recite].status)
+                  .filter((i) => i === "Reported").length}
+                  text="Reported"
+                />
               </Grid>
             </Grid>
           </Grid>
-          <Grid item container xs={12} md={3.65} sx={{
-            textAlign: {
-            md: "left",
-            sm: "center",
-            xs: "center"
-          },
-          justifyContent: {
-            md: "left",
-            sm: "center",
-            xs: "center"
-          }
-          }}>
+          <Grid
+            item
+            container
+            xs={12}
+            md={3.65}
+            sx={{
+                textAlign: {
+                md: "left",
+                sm: "center",
+                xs: "center"
+              },
+              justifyContent: {
+                md: "left",
+                sm: "center",
+                xs: "center"
+              }
+            }}
+          >
             <Grid item>
               { users[id].due === "paid" ?
-              <Grid item xs={12} md={12}>
+              <Grid
+                item
+                xs={12}
+                md={12}
+              >
                 <Container
                   component="div"
                   sx={{
                     mt: {md: 5}
                   }}
                 >
-                  <Typography variant="body2" sx={{ font: 'bold 12px Helvetica, serif'}}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      font: 'bold 12px Helvetica, serif'
+                    }}
+                  >
                     Teacher Accounting
                   </Typography>
                 </Container>
-                <Grid item container sm={12} md={11} sx={{
-                  textAlign: {
-                  md: "right",
-                  sm: "center",
-                  xs: "center"
-                },
-                justifyContent: {
-                  md: "right",
-                  sm: "center",
-                  xs: "center"
-                }
-                }}>
-                  <Grid item xs={4.5} sm={4.5} md={4.5}>
-                    <StatsFormer image={earning} num={earnings[0].toFixed(2)} text="Earnings" />
+                <Grid
+                  item
+                  container
+                  sm={12}
+                  md={11}
+                  sx={{
+                      textAlign: {
+                      md: "right",
+                      sm: "center",
+                      xs: "center"
+                    },
+                    justifyContent: {
+                      md: "right",
+                      sm: "center",
+                      xs: "center"
+                    }
+                  }}
+                >
+                  <Grid
+                    item
+                    xs={4.5}
+                    sm={4.5}
+                    md={4.5}
+                  >
+                    <StatsFormer
+                      image={earning}
+                      num={earnings[0].toFixed(2)}
+                      text="Earnings"
+                    />
                   </Grid>
-                  <Grid item xs={4.5} sm={4.5} md={4.5}>
-                    <StatsFormer image={due} num={dues[0].toFixed(2)} text="Dues" />
+                  <Grid
+                    item
+                    xs={4.5}
+                    sm={4.5}
+                    md={4.5}
+                  >
+                    <StatsFormer
+                      image={due}
+                      num={dues[0].toFixed(2)}
+                      text="Dues"
+                    />
                   </Grid>
                 </Grid>
-              </Grid> : <Container component="div" sx={{
-                      font: 'bold 15px "Monotype Corsiva", cursive',
-                       mt: {md: 5}
-                    }}>
-                    <img src={heart}
-                    alt="heart"
-                    style={{
-                      width: 30,
-                      height: 30,
-                    }} /> 
+              </Grid> 
+              : <Container
+                  component="div"
+                  sx={{
+                    font: 'bold 15px "Monotype Corsiva", cursive',
+                    mt: {md: 5}
+                  }}
+                >
+                    <img
+                      src={heart}
+                      alt="heart"
+                      style={{
+                        width: 30,
+                        height: 30,
+                      }}
+                    /> 
                     &nbsp;Volunteer
                   </Container>}
             </Grid>
           </Grid>
         </Grid>
         {authedUser !== id &&
-            <Grid item xs={1.5} sm={1} md={1} sx={{
-          textAlign: "center"
-        }}>
+            <Grid
+              item
+              xs={1.5}
+              sm={1}
+              md={1}
+              sx={{
+                textAlign: "center"
+              }}
+            >
               <LongMenu id={id} authed={authedUser} />
             </Grid>
         }
@@ -316,7 +455,8 @@ function mapStateToProps ({users , authedUser , recitations}, {id}) {
       authedUser: authedUser !== null ? authedUser[0] : null,
       recitations,
       recites: users[id].evaluatedRecitations,
-      pendingRecites: Object.keys(recitations).filter((i) => users[recitations[i].authed].description === "student"),
+      pendingRecites: Object.keys(recitations).filter((i) =>
+      users[recitations[i].authed].description === "student"),
       earnings: users[id].earnings.map((i) => i++),
       dues: users[id].dues.map((i) => i++)
   }

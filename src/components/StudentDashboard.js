@@ -25,15 +25,13 @@ function StudentDashboard ({ users , authedUser , students }) {
         if (check === false) {
             setCheck(true)
             setUserCheck(true)
-            students
-            .filter((student) => !users[authedUser].blockList.includes(student.id))
+            filteredStudent().student
             .filter(({id}) => id !== authedUser)
             .map(({id}) => $(`#choose-student-${id}`).prop("checked", true))
         } else {
             setCheck(false)
             setUserCheck(false)
-            students
-            .filter((student) => !users[authedUser].blockList.includes(student.id))
+            filteredStudent().student
             .filter(({id}) => id !== authedUser)
             .map(({id}) => $(`#choose-student-${id}`).prop("checked", false))
         }
@@ -41,27 +39,67 @@ function StudentDashboard ({ users , authedUser , students }) {
 
     function filteredStudent() {
         return {
-            student: students.filter((student) => !users[authedUser].blockList.includes(student.id))
+            student: students.filter((student) =>
+            !users[authedUser].blockList.includes(student.id))
             .filter((student) => search !== "" ? 
-            (student.email.includes(search) || student.name.toLowerCase().includes(search))
+            (student.email.includes(search)
+            || student.name.toLowerCase().includes(search))
             : student),
-            checked: students.filter((student) => !users[authedUser].blockList.includes(student.id))
+            checked: students.filter((student) =>
+            !users[authedUser].blockList.includes(student.id))
             .filter((student) => search !== "" ? 
-            (student.email.includes(search) || student.name.toLowerCase().includes(search))
+            (student.email.includes(search)
+            || student.name.toLowerCase().includes(search))
             : student)
             .slice(firstIndex, lastIndex)
-            .filter(({id}) => document.querySelector(`#choose-student-${id}`) !== null ? document.querySelector(`#choose-student-${id}`).checked === true : !id)
+            .filter(({id}) => document.querySelector(`#choose-student-${id}`) !== null
+            ? document.querySelector(`#choose-student-${id}`).checked === true
+            : !id)
         }
     }
 
     return (
-        <Grid container id="former-user-container" sx={{ pt: 12, px: 1}} spacing={1}>
-            <Grid item container spacing={1} md={12}>
-                <DataBlock size={4} pic={contacts} text="All students" counter={students.length}/>
-                <DataBlock size={4} pic={accept} text="Active" counter={students.filter(({active}) => active).length}/>
-                <DataBlock size={4} pic={reject} text="Blocked" counter={students.filter(({active}) => !active).length}/>
+        <Grid
+            container
+            sx={{
+                pt: 12,
+                px: 1
+            }}
+            spacing={1}
+        >
+            <Grid
+                item
+                container
+                spacing={1}
+                md={12}
+            >
+                <DataBlock
+                    size={4}
+                    pic={contacts}
+                    text="All students"
+                    counter={students.length}
+                />
+                <DataBlock
+                    size={4}
+                    pic={accept}
+                    text="Active"
+                    counter={students.filter(({active}) => active).length}
+                />
+                <DataBlock
+                    size={4}
+                    pic={reject}
+                    text="Blocked"
+                    counter={students.filter(({active}) => !active).length}
+                />
             </Grid>
-            <Grid item container spacing={1} id="users-container" xs={12} sm={9} direction="column">
+            <Grid
+                item
+                container
+                spacing={1}
+                xs={12}
+                sm={9}
+                direction="column"
+            >
                 <Paper
                     sx={{
                         height:60,
@@ -70,11 +108,23 @@ function StudentDashboard ({ users , authedUser , students }) {
                         width: "100%",
                         mt: 1,
                         ml: 1,
-                    }}>
-                    <Grid item container gap={1}>
-                        <Grid item xs={0.25} sm={0.25} md={0.25} sx={{
-                        textAlign: "center",
-                        }}>
+                    }}
+                >
+                    <Grid
+                        item
+                        container
+                        gap={1}
+                        justifyContent="right"
+                    >
+                        <Grid
+                            item
+                            xs={0.25}
+                            sm={0.25}
+                            md={0.25}
+                            sx={{
+                                textAlign: "center",
+                            }}
+                        >
                             <Input
                                 id="bulk-student-selector"
                                 type="checkbox"
@@ -83,7 +133,7 @@ function StudentDashboard ({ users , authedUser , students }) {
                                 value={check}
                                 />
                         </Grid>
-                        <Grid item sm={5.6}>
+                        <Grid item>
                             <TextField
                             id="student-search"
                             label="search"
@@ -93,21 +143,33 @@ function StudentDashboard ({ users , authedUser , students }) {
                             onChange={(e) => setSearch(e.target.value)}
                             />
                         </Grid>
-                        <Button
-                        variant="contained"
-                        type="submit"
-                        size="medium"
-                        onClick={() => {
-                            setSearch('');
-                            $("#student-search").val('')
-                        }}
+                        <Grid item>
+                            <Button
+                            variant="contained"
+                            type="submit"
+                            size="medium"
+                            onClick={() => {
+                                setSearch('');
+                                $("#student-search").val('')
+                            }}
+                                >
+                                Reset
+                            </Button>
+                        </Grid>
+                        {((document.querySelector("#bulk-student-selector") !== null)
+                            && (filteredStudent().student
+                            .filter(({id}) => authedUser !== id).length > 0)
+                            && filteredStudent().checked.length > 0)
+                            && (((document.querySelector("#bulk-student-selector").checked
+                            === true)
+                            || userCheck === true) && (
+                            <Typography
+                                variant="body2"
+                                color="text.secondary"
                             >
-                            Reset
-                        </Button>
-                        {((document.querySelector("#bulk-student-selector") !== null) && (filteredStudent().student.filter(({id}) => authedUser !== id).length > 0)) && (((document.querySelector("#bulk-student-selector").checked === true) || userCheck === true) && (
-                            <Typography variant="body2" color="text.secondary">
-                            {filteredStudent().checked.length} Selected
-                        </Typography>))}
+                                {filteredStudent().checked.length} Selected
+                            </Typography>))
+                        }
                         <Button
                             variant="contained"
                             type="submit"
@@ -125,18 +187,29 @@ function StudentDashboard ({ users , authedUser , students }) {
                     </Grid>
                 </Paper>
                 {filteredStudent().student
-                .map(({id}) => (
-                    <Grid key={id} id={`${id}-li`} item mb={1}>
-                        <Student id={id} setter={setUserCheck} setValue={userCheck} type="student"/>
-                    </Grid>
-                )).slice(firstIndex, lastIndex)}
+                    .map(({id}) => (
+                        <Grid
+                            key={id}
+                            id={`${id}-li`}
+                            item
+                        >
+                            <Student
+                                id={id}
+                                setter={setUserCheck}
+                                setValue={userCheck}
+                                type="student"
+                            />
+                        </Grid>
+                    )).slice(firstIndex, lastIndex)
+                }
                 <Grid item>
                 <PaginationLink
                         showing={Math.ceil(filteredStudent().student.length/10)}
                         pageSet={setCurrentPage}
                         firstIndex={firstIndex}
                         lastIndex={lastIndex}
-                        total={filteredStudent().student.filter((student) => !users[authedUser].blockList.includes(student.id)).length}
+                        total={filteredStudent().student.filter((student) =>
+                        !users[authedUser].blockList.includes(student.id)).length}
                         />
                 </Grid>
             </Grid>
@@ -146,7 +219,8 @@ function StudentDashboard ({ users , authedUser , students }) {
 
 function mapStateToProps ({ users , authedUser }) {
     let userStudents = Object.values(users);
-    let students = userStudents.length > 1 ? userStudents.filter(({description}) => description === 'student')
+    let students = userStudents.length > 0 ? userStudents.filter(({description}) =>
+    description === 'student')
     .sort((a, b) => b.joiningDate - a.joiningDate) : ['']
     return {
         students,

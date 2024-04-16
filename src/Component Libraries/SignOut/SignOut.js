@@ -29,7 +29,12 @@ export default function SignOut() {
 
   return (
     <React.Fragment>
-      <Button variant="contained" size='medium' sx={{ width: '100%' }} onClick={handleClickOpen} id='signout-button'>
+      <Button
+        variant="contained"
+        size='medium'
+        sx={{ width: '100%' }}
+        onClick={handleClickOpen}
+        id='signout-button'>
         Sign Out
       </Button>
       <Dialog

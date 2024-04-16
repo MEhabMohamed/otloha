@@ -67,14 +67,19 @@ function Player ({ quran , id , recitations }) {
     };
 
     function playMe() {
-        document.querySelector(`#${id.slice(-6)}-audio`).play().then(() => {
+        let i = Math.floor(Math.random()*Math.floor(quran.length - 1));
+        if (document.querySelector(`#${id.slice(-6)}-audio`).src === "") {
+            document.querySelector(`#${id.slice(-6)}-audio`).src
+            = quran[quran.length < 2 ? 0 : i]
+        } return document.querySelector(`#${id.slice(-6)}-audio`).play().then(() => {
         $(`#${id.slice(-6)}-pauseItem`).show();
         $(`#${id.slice(-6)}-play`).hide();
         });
     };
 
     const handlePlayer = (_, value) => {
-        document.querySelector(`#${id.slice(-6)}-current-time`).textContent = calculateTime(value);
+        document.querySelector(`#${id.slice(-6)}-current-time`).textContent
+        = calculateTime(value);
         document.querySelector(`#${id.slice(-6)}-audio`).currentTime = value;
     }
 
@@ -93,11 +98,13 @@ function Player ({ quran , id , recitations }) {
     };
 
     const displayDuration = () => {
-        $(`#${id.slice(-6)}-duration`).text(calculateTime(document.querySelector(`#${id.slice(-6)}-audio`).duration));
+        $(`#${id.slice(-6)}-duration`)
+        .text(calculateTime(document.querySelector(`#${id.slice(-6)}-audio`).duration));
     };
 
     const setSliderMax = () => {
-        document.querySelector(`#${id.slice(-6)}-seek-slider`).max = Math.floor(document.querySelector(`#${id.slice(-6)}-audio`).duration);
+        document.querySelector(`#${id.slice(-6)}-seek-slider`).max
+        = Math.floor(document.querySelector(`#${id.slice(-6)}-audio`).duration);
     };
 
     function playNext() {
@@ -120,7 +127,8 @@ function Player ({ quran , id , recitations }) {
 
     useEffect(() => {
         const whilePlaying = () => {
-            setPlayBackTime(Math.floor(document.querySelector(`#${id.slice(-6)}-audio`).currentTime));
+            setPlayBackTime(Math.floor(document.querySelector(`#${id.slice(-6)}-audio`)
+            .currentTime));
             $(`#${id.slice(-6)}-current-time`).text(calculateTime(playBackTime));
         }
 
@@ -132,143 +140,147 @@ function Player ({ quran , id , recitations }) {
     }, [id, playBackTime])
 
     return (
-        <div style={audioStyle} id={`${id.slice(-6)}-audio-player-container`}>
+        <div
+            style={audioStyle}
+            id={`${id.slice(-6)}-audio-player-container`}
+        >
             <audio 
-            preload='metadata'
-            id={`${id.slice(-6)}-audio`}
-            onEnded={() => {
-                stop();
-            }} 
-            onLoadedMetadata={() => {
-                setMax(document.querySelector(`#${id.slice(-6)}-audio`).duration);
-                displayDuration();
-                setSliderMax();
+                preload='metadata'
+                id={`${id.slice(-6)}-audio`}
+                onEnded={() => {
+                    stop();
+                }} 
+                onLoadedMetadata={() => {
+                    setMax(document.querySelector(`#${id.slice(-6)}-audio`).duration);
+                    displayDuration();
+                    setSliderMax();
             }}/>
 
             <img 
-            className="audio-controls" 
-            src={playPic} 
-            id={`${id.slice(-6)}-play`} 
-            alt="play" 
-            style={audioControlsStyle}
-            onClick={() => {
-                recitations.filter((id) => {
-                    document.querySelector(`#${id.slice(-6)}-audio`) !== null && document.querySelector(`#${id.slice(-6)}-audio`).pause()
-                    $(`#${id.slice(-6)}-pauseItem`).hide();
-                    $(`#${id.slice(-6)}-play`).show();
-                    return id
-                })
-                document.querySelector(`#${id.slice(-6)}-audio`).currentTime !== 0 ?
-                playMe(document.querySelector(`#${id.slice(-6)}-audio`)) 
-                : startMe(document.querySelector(`#${id.slice(-6)}-audio`),
-                quran, $(`#${id.slice(-6)}-pauseItem`), $(`#${id.slice(-6)}-play`))
+                className="audio-controls" 
+                src={playPic} 
+                id={`${id.slice(-6)}-play`} 
+                alt="play" 
+                style={audioControlsStyle}
+                onClick={() => {
+                    recitations.filter((id) => {
+                        document.querySelector(`#${id.slice(-6)}-audio`) !== null
+                        && document.querySelector(`#${id.slice(-6)}-audio`).pause()
+                        $(`#${id.slice(-6)}-pauseItem`).hide();
+                        $(`#${id.slice(-6)}-play`).show();
+                        return id
+                    })
+                    document.querySelector(`#${id.slice(-6)}-audio`).currentTime !== 0 ?
+                    playMe(document.querySelector(`#${id.slice(-6)}-audio`)) 
+                    : startMe(document.querySelector(`#${id.slice(-6)}-audio`),
+                    quran, $(`#${id.slice(-6)}-pauseItem`), $(`#${id.slice(-6)}-play`))
                 }}
             />
 
             <img 
-            className="audio-controls pauseItem"
-            src={pausePic}
-            alt="pause"
-            id={`${id.slice(-6)}-pauseItem`}
-            onClick={() => pauseMe(document.querySelector(`#${id.slice(-6)}-audio`))}
-            style={{display: 'none', ...audioControlsStyle}}
+                className="audio-controls pauseItem"
+                src={pausePic}
+                alt="pause"
+                id={`${id.slice(-6)}-pauseItem`}
+                onClick={() => pauseMe(document.querySelector(`#${id.slice(-6)}-audio`))}
+                style={{display: 'none', ...audioControlsStyle}}
             />
 
             <img 
-            className="audio-controls"
-            src={stopPic} alt="stop"
-            id={`${id.slice(-6)}-stopIcon`}
-            onClick={() => stop()}
-            style={audioControlsStyle}
+                className="audio-controls"
+                src={stopPic} alt="stop"
+                id={`${id.slice(-6)}-stopIcon`}
+                onClick={() => stop()}
+                style={audioControlsStyle}
             />
 
             <img 
-            className="audio-controls"
-            src={previousPic}
-            alt="prev"
-            style={audioControlsStyle}
-            id={`${id.slice(-6)}-prevIcon`} 
-            onClick={() => {
-                document.querySelector(`#${id.slice(-6)}-audio`).currentTime = 0;
-                fetch(playPrevious())
-                .then(() => playMe(document.querySelector(`#${id.slice(-6)}-audio`))
+                className="audio-controls"
+                src={previousPic}
+                alt="prev"
+                style={audioControlsStyle}
+                id={`${id.slice(-6)}-prevIcon`} 
+                onClick={() => {
+                    document.querySelector(`#${id.slice(-6)}-audio`).currentTime = 0;
+                    fetch(playPrevious())
+                    .then(() => playMe(document.querySelector(`#${id.slice(-6)}-audio`))
             )}}/>
 
             <span 
-            id={`${id.slice(-6)}-current-time`} 
-            className="time"
-            style={timeStyle}>0:00
+                id={`${id.slice(-6)}-current-time`} 
+                className="time"
+                style={timeStyle}>0:00
             </span>
 
             <Slider 
-            size="small" 
-            id={`${id.slice(-6)}-seek-slider`} 
-            aria-label="time-indicator" 
-            min={0} 
-            step={1} 
-            max={max} 
-            value={playBackTime} 
-            onChange={handlePlayer}
-            sx={{ width: '25%', py: '2px', mx: 0.5}} 
+                size="small" 
+                id={`${id.slice(-6)}-seek-slider`} 
+                aria-label="time-indicator" 
+                min={0} 
+                step={1} 
+                max={max} 
+                value={playBackTime} 
+                onChange={handlePlayer}
+                sx={{ width: '25%', py: '2px', mx: 0.5}} 
             />
 
             <span 
-            id={`${id.slice(-6)}-duration`} 
-            className="time"
-            style={timeStyle}>0:00
+                id={`${id.slice(-6)}-duration`} 
+                className="time"
+                style={timeStyle}>0:00
             </span>
 
             <img 
-            className="audio-controls"
-            src={nextPic}
-            alt="next"
-            style={audioControlsStyle}
-            id={`${id.slice(-6)}-nextIcon`}
-            onClick={() => {
-                document.querySelector(`#${id.slice(-6)}-audio`).currentTime = 0;
-                fetch(playNext())
-                .then(() => playMe(document.querySelector(`#${id.slice(-6)}-audio`)))
-            }}
+                className="audio-controls"
+                src={nextPic}
+                alt="next"
+                style={audioControlsStyle}
+                id={`${id.slice(-6)}-nextIcon`}
+                onClick={() => {
+                    document.querySelector(`#${id.slice(-6)}-audio`).currentTime = 0;
+                    fetch(playNext())
+                    .then(() => playMe(document.querySelector(`#${id.slice(-6)}-audio`)))
+                }}
             />
 
             <Slider 
-            size="small" 
-            aria-label="Volume" 
-            value={volume} 
-            onChange={handleVolumeChange} 
-            sx={volumeStyle}
+                size="small" 
+                aria-label="Volume" 
+                value={volume} 
+                onChange={handleVolumeChange} 
+                sx={volumeStyle}
             />
 
             <output 
-            id={`${id.slice(-6)}-volume-output`} 
-            className="volume-output"
-            style={outputStyle}>100
+                id={`${id.slice(-6)}-volume-output`} 
+                className="volume-output"
+                style={outputStyle}>100
             </output>
 
             <img 
-            className="audio-controls unmute" 
-            src={unmutePic} 
-            alt="unmute" 
-            id={`${id.slice(-6)}-unmute`} 
-            onClick={() => {
-                document.querySelector(`#${id.slice(-6)}-audio`).muted = false;
-                $(`#${id.slice(-6)}-unmute`).hide();
-                $(`#${id.slice(-6)}-mute`).show();
-            }}
-            style={{ display: 'none', ...audioControlsStyle}}
+                className="audio-controls unmute" 
+                src={unmutePic} 
+                alt="unmute" 
+                id={`${id.slice(-6)}-unmute`} 
+                onClick={() => {
+                    document.querySelector(`#${id.slice(-6)}-audio`).muted = false;
+                    $(`#${id.slice(-6)}-unmute`).hide();
+                    $(`#${id.slice(-6)}-mute`).show();
+                }}
+                style={{ display: 'none', ...audioControlsStyle}}
             />
 
             <img 
-            className="audio-controls"
-            src={mutePic}
-            alt="mute"
-            style={audioControlsStyle}
-            id={`${id.slice(-6)}-mute`} 
-            onClick={() => {
-                document.querySelector(`#${id.slice(-6)}-audio`).muted = true;
-                $(`#${id.slice(-6)}-unmute`).show();
-                $(`#${id.slice(-6)}-mute`).hide();
-            }}
+                className="audio-controls"
+                src={mutePic}
+                alt="mute"
+                style={audioControlsStyle}
+                id={`${id.slice(-6)}-mute`} 
+                onClick={() => {
+                    document.querySelector(`#${id.slice(-6)}-audio`).muted = true;
+                    $(`#${id.slice(-6)}-unmute`).show();
+                    $(`#${id.slice(-6)}-mute`).hide();
+                }}
             />
         </div>
     )

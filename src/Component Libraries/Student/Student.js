@@ -27,7 +27,16 @@ const Img = styled('img')({
   borderRadius: '50%',
 });
 
-function Student({users , type , authedUser , id , recites , recitations , setter , setValue}) {
+function Student({
+    users,
+    type,
+    authedUser,
+    id,
+    recites,
+    recitations,
+    setter,
+    setValue
+  }) {
 
   const handleCheck = () => {
     if (setValue === false) {
@@ -77,8 +86,26 @@ function Student({users , type , authedUser , id , recites , recitations , sette
           height: 75,
           textAlign: "center"
         }}>
-            <ButtonBase sx={{ width: 70, height: 70, cursor: "default", marginLeft: authedUser !== id ? "auto" : "1rem" }}>
-              <Img sx={{ width: 70, height: 70 }} alt="student-pic" src={users[id].avatar !== "" ? URL.createObjectURL(users[id].avatar) : (users[id].gender === 'male' ? male : female)} />
+            <ButtonBase
+              sx={{
+                width: 70,
+                height: 70,
+                cursor: "default",
+                marginLeft: authedUser !== id
+                ? "auto"
+                : "1rem"
+              }}
+            >
+              <Img
+                sx={{
+                  width: 70,
+                  height: 70
+                }}
+                alt="student-pic"
+                src={users[id].avatar !== ""
+                ? URL.createObjectURL(users[id].avatar)
+                : (users[id].gender === 'male' ? male : female)}
+              />
             </ButtonBase>
           </Grid>
           <Grid item
@@ -90,7 +117,10 @@ function Student({users , type , authedUser , id , recites , recitations , sette
           >
             <Grid item container>
               <Grid item md={4}>
-                <Typography variant="body2" fontWeight="bolder">
+                <Typography
+                  variant="body2"
+                  fontWeight="bolder"
+                >
                   {users[id].name}
                 </Typography>
               </Grid>
@@ -161,7 +191,10 @@ function Student({users , type , authedUser , id , recites , recitations , sette
                 Verified 
                 </Typography> 
                 :
-                <Typography variant="body2" gutterBottom sx={{
+                <Typography
+                  variant="body2"
+                  gutterBottom
+                  sx={{
                     background: 'rgba(177, 49, 10, 0.63)',
                     color: 'whitesmoke',
                     padding: 0.5,
@@ -169,22 +202,25 @@ function Student({users , type , authedUser , id , recites , recitations , sette
                     width: 60,
                     borderRadius: '0.25rem',
                     font: 'bold 10px Helvetica, serif'
-                }}>
+                  }}
+                >
                 Unverified 
                 </Typography> }
-                <Typography sx={{
-                  font: 'bold 10px Helvetica, serif',
-                  color: 'rgba(163, 153, 9, 0.849)',
-                  mt: 0.5
-                }}>
+                <Typography
+                  sx={{
+                    font: 'bold 10px Helvetica, serif',
+                    color: 'rgba(163, 153, 9, 0.849)',
+                    mt: 0.5
+                  }}
+                >
                   {users[id].level}&nbsp;
                   <img
-                  src={star}
-                  alt='star'
-                  style={{
-                    width: '10px',
-                    height: '10px',
-                  }}
+                    src={star}
+                    alt='star'
+                    style={{
+                      width: '10px',
+                      height: '10px',
+                    }}
                   />
                   {`${users[id].rating.toFixed(2)}`}
                 </Typography>
@@ -199,11 +235,21 @@ function Student({users , type , authedUser , id , recites , recitations , sette
                 </Typography>
               </Grid>
               <Grid item>
-                <Typography variant="body2" sx={{ font: 'bold 12px Helvetica, serif'}}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    font: 'bold 12px Helvetica, serif'
+                  }}
+                >
                   Recitations Statistics
                 </Typography>
               </Grid>
-                <Grid item container sm={12} md={10} sx={{
+                <Grid
+                  item
+                  container
+                  sm={12}
+                  md={10}
+                  sx={{
                     textAlign: {
                         md: "left",
                         sm: "center",
@@ -215,20 +261,69 @@ function Student({users , type , authedUser , id , recites , recitations , sette
                         xs: "center"
                       }
                   }}>
-                  <Grid item xs={3} sm={2} md={2.2}>
-                    <StatsFormer image={total} num={recites.length} text="Total" />
+                  <Grid
+                    item
+                    xs={3}
+                    sm={2}
+                    md={2.2}
+                  >
+                    <StatsFormer
+                      image={total}
+                      num={recites.length}
+                      text="Total"
+                    />
                   </Grid>
-                  <Grid item xs={3} sm={2} md={2.2}>
-                    <StatsFormer image={pending} num={recites.map((recite) => recitations[recite].status).filter((i) => i === "Pending").length} text="Pending" />
+                  <Grid
+                    item
+                    xs={3}
+                    sm={2}
+                    md={2.2}
+                  >
+                    <StatsFormer
+                      image={pending}
+                      num={recites.map((recite) => recitations[recite].status)
+                      .filter((i) => i === "Pending").length}
+                      text="Pending"
+                    />
                   </Grid>
-                  <Grid item xs={3} sm={2} md={2.2}>
-                    <StatsFormer image={accept} num={recites.map((recite) => recitations[recite].status).filter((i) => i === "Accepted").length} text="Accepted" />
+                  <Grid
+                    item
+                    xs={3}
+                    sm={2}
+                    md={2.2}
+                  >
+                    <StatsFormer
+                      image={accept}
+                      num={recites.map((recite) => recitations[recite].status)
+                      .filter((i) => i === "Accepted").length}
+                      text="Accepted"
+                    />
                   </Grid>
-                  <Grid item xs={3} sm={2} md={2.2}>
-                    <StatsFormer image={reject} num={recites.map((recite) => recitations[recite].status).filter((i) => i === "Rejected").length} text="Rejected" />
+                  <Grid
+                    item
+                    xs={3}
+                    sm={2}
+                    md={2.2}
+                  >
+                    <StatsFormer
+                      image={reject}
+                      num={recites.map((recite) => recitations[recite].status)
+                      .filter((i) => i === "Rejected").length}
+                      text="Rejected"
+                    />
                   </Grid>
-                  <Grid item xs={3} sm={2} md={2.2}>
-                    <StatsFormer image={report} num={recites.map((recite) => recitations[recite].status).filter((i) => i === "Reported").length} text="Reported" />
+                  <Grid
+                    item
+                    xs={3}
+                    sm={2}
+                    md={2.2}
+                  >
+                    <StatsFormer
+                      image={report}
+                      num={recites.map((recite) => recitations[recite].status)
+                      .filter((i) => i === "Reported").length}
+                      text="Reported"
+                    />
                   </Grid>
                 </Grid>
             </Grid>

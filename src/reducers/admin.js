@@ -13,10 +13,8 @@ export default function admins (state={}, action) {
                 ...action.admins,
             }
         case DELETE_ADMIN:
-            delete action.admins[action.id.id]
-            return {
-                ...state
-            }
+            return Object
+            .fromEntries(Object.entries(state).filter(e => e[0] !== action.id))
         default: 
             return state
     }

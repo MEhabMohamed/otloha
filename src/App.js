@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Route, Routes, Outlet, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Outlet, Navigate }
+from 'react-router-dom';
 import { connect } from 'react-redux';
 import React, { useEffect, useRef, useState } from 'react';
 import handleInitialData from './actions/shared';
@@ -19,6 +20,7 @@ import HomePage from './components/HomePage';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import RecitationProfile from './Component Libraries/Recitation/RecitationProfile';
 import BlockList from './Component Libraries/BlockList/BlockList';
+import SetNewAdmin from './Component Libraries/AddRemoveAdmin/AddRemoveAdmin';
 
 const PrivateWrapper = ({ auth: isAuthenticated }) => {
   if (isAuthenticated !== null) {
@@ -78,14 +80,21 @@ function App({ authedUser , initial , recitations }) {
             {isAuthed === null && <Route path='/' element={<SignInSide />} />}
             <Route element={<PrivateWrapper auth={isAuthed}/>}>
               <Route path='*' element={<NotFound />} />
-                <Route path='/' element={<HomePage theme={mode} />} />
-                <Route path='/createuser' element={<SignUp />} />
-                <Route path='/new-recitation' element={<NewRecitation />} />
-                <Route path='/teachers' element={<TeacherDashboard />} />
-                <Route path='/students' element={<StudentDashboard />} />
-                <Route path='/recitations' element={<RecitationDashboard />} />
-                <Route path='/blocked' element={<BlockList />} />
-                {recitations.map((id => <Route path={`/recitations/${id}`} key={id} element={<RecitationProfile id={id}/>} />))}
+              <Route path='/' element={<HomePage theme={mode} />} />
+              <Route path='/createuser' element={<SignUp />} />
+              <Route path='/new-recitation' element={<NewRecitation />} />
+              <Route path='new-admin' element={<SetNewAdmin /> } />
+              <Route path='/teachers' element={<TeacherDashboard />} />
+              <Route path='/students' element={<StudentDashboard />} />
+              <Route path='/recitations' element={<RecitationDashboard />} />
+              <Route path='/blocked' element={<BlockList />} />
+              {recitations.map((id =>
+                <Route
+                  path={`/recitations/${id}`}
+                  key={id}
+                  element={<RecitationProfile id={id}/>}
+                />
+              ))}
             </Route>
           </Routes>
           </Box>

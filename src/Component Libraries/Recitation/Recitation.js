@@ -46,8 +46,23 @@ function Recitation({users, recitation , id, index , authedUser}) {
               textAlign: "center"
             }}
           >
-            <ButtonBase sx={{ width: 70, height: 70, cursor: "default" }}>
-              <Img sx={{ width: 70, height: 70 }} alt="complex" src={users[recitation.authed].avatar !== "" ? URL.createObjectURL(users[recitation.authed].avatar) : (users[recitation.authed].gender === 'male' ? male : female)} />
+            <ButtonBase
+              sx={{
+                width: 70,
+                height: 70,
+                cursor: "default"
+              }}
+            >
+              <Img
+                sx={{
+                  width: 70,
+                  height: 70
+                }}
+                alt="complex"
+                src={users[recitation.authed].avatar !== ""
+                ? URL.createObjectURL(users[recitation.authed].avatar)
+                : (users[recitation.authed].gender === 'male' ? male : female)}
+              />
             </ButtonBase>
           </Grid>
           <Grid
@@ -67,7 +82,8 @@ function Recitation({users, recitation , id, index , authedUser}) {
                 <Typography variant="body1" color="text.secondary">
                   ID {index}
                 </Typography>
-                {users[recitation.authed].description === "student" && <Stack variant="body2" sx={{
+                {users[recitation.authed].description === "student"
+                && <Stack variant="body2" sx={{
                   mx: 2,
                 }}>
                   {recitation.status === "Pending" ?
@@ -117,7 +133,9 @@ function Recitation({users, recitation , id, index , authedUser}) {
             </Grid>
             <Grid item sx={{
               mt: {
-                md: recitation.status !== "Pending" ? (recitation.status === "Reported" ? -4 : -9) : -2
+                md: recitation.status !== "Pending"
+                ? (recitation.status === "Reported" ? -4 : -9)
+                : -2
               }
             }}>
               <Typography variant="body2" color="text.secondary">
@@ -132,7 +150,9 @@ function Recitation({users, recitation , id, index , authedUser}) {
                 From {recitation.verse.from} To {recitation.verse.to}
               </Typography>
               <Typography variant="body2" sx={{ font: 'bold 12px Helvetica, serif'}}>
-                {recitation.narration} - {recitation.verse.surah} - From Verse {recitation.verse.fromNumber} To Verse {recitation.verse.toNumber}
+                {`${recitation.narration} - ${recitation.verse.surah} 
+                - From Verse ${recitation.verse.fromNumber} To Verse 
+                ${recitation.verse.toNumber}`}
               </Typography>
               {recitation.status === "Reported" && 
                 <Typography variant="body2" sx={{
@@ -161,18 +181,28 @@ function Recitation({users, recitation , id, index , authedUser}) {
                   height: 75,
                   textAlign: "center"
                 }}>
-                  <ButtonBase sx={{ width: 70, height: 70, cursor: "default", marginLeft: authedUser !== id ? "auto" : "1rem" }}>
+                  <ButtonBase
+                    sx={{
+                      width: 70,
+                      height: 70,
+                      cursor: "default",
+                      marginLeft: authedUser !== id ? "auto" : "1rem"
+                    }}
+                  >
                     <Img
                       sx={{ width: 70, height: 70 }}
                       alt="teacher-pic"
                       src={(recitation.teacher.name && 
                         users[Object.keys(users)
-                       .filter((id) => users[id].name === recitation.teacher.name).toString()].avatar) !== "" ?
+                       .filter((id) => users[id].name === recitation.teacher.name)
+                       .toString()].avatar) !== "" ?
                        URL.createObjectURL(users[Object.keys(users)
-                       .filter((id) => users[id].name === recitation.teacher.name).toString()].avatar) :
+                       .filter((id) => users[id].name === recitation.teacher.name)
+                       .toString()].avatar) :
                         (recitation.teacher.avatar !== "" ? recitation.teacher.avatar : 
                         (users[Object.keys(users)
-                       .filter((id) => users[id].name === recitation.teacher.name).toString()]
+                       .filter((id) => users[id].name === recitation.teacher.name)
+                       .toString()]
                        .gender === 'male' ? male : female))}
                     />
                   </ButtonBase>
@@ -184,10 +214,18 @@ function Recitation({users, recitation , id, index , authedUser}) {
                     sm: "center"
                   }
                 }}>
-                <Typography variant="subtitle2" gutterBottom fontWeight="bolder">
+                <Typography
+                  variant="subtitle2"
+                  gutterBottom
+                  fontWeight="bolder"
+                >
                   Teacher
                 </Typography>
-                <Typography variant="subtitle2" gutterBottom fontWeight="bolder">
+                <Typography
+                  variant="subtitle2"
+                  gutterBottom
+                  fontWeight="bolder"
+                >
                   {recitation.teacher.name}
                 </Typography>
                 </Grid>

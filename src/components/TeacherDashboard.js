@@ -44,62 +44,129 @@ function TeacherDashboard ({ users , authedUser , teachers }) {
 
     function filteredTeacher() {
         return {
-            teacher: teachers.filter((teacher) => !users[authedUser].blockList.includes(teacher.id))
+            teacher: teachers.filter((teacher) =>
+            !users[authedUser].blockList.includes(teacher.id))
             .filter((teacher) => search !== "" ? 
-            (teacher.email.includes(search) || teacher.name.toLowerCase().includes(search))
+            (teacher.email.includes(search)
+            || teacher.name.toLowerCase().includes(search))
             : teacher),
-            checked: teachers.filter((teacher) => !users[authedUser].blockList.includes(teacher.id))
+            checked: teachers.filter((teacher) =>
+            !users[authedUser].blockList.includes(teacher.id))
             .filter((teacher) => search !== "" ? 
-            (teacher.email.includes(search) || teacher.name.toLowerCase().includes(search))
+            (teacher.email.includes(search)
+            || teacher.name.toLowerCase().includes(search))
             : teacher)
             .slice(firstIndex, lastIndex)
-            .filter(({id}) => document.querySelector(`#choose-teacher-${id}`) !== null ? document.querySelector(`#choose-teacher-${id}`).checked === true : !id)
+            .filter(({id}) => document.querySelector(`#choose-teacher-${id}`) !== null
+            ? document.querySelector(`#choose-teacher-${id}`).checked === true
+            : !id)
         }
     }
 
     return (
-        <Grid container id="former-teacher-container" sx={{ pt: 12}} spacing={1}>
-            <Grid item container spacing={1} md={12}>
-                <DataBlock size={2} pic={contacts} text="All teachers" counter={teachers.length}/>
-                <DataBlock size={2} pic={waiting} text="Pending" counter={teachers.filter(({status}) => status === "Pending").length}/>
-                <DataBlock size={2} pic={accept} text="Approved" counter={teachers.filter(({status}) => status === "Approved").length}/>
-                <DataBlock size={2} pic={reject} text="Rejected" counter={teachers.filter(({status}) => status === "Rejected").length}/>
-                <DataBlock size={2} pic={earning} text="Paid" counter={teachers.filter(({due}) => due === "paid").length}/>
-                <DataBlock size={2} pic={heart} text="Volunteer" counter={teachers.filter(({due}) => due === "volunteer").length}/>
+        <Grid
+            container
+            sx={{
+                pt: 12
+            }}
+            spacing={1}
+        >
+            <Grid
+                item
+                container
+                spacing={1}
+                md={12}
+            >
+                <DataBlock
+                    size={2}
+                    pic={contacts}
+                    text="All teachers"
+                    counter={teachers.length}
+                />
+                <DataBlock
+                    size={2}
+                    pic={waiting}
+                    text="Pending"
+                    counter={teachers.filter(({status}) => status === "Pending").length}
+                />
+                <DataBlock
+                    size={2}
+                    pic={accept}
+                    text="Approved"
+                    counter={teachers.filter(({status}) => status === "Approved").length}
+                />
+                <DataBlock
+                    size={2}
+                    pic={reject}
+                    text="Rejected"
+                    counter={teachers.filter(({status}) => status === "Rejected").length}
+                />
+                <DataBlock
+                    size={2}
+                    pic={earning}
+                    text="Paid"
+                    counter={teachers.filter(({due}) => due === "paid").length}
+                />
+                <DataBlock
+                    size={2}
+                    pic={heart}
+                    text="Volunteer"
+                    counter={teachers.filter(({due}) => due === "volunteer").length}
+                />
             </Grid>
-            <Grid item container direction="column" spacing={1} id="users-container" xs={12} sm={8} ml={1}>
+            <Grid
+                item
+                container
+                direction="column"
+                spacing={1}
+                xs={12}
+                sm={9}
+                ml={1}
+            >
             <Paper
-                    sx={{
-                        height:60,
-                        pt: 1,
-                        px: 1,
-                        width: "100%",
-                        mt: 1,
-                        ml: 1,
-                    }}>
-                    <Grid item container gap={1}>
-                        <Grid item xs={0.25} sm={0.25} md={0.25} sx={{
-                        textAlign: "center",
-                        }}>
-                            <Input
-                                id="bulk-teacher-selector"
-                                type="checkbox"
-                                disableUnderline
-                                onChange={handleCheck}
-                                value={check}
-                                />
-                        </Grid>
-                        <Grid item sm={5.6}>
-                            <TextField
+                sx={{
+                    height:60,
+                    pt: 1,
+                    px: 1,
+                    width: "100%",
+                    mt: 1,
+                    ml: 1,
+                }}
+            >
+                <Grid
+                    item
+                    container
+                    gap={1}
+                    justifyContent="right"
+                >
+                    <Grid
+                        item
+                        xs={0.25}
+                        sm={0.25}
+                        md={0.25}
+                        sx={{
+                            textAlign: "center",
+                        }}
+                    >
+                        <Input
+                            id="bulk-teacher-selector"
+                            type="checkbox"
+                            disableUnderline
+                            onChange={handleCheck}
+                            value={check}
+                        />
+                    </Grid>
+                    <Grid item>
+                        <TextField
                             id="teacher-search"
                             label="search"
                             name="search"
                             fullWidth
                             autoComplete="search-feild"
                             onChange={(e) => setSearch(e.target.value)}
-                            />
-                        </Grid>
-                        <Button
+                        />
+                    </Grid>
+                    <Button
                         variant="contained"
                         type="submit"
                         size="medium"
@@ -107,13 +174,24 @@ function TeacherDashboard ({ users , authedUser , teachers }) {
                             setSearch('');
                             $("#teacher-search").val('')
                         }}
-                            >
-                            Reset
-                        </Button>
-                        {((document.querySelector("#bulk-teacher-selector") !== null) && (filteredTeacher().teacher.filter(({id}) => authedUser !== id).length > 0)) && (((document.querySelector("#bulk-teacher-selector").checked === true) || userCheck === true) && (
-                            <Typography variant="body2" color="text.secondary">
+                    >
+                        Reset
+                    </Button>
+                    {((document.querySelector("#bulk-teacher-selector") !== null)
+                    && (filteredTeacher().teacher.filter(({id}) =>
+                    authedUser !== id).length > 0)
+                    && filteredTeacher().checked.length > 0)
+                    && ((
+                    (document.querySelector("#bulk-teacher-selector").checked === true)
+                    || userCheck === true
+                    ) && (
+                        <Typography
+                            variant="body2"
+                            color="text.secondary"
+                        >
                             {filteredTeacher().checked.length} Selected
-                        </Typography>))}
+                        </Typography>)
+                    )}
                         <Button
                             variant="contained"
                             type="submit"
@@ -130,18 +208,31 @@ function TeacherDashboard ({ users , authedUser , teachers }) {
                         </Button>
                     </Grid>
                 </Paper>
-                {filteredTeacher().teacher.filter((teacher) => !users[authedUser].blockList.includes(teacher.id)).map(({id}) => (
-                    <Grid key={id} id={`${id}-li`} item>
-                        <Teacher id={id} type="teacher" setter={setUserCheck} setValue={userCheck}/>
+                {filteredTeacher().teacher.filter((teacher) =>
+                !users[authedUser].blockList.includes(teacher.id))
+                .map(({id}) => (
+                    <Grid
+                        key={id}
+                        id={`${id}-li`}
+                        item
+                    >
+                        <Teacher
+                            id={id}
+                            type="teacher"
+                            setter={setUserCheck}
+                            setValue={userCheck}
+                        />
                     </Grid>
-                )).slice(firstIndex, lastIndex)}
+                )).slice(firstIndex, lastIndex)
+                }
                 <Grid item>
                 <PaginationLink
                         showing={Math.ceil(filteredTeacher().teacher.length/10)}
                         pageSet={setCurrentPage}
                         firstIndex={firstIndex}
                         lastIndex={lastIndex}
-                        total={filteredTeacher().teacher.filter((teacher) => !users[authedUser].blockList.includes(teacher.id)).length}
+                        total={filteredTeacher().teacher.filter((teacher) =>
+                        !users[authedUser].blockList.includes(teacher.id)).length}
                         />
                 </Grid>
             </Grid>
@@ -151,7 +242,8 @@ function TeacherDashboard ({ users , authedUser , teachers }) {
 
 function mapStateToProps ({ users , authedUser }) {
     let userTeachers = Object.values(users);
-    let teachers = userTeachers.length > 0 ? userTeachers.filter(({description}) => description === 'teacher')
+    let teachers = userTeachers.length > 0 ? userTeachers.filter(({description}) =>
+    description === 'teacher')
     .sort((a, b) => b.joiningDate - a.joiningDate) : ['']
     return {
         teachers,

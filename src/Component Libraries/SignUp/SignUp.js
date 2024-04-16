@@ -63,9 +63,39 @@ function SignUp({ usermails }) {
     if (usermails.includes(newEmail)) {
         AlertShow($('#email-alert'), setEmailAlert, "Email already registered!")
     } else if (data.get('description') === "teacher") {
-      handleNewUser(username, newPass, newCountry, data.get('description'), newEmail, newPic.current, data.get('gender'), dispatch, navigate, handleAddTeacher, data.get('due'), setEmailAlert, setPassAlert, lang, Date.parse(bDate))
+      handleNewUser(
+        username,
+        newPass,
+        newCountry,
+        data.get('description'),
+        newEmail, newPic.current,
+        data.get('gender'),
+        dispatch,
+        navigate,
+        handleAddTeacher,
+        data.get('due'),
+        setEmailAlert,
+        setPassAlert,
+        lang,
+        Date.parse(bDate
+      ))
     } else {
-      handleNewUser(username, newPass, newCountry, data.get('description'), newEmail, newPic.current, data.get('gender'), dispatch, navigate, handleAddStudent, narration, setEmailAlert, setPassAlert, lang, Date.parse(bDate))
+      handleNewUser(
+        username,
+        newPass,
+        newCountry,
+        data.get('description'),
+        newEmail, newPic.current,
+        data.get('gender'),
+        dispatch,
+        navigate,
+        handleAddStudent,
+        narration,
+        setEmailAlert,
+        setPassAlert,
+        lang,
+        Date.parse(bDate)
+      )
     }
   };
 
@@ -76,11 +106,16 @@ function SignUp({ usermails }) {
       'position': 'absolute',
       'margin': '4rem 0 2rem -1.5rem'
   })
-    newPic.current = e.target.files[0].name.slice(-4) === (".jpg" || ".png" || "jpeg") ? e.target.files[0] : "";
+    newPic.current = e.target.files[0].name.slice(-4)
+    === (".jpg" || ".png" || "jpeg") ? e.target.files[0]
+    : "";
   }
 
   return (
-      <Container component={Paper} maxWidth="xs">
+      <Container
+        component={Paper}
+        maxWidth="xs"
+      >
         <Box
           sx={{
             py: 10,
@@ -95,7 +130,12 @@ function SignUp({ usermails }) {
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          <Box
+            component="form"
+            noValidate
+            onSubmit={handleSubmit}
+            sx={{ mt: 3 }}
+          >
             <Grid container spacing={2}>
               <Grid item xs={12} textAlign="center">
                 <img 
@@ -159,44 +199,142 @@ function SignUp({ usermails }) {
                   onChange={(e) => setnewEmail(e.target.value)}
                 />
               </Grid>
-              <Grid item xs={12} sx={{ display: "none"}} id="email-alert">
+              <Grid
+                item
+                xs={12}
+                sx={{ display: "none"}}
+                id="email-alert"
+              >
                   <BasicAlerts text={emailAlert} />
               </Grid>
-              <Grid item xs={12} justifyContent="center" display="flex" flexDirection="row">
-                <Input type="radio" name="gender" value="male" disableUnderline sx={{ mx: 1 }}/><Typography>Male</Typography>
-                <Input type="radio" name="gender" value="female" disableUnderline sx={{ mr: 1 , ml: 5 }}/><Typography>Female</Typography>
+              <Grid
+                item
+                xs={12}
+                justifyContent="center"
+                container
+                direction="row">
+                <Input
+                  type="radio"
+                  name="gender"
+                  value="male"
+                  disableUnderline
+                  sx={{ mx: 1 }}
+                />
+                  <Typography>
+                    Male
+                  </Typography>
+                <Input
+                  type="radio"
+                  name="gender"
+                  value="female"
+                  disableUnderline
+                  sx={{ mr: 1 , ml: 5 }}
+                />
+                  <Typography>
+                    Female
+                  </Typography>
               </Grid>
-              <Grid item xs={12} justifyContent="center" display="flex" flexDirection="row">
-                <Input type="radio" name="description" value="teacher" disableUnderline sx={{ mx: 1 }} 
-                onClick={() => {
-                $('#teacher-type').css({'display': 'flex'})
-                $('#narrate').hide()
-                }}/><Typography>Teacher</Typography>
-                <Input type="radio" 
-                name="description" 
-                value="student" 
-                disableUnderline 
-                sx={{ mr: 1 , ml: 5 }} 
-                onClick={() => {
-                  $('#teacher-type').css({'display': 'none'})
-                  $('#narrate').show()
-                  }}/><Typography>Student</Typography>
+              <Grid
+                item
+                xs={12}
+                justifyContent="center"
+                container
+                direction="row">
+                <Input
+                  type="radio"
+                  name="description"
+                  value="teacher"
+                  disableUnderline
+                  sx={{ mx: 1 }} 
+                  onClick={() => {
+                  $('#teacher-type').css({'display': 'flex'})
+                  $('#narrate').hide()
+                  }}
+                />
+                  <Typography>
+                    Teacher
+                  </Typography>
+                <Input
+                  type="radio" 
+                  name="description" 
+                  value="student" 
+                  disableUnderline 
+                  sx={{ mr: 1 , ml: 5 }} 
+                  onClick={() => {
+                    $('#teacher-type').css({'display': 'none'})
+                    $('#narrate').show()
+                  }}  
+                />
+                  <Typography>
+                    Student
+                  </Typography>
               </Grid>
-              <Grid item xs={12} justifyContent="center" flexDirection="row" sx={{ display: "none" }} id="teacher-type">
-                <Input type="radio" name="due" value="paid" disableUnderline sx={{ mx: 1 }}/><Typography>Paid</Typography>
-                <Input type="radio" name="due" value="volunteer" disableUnderline sx={{ mr: 1 , ml: 5 }}/><Typography>Volunteer</Typography>
+              <Grid
+                item
+                xs={12}
+                justifyContent="center"
+                container
+                direction="row"
+                sx={{ display: "none" }}
+                id="teacher-type"
+              >
+                <Input
+                  type="radio"
+                  name="due"
+                  value="paid"
+                  disableUnderline
+                  sx={{ mx: 1 }}
+                />
+                  <Typography>
+                    Paid
+                  </Typography>
+                <Input
+                  type="radio"
+                  name="due"
+                  value="volunteer"
+                  disableUnderline
+                  sx={{ mr: 1 , ml: 5 }}
+                />
+                  <Typography>
+                    Volunteer
+                  </Typography>
               </Grid>
-              <Grid item xs={12} sx={{ display: "none"}} id="narrate">
-                <NarrationSelect narrate={narration} setter={setNarration} identify="signup"/>
+              <Grid
+                item
+                xs={12}
+                sx={{ display: "none"}}
+                id="narrate"
+              >
+                <NarrationSelect
+                  narrate={narration}
+                  setter={setNarration}
+                  identify="signup"
+                />
               </Grid>
               <Grid item xs={12}>
-                <CountrySelector value={newCountry} select={setnewCountry} identify="signup"/>
+                <CountrySelector
+                  value={newCountry}
+                  select={setnewCountry}
+                  identify="signup"
+                />
               </Grid>
               <Grid item xs={12}>
-                <Locales value={lang} select={setLang}/>
+                <Locales
+                  value={lang}
+                  select={setLang}
+                />
               </Grid>
-              <Grid item xs={12} textAlign="center">
-                <DatePick value={bDate} choose={setBDate} label="Birth Date:" setWidth="100%"/>
+              <Grid
+                item
+                xs={12}
+                textAlign="center"
+              >
+                <DatePick
+                  value={bDate}
+                  choose={setBDate}
+                  label="Birth Date:"
+                  setWidth="100%"
+                />
               </Grid>
               <Grid item xs={12}>
                 <img 

@@ -40,16 +40,30 @@ function BlockList ({ authedUser , blockedUsers }) {
             : block),
             checked: blockedUsers
             .filter((blockedUser) => search !== "" ? 
-            (blockedUser.email.includes(search) || blockedUser.name.toLowerCase().includes(search))
+            (blockedUser.email.includes(search)
+            || blockedUser.name.toLowerCase().includes(search))
             : blockedUser)
             .slice(firstIndex, lastIndex)
-            .filter(({id}) => document.querySelector(`#choose-blocked-${id}`) !== null ? document.querySelector(`#choose-blocked-${id}`).checked === true : id)
+            .filter(({id}) => document.querySelector(`#choose-blocked-${id}`) !== null
+            ? document.querySelector(`#choose-blocked-${id}`).checked === true
+            : id)
         }
     }
 
     return (
-        <Grid container id="former-blocked-container" sx={{ pt: 12}}>
-            <Grid item container id="blocked-container" xs={12} sm={8} ml={1} spacing={1} direction="column">
+        <Grid
+            container
+            sx={{
+                pt: 12
+            }}
+        >
+            <Grid
+                item
+                container
+                ml={1}
+                spacing={1}
+                direction="column"
+            >
             <Paper
                     sx={{
                         height:60,
@@ -59,10 +73,21 @@ function BlockList ({ authedUser , blockedUsers }) {
                         mt: 1,
                         ml: 1,
                     }}>
-                    <Grid item container gap={1}>
-                        <Grid item xs={0.25} sm={0.25} md={0.25} sx={{
-                        textAlign: "center",
-                        }}>
+                    <Grid
+                        item
+                        container
+                        gap={1}
+                        justifyContent="right"
+                    >
+                        <Grid
+                            item
+                            xs={0.25}
+                            sm={0.25}
+                            md={0.25}
+                            sx={{
+                                textAlign: "center",
+                            }}
+                        >
                             <Input
                                 id="bulk-blocked-selector"
                                 type="checkbox"
@@ -71,7 +96,7 @@ function BlockList ({ authedUser , blockedUsers }) {
                                 value={check}
                                 />
                         </Grid>
-                        <Grid item sm={5.6}>
+                        <Grid item>
                             <TextField
                             id="blocked-search"
                             label="search"
@@ -92,8 +117,14 @@ function BlockList ({ authedUser , blockedUsers }) {
                             >
                             Reset
                         </Button>
-                        {document.querySelector("#bulk-blocked-selector") !== null && (((document.querySelector("#bulk-blocked-selector").checked === true) || userCheck === true) && (
-                            <Typography variant="body2" color="text.secondary">
+                        {document.querySelector("#bulk-blocked-selector") !== null
+                        && ((
+                        (document.querySelector("#bulk-blocked-selector").checked === true)
+                        || userCheck === true) && (
+                            <Typography
+                                variant="body2"
+                                color="text.secondary"
+                            >
                             {filteredBlock().checked.length} Selected
                         </Typography>))}
                         <Button
@@ -113,11 +144,31 @@ function BlockList ({ authedUser , blockedUsers }) {
                     </Grid>
                 </Paper>
                 {filteredBlock().blockedUser.map((user) => (user.description === "student" ?
-                    <Grid key={user.id} id={`${user.id}-li`} item mb={1}>
-                        <Student id={user.id} type="blocked" setValue={userCheck} setter={setUserCheck}/>
+                    <Grid
+                        key={user.id}
+                        id={`${user.id}-li`}
+                        item
+                        mb={1}
+                    >
+                        <Student
+                            id={user.id}
+                            type="blocked"
+                            setValue={userCheck}
+                            setter={setUserCheck}
+                        />
                     </Grid> : 
-                    <Grid key={user.id} id={`${user.id}-li`} item mb={1}>
-                        <Teacher id={user.id} type="blocked" setValue={userCheck} setter={setUserCheck}/>
+                    <Grid
+                        key={user.id}
+                        id={`${user.id}-li`}
+                        item
+                        mb={1}
+                    >
+                        <Teacher
+                            id={user.id}
+                            type="blocked"
+                            setValue={userCheck}
+                            setter={setUserCheck}
+                        />
                     </Grid>
                 )).slice(firstIndex, lastIndex)}
                 <Grid item>

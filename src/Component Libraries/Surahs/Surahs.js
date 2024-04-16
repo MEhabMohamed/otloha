@@ -26,7 +26,15 @@ export default function SurahSelect({ surah , setter , mushaf}) {
           label="Surah"
           onChange={handleChange}
         >
-        {mushaf !== ("" && undefined) ? mushaf.data.surahs.map(({name , number}) => <MenuItem key={number} value={name}>{name}</MenuItem>) : <CircularIndeterminate />}
+        {mushaf !== ("" && undefined) ? mushaf.data.surahs
+        .map(({name , number}) =>
+          <MenuItem
+            key={number}
+            value={name}>
+              {name}
+          </MenuItem>)
+          : <CircularIndeterminate />
+        }
         </Select>
       </FormControl>
     </Box>

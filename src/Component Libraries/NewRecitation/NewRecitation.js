@@ -37,7 +37,8 @@ function NewRecitation({ authedUser }) {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    $.getJSON('http://api.alquran.cloud/v1/quran/quran-uthmani', (data) => setMushaf(data));
+    $.getJSON('http://api.alquran.cloud/v1/quran/quran-uthmani',
+    (data) => setMushaf(data));
 
     function handleSubmitText (e) {
         e.preventDefault();
@@ -51,7 +52,10 @@ function NewRecitation({ authedUser }) {
     }
 
     return (
-        <Container component={Paper} maxWidth="xs">
+        <Container
+            component={Paper}
+            maxWidth="xs"
+        >
             <Box 
                 id="new-recitation"
                 sx={{
@@ -59,7 +63,15 @@ function NewRecitation({ authedUser }) {
                     flexDirection: 'column',
                     alignItems: 'center',
                 }}>
-                <Box component="form" noValidate sx={{pt: 12 , pb: 2}} id="new-recitation-form" onSubmit={(e) => {
+                <Box
+                    component="form"
+                    noValidate
+                    sx={{
+                        pt: 12,
+                        pb: 2
+                    }}
+                    id="new-recitation-form"
+                    onSubmit={(e) => {
                         fetch({
                             verse,
                             narration,
@@ -75,70 +87,122 @@ function NewRecitation({ authedUser }) {
                                 setToAyah('');
                                 $('#file-name').text('');
                             })}}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} textAlign="center">
+                    <Grid
+                        container
+                        spacing={2}
+                    >
+                        <Grid
+                            item
+                            xs={12}
+                            textAlign="center"
+                        >
                         <img
-                        src={qu}
-                        alt="add-recitation" 
-                        style={{
-                                width: '100px',
-                                height: '100px',
-                                borderRadius: '50%',
-                            }} />
-                            <Box
-                            variant="contained"
-                            component="label"
-                            id='get-verse'
-                            sx={{
-                                width: '2rem',
-                                height: '2rem',
-                                position: 'absolute',
-                                margin: '4rem 0 2rem -1.5rem',
-                                backgroundSize: '100%',
-                                backgroundRepeat: 'no-repeat',
-                                cursor: 'pointer',
-                                backgroundImage: `url(${plus})`
-                            }}
+                            src={qu}
+                            alt="add-recitation" 
+                            style={{
+                                    width: '100px',
+                                    height: '100px',
+                                    borderRadius: '50%',
+                                }} />
+                                <Box
+                                variant="contained"
+                                component="label"
+                                id='get-verse'
+                                sx={{
+                                    width: '2rem',
+                                    height: '2rem',
+                                    position: 'absolute',
+                                    margin: '4rem 0 2rem -1.5rem',
+                                    backgroundSize: '100%',
+                                    backgroundRepeat: 'no-repeat',
+                                    cursor: 'pointer',
+                                    backgroundImage: `url(${plus})`
+                                }}
                             >
                             <input
-                            type="file"
-                            id="getVerse"
-                            onChange={(e) => {
-                                if (e.target.files[0] !== undefined) {
-                                    const objURL = e.target.files[0].name.slice(-4) === (".mp3" || "mpeg" || '.ogg') && URL.createObjectURL(e.target.files[0]);
-                                    setPlayback(objURL);
-                                    document.querySelector('#file-name').textContent = e.target.files[0].name.slice(0 , -4);
-                                }
-                            }}
-                            hidden
+                                type="file"
+                                id="getVerse"
+                                onChange={(e) => {
+                                    if (e.target.files[0] !== undefined) {
+                                        const objURL = e.target.files[0].name.slice(-4)
+                                        === (".mp3" || "mpeg" || '.ogg')
+                                        && URL.createObjectURL(e.target.files[0]);
+                                        setPlayback(objURL);
+                                        document.querySelector('#file-name').textContent
+                                        = e.target.files[0].name.slice(0 , -4);
+                                    }
+                                }}
+                                hidden
                             />
                             </Box>
                         </Grid>
-                        <Grid item xs={12} textAlign="center">
-                            <Typography variant="body1" id="file-name"></Typography>
+                        <Grid
+                            item
+                            xs={12}
+                            textAlign="center"
+                        >
+                            <Typography
+                                variant="body1"
+                                id="file-name"
+                                >   
+                            </Typography>
                         </Grid>
-                        <Grid item xs={12} sx={{ display: "none"}} id="recitation-alert">
+                        <Grid
+                            item
+                            xs={12}
+                            sx={{
+                                display: "none"
+                            }}
+                            id="recitation-alert"
+                        >
                             <BasicAlerts text={alarm} />
                         </Grid>
-                        <Grid item xs={12}>
-                            <SurahSelect surah={surah} setter={setSurah} mushaf={mushaf}/>
+                        <Grid
+                            item
+                            xs={12}
+                        >
+                            <SurahSelect
+                                surah={surah}
+                                setter={setSurah}
+                                mushaf={mushaf}
+                            />
                         </Grid>
                         {surah !== "" && <Grid item xs={12}>
-                            <AyahSelect id="from-ayah-select" surah={surah} ayah={fromAyah} setter={setFromAyah} label="Ayah From" numberSetter={setFromAyahNumber} mushaf={mushaf} />
+                            <AyahSelect
+                                id="from-ayah-select"
+                                surah={surah}
+                                ayah={fromAyah}
+                                setter={setFromAyah}
+                                label="Ayah From"
+                                numberSetter={setFromAyahNumber}
+                                mushaf={mushaf}
+                            />
                         </Grid>}
                         {surah !== "" && <Grid item xs={12}>
-                            <AyahSelect id="to-ayah-select" surah={surah} ayah={toAyah} setter={setToAyah} label="Ayah To" numberSetter={setToAyahNumber} mushaf={mushaf} />
+                            <AyahSelect
+                                id="to-ayah-select"
+                                surah={surah}
+                                ayah={toAyah}
+                                setter={setToAyah}
+                                label="Ayah To"
+                                numberSetter={setToAyahNumber}
+                                mushaf={mushaf}
+                            />
                         </Grid>}
                         <Grid item xs={12}>
-                            <NarrationSelect narrate={narration} setter={setNarration} identify="new-recitation"/>
+                            <NarrationSelect
+                                narrate={narration}
+                                setter={setNarration}
+                                identify="new-recitation"
+                            />
                         </Grid>
                         <Grid item xs={12}>
                             <Button
-                            fullWidth
-                            id="submit-recitation"
-                            type="submit"
-                            color="primary"
-                            variant="contained"
+                                fullWidth
+                                id="submit-recitation"
+                                type="submit"
+                                color="primary"
+                                variant="contained"
                             >
                                 Submit
                             </Button>

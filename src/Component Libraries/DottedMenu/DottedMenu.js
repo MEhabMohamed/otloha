@@ -51,7 +51,8 @@ function LongMenu({ id , authedUser , users }) {
             }
         }}
       >
-        {users[authedUser].blockList.includes(id) ? <MenuItem key={"unblock"} onClick={() => {
+        {users[authedUser].blockList.includes(id)
+        ? <MenuItem key={"unblock"} onClick={() => {
             dispatch(handleUnblock(id, authedUser));
             return setAnchorEl(null)
             }}>

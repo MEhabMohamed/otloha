@@ -16,6 +16,7 @@ import otloha from '../../Resources/otloha.png';
 import { useNavigate } from 'react-router-dom';
 import SignOut from '../SignOut/SignOut';
 import EditUser from '../EditUser/EditUser';
+import { connect } from 'react-redux';
 
 const logoStyle = {
   width: '5rem',
@@ -23,7 +24,7 @@ const logoStyle = {
   cursor: 'pointer',
 };
 
-function AppAppBar({ mode, toggleColorMode, auth }) {
+function AppAppBar({ mode , toggleColorMode , auth , admins }) {
 
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
@@ -62,8 +63,12 @@ function AppAppBar({ mode, toggleColorMode, auth }) {
               borderColor: 'divider',
               boxShadow:
                 theme.palette.mode === 'light'
-                  ? `0 0 1px rgba(85, 166, 246, 0.1), 1px 1.5px 2px -1px rgba(85, 166, 246, 0.15), 4px 4px 12px -2.5px rgba(85, 166, 246, 0.15)`
-                  : '0 0 1px rgba(2, 31, 59, 0.7), 1px 1.5px 2px -1px rgba(2, 31, 59, 0.65), 4px 4px 12px -2.5px rgba(2, 31, 59, 0.65)',
+                  ? `0 0 1px rgba(85, 166, 246, 0.1),
+                  1px 1.5px 2px -1px rgba(85, 166, 246, 0.15),
+                  4px 4px 12px -2.5px rgba(85, 166, 246, 0.15)`
+                  : `0 0 1px rgba(2, 31, 59, 0.7),
+                  1px 1.5px 2px -1px rgba(2, 31, 59, 0.65),
+                  4px 4px 12px -2.5px rgba(2, 31, 59, 0.65)`,
             })}
           >
             <Box
@@ -88,7 +93,11 @@ function AppAppBar({ mode, toggleColorMode, auth }) {
                   onClick={() => navigate('./teachers')}
                   sx={{ py: '6px', px: '12px' }}
                 >
-                  <Typography variant="body2" color="text.primary" fontWeight="bolder">
+                  <Typography
+                    variant="body2"
+                    color="text.primary"
+                    fontWeight="bolder"
+                  >
                     Teachers
                   </Typography>
                 </MenuItem>
@@ -96,7 +105,11 @@ function AppAppBar({ mode, toggleColorMode, auth }) {
                   onClick={() => navigate('./students')}
                   sx={{ py: '6px', px: '12px' }}
                 >
-                  <Typography variant="body2" color="text.primary" fontWeight="bolder">
+                  <Typography
+                    variant="body2"
+                    color="text.primary"
+                    fontWeight="bolder"
+                  >
                     Students
                   </Typography>
                 </MenuItem>
@@ -104,7 +117,11 @@ function AppAppBar({ mode, toggleColorMode, auth }) {
                   onClick={() => navigate('./recitations')}
                   sx={{ py: '6px', px: '12px' }}
                 >
-                  <Typography variant="body2" color="text.primary" fontWeight="bolder">
+                  <Typography
+                    variant="body2"
+                    color="text.primary"
+                    fontWeight="bolder"
+                  >
                     Recitations
                   </Typography>
                 </MenuItem>
@@ -112,7 +129,11 @@ function AppAppBar({ mode, toggleColorMode, auth }) {
                   onClick={() => navigate('./new-recitation')}
                   sx={{ py: '6px', px: '12px' }}
                 >
-                  <Typography variant="body2" color="text.primary" fontWeight="bolder">
+                  <Typography
+                    variant="body2"
+                    color="text.primary"
+                    fontWeight="bolder"
+                  >
                     New recitation
                   </Typography>
                 </MenuItem>
@@ -120,10 +141,27 @@ function AppAppBar({ mode, toggleColorMode, auth }) {
                   onClick={() => navigate('./blocked')}
                   sx={{ py: '6px', px: '12px' }}
                 >
-                  <Typography variant="body2" color="text.primary" fontWeight="bolder">
+                  <Typography
+                    variant="body2"
+                    color="text.primary"
+                    fontWeight="bolder"
+                  >
                     Block List
                   </Typography>
                 </MenuItem>
+                {Object.keys(admins).includes(auth)
+                && <MenuItem
+                  onClick={() => navigate('./new-admin')}
+                  sx={{ py: '6px', px: '12px' }}
+                >
+                  <Typography
+                    variant="body2"
+                    color="text.primary"
+                    fontWeight="bolder"
+                  >
+                    Admins
+                  </Typography>
+                </MenuItem>}
               </Box>
             </Box>
             <Box
@@ -133,8 +171,18 @@ function AppAppBar({ mode, toggleColorMode, auth }) {
                 alignItems: 'center',
               }}
             >
-              { auth !== null && <EditUser widthSet="140px"/> }
-              <ToggleColorMode mode={mode} toggleColorMode={toggleColorMode} />
+              <Box
+                color="primary"
+                variant="text"
+              >
+                <ToggleColorMode mode={mode} toggleColorMode={toggleColorMode} />
+              </Box>
+              <Box
+                color="primary"
+                variant="text"
+              >
+                { auth !== null && <EditUser widthSet="auto"/> }
+              </Box>
               <Box
                 color="primary"
                 variant="text"
@@ -193,7 +241,11 @@ function AppAppBar({ mode, toggleColorMode, auth }) {
                       onClick={() => navigate('./teachers')}
                       sx={{ py: '6px', px: '12px' }}
                     >
-                      <Typography variant="body2" color="text.primary" fontWeight="bolder">
+                      <Typography
+                        variant="body2"
+                        color="text.primary"
+                        fontWeight="bolder"
+                      >
                         Teachers
                       </Typography>
                   </MenuItem>
@@ -201,7 +253,11 @@ function AppAppBar({ mode, toggleColorMode, auth }) {
                     onClick={() => navigate('./students')}
                     sx={{ py: '6px', px: '12px' }}
                     >
-                    <Typography variant="body2" color="text.primary" fontWeight="bolder">
+                    <Typography
+                      variant="body2"
+                      color="text.primary"
+                      fontWeight="bolder"
+                    >
                       Students
                     </Typography>
                   </MenuItem>
@@ -209,7 +265,11 @@ function AppAppBar({ mode, toggleColorMode, auth }) {
                       onClick={() => navigate('./recitations')}
                       sx={{ py: '6px', px: '12px' }}
                     >
-                      <Typography variant="body2" color="text.primary" fontWeight="bolder">
+                      <Typography
+                        variant="body2"
+                        color="text.primary"
+                        fontWeight="bolder"
+                      >
                         Recitations
                       </Typography>
                   </MenuItem>
@@ -217,7 +277,11 @@ function AppAppBar({ mode, toggleColorMode, auth }) {
                     onClick={() => navigate('./new-recitation')}
                     sx={{ py: '6px', px: '12px' }}
                   >
-                    <Typography variant="body2" color="text.primary" fontWeight="bolder">
+                    <Typography
+                      variant="body2"
+                      color="text.primary"
+                      fontWeight="bolder"
+                    >
                       New recitation
                     </Typography>
                   </MenuItem>
@@ -225,13 +289,17 @@ function AppAppBar({ mode, toggleColorMode, auth }) {
                   onClick={() => navigate('./blocked')}
                   sx={{ py: '6px', px: '12px' }}
                 >
-                  <Typography variant="body2" color="text.primary" fontWeight="bolder">
+                  <Typography
+                    variant="body2"
+                    color="text.primary"
+                    fontWeight="bolder"
+                  >
                     Block List
                   </Typography>
                 </MenuItem>
                   <Divider />
                   <MenuItem>
-                    { auth !== null && <EditUser widthSet="xs"/>}
+                    { auth !== null && <EditUser widthSet="100%"/>}
                   </MenuItem>
                   <MenuItem>
                     <Button
@@ -273,4 +341,10 @@ AppAppBar.propTypes = {
   toggleColorMode: PropTypes.func.isRequired,
 };
 
-export default AppAppBar;
+function mapStateToProps({ admins }) {
+  return {
+    admins
+  }
+}
+
+export default connect(mapStateToProps)(AppAppBar);

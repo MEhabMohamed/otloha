@@ -8,7 +8,7 @@ import { handleEditPassword, handleEditPic } from "../../actions/user";
 import eye from "../../Resources/eye.png";
 import showPass from "../../helpers/showpass";
 import readURL from "../../helpers/getPic";
-import { Box, Container, TextField } from "@mui/material";
+import { Box, Stack, TextField } from "@mui/material";
 import cam from "../../Resources/cam.jpg";
 import male from "../../Resources/male.jpg";
 import female from "../../Resources/female.jpeg";
@@ -39,8 +39,10 @@ function EditUser({ users , authedUser , widthSet}) {
         'position': 'absolute',
         'margin': '55px 0 auto 65px'})
         if (e.target.files[0] !== (undefined && "")) {
-        newPic.current = e.target.files[0].name.slice(-4) === (".jpg" || ".png" || "jpeg") ? e.target.files[0] : "";
-        e.target.files[0].name.slice(-4) === (".jpg" || ".png" || "jpeg") && dispatch(handleEditPic(authedUser, e.target.files[0]))
+        newPic.current = e.target.files[0].name.slice(-4) === (".jpg" || ".png" || "jpeg")
+        ? e.target.files[0] : "";
+        e.target.files[0].name.slice(-4) === (".jpg" || ".png" || "jpeg")
+        && dispatch(handleEditPic(authedUser, e.target.files[0]))
         }
     }
 
@@ -48,20 +50,19 @@ function EditUser({ users , authedUser , widthSet}) {
         e.preventDefault();
         if (ePass.current.length >= 8) {
             if (ePass.current === users[authedUser].password) {
-                AlertShow($('#edit-pass-alert') , setPassAlert, "Password did not change!");
+                AlertShow($('#edit-pass-alert'), setPassAlert, "Password did not change!");
             } else {
             dispatch(handleEditPassword(authedUser, ePass.current));
             setPass('');
             handleClose();
             }
         } else {
-            AlertShow($('#edit-pass-alert') , setPassAlert, "Please use min 8 characters!");
+            AlertShow($('#edit-pass-alert'), setPassAlert, "Please use min 8 characters!");
         };
     };
 
     return (
-        <Container
-            component="div" 
+        <Stack
             id="edited-user-container"
             sx={{ width: widthSet }}
         >
@@ -100,7 +101,9 @@ function EditUser({ users , authedUser , widthSet}) {
                     <MenuItem sx={{ justifyContent: "center" }}>
                         <img 
                             id="editedPic" 
-                            src={users[authedUser].avatar !== "" ? URL.createObjectURL(users[authedUser].avatar) : (users[authedUser].gender === 'male' ? male : female)}
+                            src={users[authedUser].avatar !== ""
+                            ? URL.createObjectURL(users[authedUser].avatar)
+                            : (users[authedUser].gender === 'male' ? male : female)}
                             alt="no internet :(" 
                             style={{ borderRadius: '50%',
                             width: 80,
@@ -189,7 +192,7 @@ function EditUser({ users , authedUser , widthSet}) {
                             </Button>
                     </MenuItem>
             </Menu>
-        </Container>
+        </Stack>
     )
 }
 

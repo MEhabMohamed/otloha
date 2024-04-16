@@ -63,7 +63,18 @@ function SignInSide({ usermails , users }) {
         >
           <Hero />
         </Grid>
-        <Grid item xs={12} sm={6} md={5} component={Paper} elevation={6} square sx={{ py: 10 }}>
+        <Grid
+          item
+          xs={12}
+          sm={6}
+          md={5}
+          component={Paper}
+          elevation={6}
+          square
+          sx={{
+            py: 10
+          }}
+        >
           <Box
             sx={{
               mx: 4,
@@ -93,7 +104,14 @@ function SignInSide({ usermails , users }) {
             <Typography component="span" sx={{ fontSize: 12}}>
               or using Email
             </Typography>
-            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+            <Box
+              component="form"
+              noValidate
+              onSubmit={handleSubmit}
+              sx={{
+                mt: 1
+              }}
+            >
               <TextField
                 margin="normal"
                 required

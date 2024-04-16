@@ -5,13 +5,24 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-export default function AyahSelect({ surah , ayah , setter , label , numberSetter , mushaf }) {
+export default function AyahSelect({
+    surah,
+    ayah,
+    setter,
+    label,
+    numberSetter,
+    mushaf
+  }) {
 
-  const ayahs = mushaf !== ("" && undefined) ? mushaf.data.surahs.filter((s) => s.name === surah)[0].ayahs : 0;
+  const ayahs = mushaf !== ("" && undefined)
+  ? mushaf.data.surahs.filter((s) => s.name === surah)[0].ayahs
+  : 0;
 
   const handleChange = (event) => {
     setter(event.target.value);
-    numberSetter(mushaf !== ("" && undefined) ? ayahs.filter(({text}) => text === event.target.value)[0].numberInSurah : 0)
+    numberSetter(mushaf !== ("" && undefined)
+    ? ayahs.filter(({text}) => text === event.target.value)[0].numberInSurah
+    : 0)
   };
 
   return (
@@ -28,7 +39,13 @@ export default function AyahSelect({ surah , ayah , setter , label , numberSette
           label="Ayah"
           onChange={handleChange}
         >
-        {surah !== "" && ayahs.map(({text , number}) => <MenuItem key={number} value={text}>{`...${text.substring(0, 40)}`}</MenuItem>)}
+        {surah !== "" && ayahs.map(({text , number}) =>
+        <MenuItem
+          key={number}
+          value={text}
+        >
+          {`...${text.substring(0, 40)}`}
+        </MenuItem>)}
         </Select>
       </FormControl>
     </Box>
