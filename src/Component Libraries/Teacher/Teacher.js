@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
@@ -7,13 +7,12 @@ import Typography from '@mui/material/Typography';
 import ButtonBase from '@mui/material/ButtonBase';
 import male from '../../Resources/male.jpg';
 import female from '../../Resources/female.jpeg';
-import { Container, Input } from '@mui/material';
+import { Button, Container, Input } from '@mui/material';
 import StatsFormer from '../StatsFormer/StatsFormer';
 import pending from '../../Resources/waiting.png';
 import accept from '../../Resources/accept.png';
 import reject from '../../Resources/reject.png';
 import report from '../../Resources/report.png';
-import star from '../../Resources/star.png';
 import earning from '../../Resources/earning.png';
 import due from '../../Resources/due.png';
 import heart from '../../Resources/heart.png';
@@ -21,6 +20,9 @@ import total from '../../Resources/blue-circle.png';
 import maleSymbol from '../../Resources/male-symbol.png';
 import femaleSymbol from '../../Resources/female-symbol.png';
 import LongMenu from '../DottedMenu/DottedMenu';
+import BasicRating from '../Rating/Rating';
+import TeacherEvaluationSelect from './TeacherEvaluation';
+import { handleTeacherEvaluation } from '../../actions/user';
 
 const Img = styled('img')({
   margin: 'auto',
@@ -31,18 +33,26 @@ const Img = styled('img')({
 });
 
 function Teacher({
-    users,
-    authedUser,
-    id,
-    recitations,
-    recites,
-    earnings,
-    dues,
-    pendingRecites,
-    type,
-    setter,
-    setValue
-  }) {
+                  users,
+                  authedUser,
+                  id,
+                  recitations,
+                  recites,
+                  earnings,
+                  dues,
+                  pendingRecites,
+                  type,
+                  setter,
+                  setValue,
+                  admins
+                }) {
+
+  let ratingSum = 0;
+
+  users[id].raters.map(({rating}) => ratingSum += rating);
+  let [evaluation, setEvaluation] = React.useState('');
+
+  const dispatch = useDispatch();
 
   const handleCheck = () => {
     if (setValue === false) {
@@ -50,7 +60,12 @@ function Teacher({
     } else {
         setter(false)
     }
-  }
+  };
+
+  const handleEvaluation = (e) => {
+    e.preventDefault();
+    evaluation !== "" && dispatch(handleTeacherEvaluation(id, evaluation))
+  };
 
   return (
     <Paper
@@ -94,7 +109,7 @@ function Teacher({
           container
           sm={10.75}
           md={10.75}
-          xs={10.25}
+          xs={9.75}
         >
           <Grid
             item
@@ -193,11 +208,13 @@ function Teacher({
                   {users[id].email}
                 </Typography>
                   {users[id].verified ? 
-                  <Typography variant="body2" gutterBottom sx={{
+                  <Typography variant="body2" sx={{
                     background: 'rgba(10, 204, 211, 0.63)',
                     color: 'whitesmoke',
                     padding: 0.5,
+                    height: 20,
                     mx: 0.5,
+                    mt: -0.5,
                     width: 60,
                     borderRadius: '0.25rem',
                     font: 'bold 10px Helvetica, serif'
@@ -205,10 +222,11 @@ function Teacher({
                 Verified 
                 </Typography> 
                 :
-                <Typography variant="body2" gutterBottom sx={{
+                <Typography variant="body2" sx={{
                     background: 'rgba(177, 49, 10, 0.63)',
                     color: 'whitesmoke',
                     padding: 0.5,
+                    height: 20,
                     mx: 0.5,
                     mt: -0.5,
                     width: 60,
@@ -217,21 +235,13 @@ function Teacher({
                 }}>
                 Unverified 
                 </Typography> }
-                <Typography sx={{
-                  font: 'bold 10px Helvetica, serif',
-                  color: 'rgba(163, 153, 9, 0.849)'
-                }}>
-                  {users[id].level}&nbsp;
-                  <img
-                  src={star}
-                  alt='star'
-                  style={{
-                    width: '10px',
-                    height: '10px',
-                  }}
-                  />
-                  {`${users[id].rating.toFixed(2)}`}
-                </Typography>
+                <BasicRating
+                  level={users[id].level}
+                  rating={ratingSum/users[id].raters.length}
+                  rated={((users[id].id === authedUser)
+                  || (users[authedUser].rated.includes(id)))}
+                  ratedId={id}
+                />
             </Grid>
             <Grid item>
                 <Typography
@@ -262,7 +272,7 @@ function Teacher({
             }}>
               <Grid
                 item
-                xs={3}
+                xs={4}
                 sm={2}
                 md={2.2}
               >
@@ -274,7 +284,7 @@ function Teacher({
               </Grid>
               <Grid
                 item
-                xs={3}
+                xs={4}
                 sm={2}
                 md={2.2}
               >
@@ -287,7 +297,7 @@ function Teacher({
               </Grid>
               <Grid
                 item
-                xs={3}
+                xs={4}
                 sm={2}
                 md={2.2}
               >
@@ -300,7 +310,7 @@ function Teacher({
               </Grid>
               <Grid
                 item
-                xs={3}
+                xs={4}
                 sm={2}
                 md={2.2}
               >
@@ -313,7 +323,7 @@ function Teacher({
               </Grid>
               <Grid
                 item
-                xs={3}
+                xs={4}
                 sm={2}
                 md={2.2}
               >
@@ -344,18 +354,55 @@ function Teacher({
               }
             }}
           >
+            {((admins.includes(authedUser)) && (id !== authedUser)
+            && (users[id].status === "Pending"))
+            && <Grid
+              item
+              container
+              xs={12}
+              sx={{
+                mt: {
+                  xs: 3,
+                  sm: 3,
+                  md: 1.8
+                }
+              }}
+            >
+              <Grid item md={9}>
+                <TeacherEvaluationSelect
+                  evaluation={evaluation}
+                  setter={setEvaluation}
+                  identify={id}
+                />
+              </Grid>
+              <Grid item md={3}>
+                <Button
+                  type='submit'
+                  size='small'
+                  variant='contained'
+                  onClick={handleEvaluation}
+                >
+                  Confirm
+                </Button>
+              </Grid>
+            </Grid>}
             <Grid item>
               { users[id].due === "paid" ?
               <Grid
                 item
                 xs={12}
                 md={12}
+                sx={{
+                    mt: {
+                      md: ((id === authedUser)
+                      || (users[id].status !== "Pending")
+                      || (!admins.includes(authedUser)))
+                      ? ((id === authedUser) ? 4.7 : 5.2) : "auto",
+                    }
+                  }}
               >
                 <Container
                   component="div"
-                  sx={{
-                    mt: {md: 5}
-                  }}
                 >
                   <Typography
                     variant="body2"
@@ -392,7 +439,7 @@ function Teacher({
                   >
                     <StatsFormer
                       image={earning}
-                      num={earnings[0].toFixed(2)}
+                      num={earnings.toFixed(2)}
                       text="Earnings"
                     />
                   </Grid>
@@ -404,7 +451,7 @@ function Teacher({
                   >
                     <StatsFormer
                       image={due}
-                      num={dues[0].toFixed(2)}
+                      num={dues.toFixed(2)}
                       text="Dues"
                     />
                   </Grid>
@@ -414,7 +461,11 @@ function Teacher({
                   component="div"
                   sx={{
                     font: 'bold 15px "Monotype Corsiva", cursive',
-                    mt: {md: 5}
+                    mt: {
+                      md: ((id === authedUser)
+                      || (users[id].status !== "Pending"))
+                      ? 3 : "auto",
+                    }
                   }}
                 >
                     <img
@@ -433,7 +484,7 @@ function Teacher({
         {authedUser !== id &&
             <Grid
               item
-              xs={1.5}
+              xs={2}
               sm={1}
               md={1}
               sx={{
@@ -448,8 +499,16 @@ function Teacher({
   );
 }
 
-function mapStateToProps ({users , authedUser , recitations}, {id}) {
+function mapStateToProps ({users , authedUser , recitations , admins}, {id}) {
+
+  let earningSum = 0;
+  let dueSum = 0;
+
+  users[id].earnings.map((i) => earningSum += i);
+  users[id].dues.map((i) => dueSum += i);
+
   return {
+      admins: Object.keys(admins),
       users,
       id,
       authedUser: authedUser !== null ? authedUser[0] : null,
@@ -457,8 +516,8 @@ function mapStateToProps ({users , authedUser , recitations}, {id}) {
       recites: users[id].evaluatedRecitations,
       pendingRecites: Object.keys(recitations).filter((i) =>
       users[recitations[i].authed].description === "student"),
-      earnings: users[id].earnings.map((i) => i++),
-      dues: users[id].dues.map((i) => i++)
+      earnings: earningSum,
+      dues: dueSum,
   }
 };
 

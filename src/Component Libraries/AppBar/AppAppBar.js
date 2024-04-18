@@ -94,7 +94,9 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
                   sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography
-                    variant="body2"
+                    sx={{
+                      fontSize: "12px"
+                    }}
                     color="text.primary"
                     fontWeight="bolder"
                   >
@@ -106,7 +108,9 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
                   sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography
-                    variant="body2"
+                    sx={{
+                      fontSize: "12px"
+                    }}
                     color="text.primary"
                     fontWeight="bolder"
                   >
@@ -118,7 +122,9 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
                   sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography
-                    variant="body2"
+                    sx={{
+                      fontSize: "12px"
+                    }}
                     color="text.primary"
                     fontWeight="bolder"
                   >
@@ -130,7 +136,9 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
                   sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography
-                    variant="body2"
+                    sx={{
+                      fontSize: "12px"
+                    }}
                     color="text.primary"
                     fontWeight="bolder"
                   >
@@ -142,7 +150,9 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
                   sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography
-                    variant="body2"
+                    sx={{
+                      fontSize: "12px"
+                    }}
                     color="text.primary"
                     fontWeight="bolder"
                   >
@@ -155,11 +165,13 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
                   sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography
-                    variant="body2"
+                    sx={{
+                      fontSize: "12px"
+                    }}
                     color="text.primary"
                     fontWeight="bolder"
                   >
-                    Admins
+                    &#43;/&#8722; Admins
                   </Typography>
                 </MenuItem>}
               </Box>
@@ -198,8 +210,7 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
               <Button
                 color="primary"
                 variant="contained"
-                size="medium"
-                component="button"
+                size="small"
                 onClick={(e) => {
                   e.preventDefault()
                   return navigate('./createuser')
@@ -305,7 +316,6 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
                     <Button
                       color="primary"
                       variant="contained"
-                      component="button"
                       onClick={(e) => {
                         e.preventDefault()
                         return navigate('./createuser')

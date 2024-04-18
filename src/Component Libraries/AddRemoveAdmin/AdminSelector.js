@@ -11,6 +11,7 @@ function AdminSelect({ users , authedUser , admins , value , select }) {
       id={`admin-select`}
       options={Object.values(users)
       .filter(({id}) => id !== authedUser && !Object.keys(admins).includes(id))
+      .filter(({description}) => description === "teacher")
       .map(({email}) => email)}
       sx={{
         minWidth: 140,

@@ -1,8 +1,9 @@
-import { saveEvaluations, saveRecitations } from "../helpers/savers"
+import { saveEvaluations, saveRecitationRatings, saveRecitations } from "../helpers/savers"
 
 export const ADD_RECITATION = 'ADD_RECITATION'
 export const RECEIVE_RECITATIONS = 'RECEIVE_RECITATIONS'
 export const EVALUATE_RECITATION = 'EVALUATE_RECITATION'
+export const ADD_RECITATION_RATING = 'ADD_RATING'
 
 function addRecitation (recitation , authed) {
     return {
@@ -28,6 +29,25 @@ export function receiveRecitations(recitations) {
     return {
         type: RECEIVE_RECITATIONS,
         recitations
+    }
+}
+
+function addRecitationRating(raterId , ratedId, rating) {
+    return {
+        type: ADD_RECITATION_RATING,
+        raterId,
+        ratedId,
+        rating
+    }
+}
+
+export function handleAddRecitationRating(raterId, ratedId, rating) {
+    return (dispatch) => {
+        return saveRecitationRatings({
+            raterId,
+            ratedId,
+            rating
+        }).then(() => dispatch(addRecitationRating(raterId, ratedId, rating)))
     }
 }
 

@@ -263,7 +263,7 @@ function Student({
                   }}>
                   <Grid
                     item
-                    xs={3}
+                    xs={4}
                     sm={2}
                     md={2.2}
                   >
@@ -275,7 +275,7 @@ function Student({
                   </Grid>
                   <Grid
                     item
-                    xs={3}
+                    xs={4}
                     sm={2}
                     md={2.2}
                   >
@@ -288,7 +288,7 @@ function Student({
                   </Grid>
                   <Grid
                     item
-                    xs={3}
+                    xs={4}
                     sm={2}
                     md={2.2}
                   >
@@ -301,7 +301,7 @@ function Student({
                   </Grid>
                   <Grid
                     item
-                    xs={3}
+                    xs={4}
                     sm={2}
                     md={2.2}
                   >
@@ -314,7 +314,7 @@ function Student({
                   </Grid>
                   <Grid
                     item
-                    xs={3}
+                    xs={4}
                     sm={2}
                     md={2.2}
                   >

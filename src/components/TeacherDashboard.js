@@ -125,7 +125,6 @@ function TeacherDashboard ({ users , authedUser , teachers }) {
             >
             <Paper
                 sx={{
-                    height:60,
                     pt: 1,
                     px: 1,
                     width: "100%",

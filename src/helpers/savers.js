@@ -82,7 +82,7 @@ function formatRecitation ({
         authed,
         id: generateUID().replace(/[0-9]/g, 'k'),
         status: "Pending",
-        rating: 0,
+        raters: [],
         createdAt: Date.now(),
         evaluatedAt: "",
         teacher: {
@@ -128,9 +128,10 @@ function formatTeacher ({
         verified: false,
         level: 'Beginner',
         active: true,
-        rating: 0,
-        earnings: [0.00],
-        dues: [0.00],
+        rated: [],
+        raters: [],
+        earnings: [0],
+        dues: [0],
         blockList: []
     }
 }
@@ -166,7 +167,8 @@ function formatStudent ({
         verified: false,
         level: 'Beginner',
         active: true,
-        rating: 0,
+        raters: [],
+        rated: [],
         blockList: []
     }
 }
@@ -374,6 +376,78 @@ export function savePasses ({
     })
 }
 
+export function saveUserRatings ({
+    raterId,
+    ratedId,
+    rating
+}) {
+return new Promise((res,rej) => {
+    
+    setTimeout(() => {
+
+        users[ratedId].description === "teacher" ?
+        teachers = {
+            ...teachers,
+            [ratedId]: {
+                ...teachers[ratedId],
+                raters: teachers[ratedId].raters.concat([{raterId, rating}]),
+            },
+        } : students = {
+            ...students,
+            [ratedId]: {
+                ...students[ratedId],
+                raters: students[ratedId].raters.concat([{raterId, rating}]),
+            }
+        };
+
+        users[raterId].description === "teacher" ?
+        teachers = {
+            ...teachers,
+            [raterId]: {
+                ...teachers[raterId],
+                rated: teachers[raterId].rated.concat([ratedId])
+            },
+        } : students = {
+            ...students,
+            [raterId]: {
+                ...students[raterId],
+                rated: students[raterId].rated.concat([ratedId])
+            }
+        };
+
+        users = {
+            ...teachers,
+            ...students
+        }
+
+        res(raterId, ratedId, rating)
+    }, 1000)
+})
+}
+
+export function saveRecitationRatings ({
+    raterId,
+    ratedId,
+    rating
+}) {
+return new Promise((res,rej) => {
+    
+    setTimeout(() => {
+
+        recitations = {
+            ...recitations,
+            [ratedId]: {
+                ...recitations[ratedId],
+                raters: recitations[ratedId].raters.concat([{raterId, rating}]),
+                rating: recitations[ratedId].rating += rating
+            }
+        }
+
+        res(raterId, ratedId, rating)
+    }, 1000)
+})
+}
+
 export function savePics({
         id,
         pic
@@ -516,5 +590,28 @@ export function saveEvaluations({
             res(id)
         }, 1000)
     })
+}
+
+export function saveTeacherEvaluation({id, status}) {
+    return new Promise((res, rej) => {
+
+        setTimeout(() => {
+
+            teachers = {
+                ...teachers,
+                [id]: {
+                    ...teachers[id],
+                    status
+                }
+            }
+
+            users = {
+                ...teachers,
+                ...students
+            }
+
+            res(id, status)
+        })
+    }) 
 }
 

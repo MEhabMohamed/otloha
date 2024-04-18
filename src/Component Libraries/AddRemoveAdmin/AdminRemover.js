@@ -10,7 +10,7 @@ function AdminRemove({ admins , value , select , authedUser }) {
       id={`admin-remove`}
       options={Object.values(Object.values(admins))
       .filter(({ id }) => id !== authedUser)
-      .map(({ id }) => id)}
+      .map(({ email }) => email)}
       sx={{
         minWidth: 140,
       }}

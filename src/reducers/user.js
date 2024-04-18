@@ -1,5 +1,5 @@
 import { ADD_RECITATION, EVALUATE_RECITATION } from "../actions/recitation"
-import { ADD_BLOCK, ADD_USER , EDIT_PASSWORD, EDIT_PIC, RECEIVE_USERS, REMOVE_BLOCK } from "../actions/user"
+import { ADD_BLOCK, ADD_USER_RATING, ADD_USER , EDIT_PASSWORD, EDIT_PIC, RECEIVE_USERS, REMOVE_BLOCK, ADD_TEACHER_EVALUATION } from "../actions/user"
 
 export default function users(state={}, action) {
     switch (action.type) {
@@ -12,6 +12,18 @@ export default function users(state={}, action) {
             return {
                 ...state,
                 ...action.users,
+            }
+        case ADD_USER_RATING:
+            return {
+                ...state,
+                [action.ratedId]: {
+                    ...state[action.ratedId],
+                    raters: state[action.ratedId].raters.concat([{rater: action.raterId, rating: action.rating}]),
+                },
+                [action.raterId]: {
+                    ...state[action.raterId],
+                    rated: state[action.raterId].rated.concat([action.ratedId])
+                }
             }
         case EDIT_PASSWORD:
             return {
@@ -61,6 +73,14 @@ export default function users(state={}, action) {
                 [action.authed]: {
                     ...state[action.authed],
                     evaluatedRecitations: state[action.authed].evaluatedRecitations.concat([action.id])
+                }
+            }
+        case ADD_TEACHER_EVALUATION:
+            return {
+                ...state,
+                [action.id]: {
+                    ...state[action.id],
+                    status: action.status
                 }
             }
         default: 

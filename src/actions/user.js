@@ -1,4 +1,4 @@
-import { saveBlocks, savePasses, savePics, saveStudent, saveTeacher, saveUnblocks } from "../helpers/savers"
+import { saveBlocks, savePasses, savePics, saveStudent, saveTeacher, saveTeacherEvaluation, saveUnblocks, saveUserRatings } from "../helpers/savers"
 
 export const ADD_USER = 'ADD_USER'
 export const RECEIVE_USERS = 'RECEIVE_USERS'
@@ -8,6 +8,8 @@ export const RECEIVE_TEACHERS = 'RECEIVE_TEACHERS'
 export const RECEIVE_STUDENTS = 'RECEIVE_STUDENTS'
 export const ADD_BLOCK = 'ADD_BLOCK'
 export const REMOVE_BLOCK = 'REMOVE_BLOCK'
+export const ADD_USER_RATING = 'ADD_USER_RATING'
+export const ADD_TEACHER_EVALUATION = 'ADD_TEACHER_EVALUATION'
 
 function addUser(user) {
     return {
@@ -58,6 +60,25 @@ export function receiveUsers(users) {
     return {
         type: RECEIVE_USERS,
         users
+    }
+}
+
+function addUserRating(raterId , ratedId, rating) {
+    return {
+        type: ADD_USER_RATING,
+        raterId,
+        ratedId,
+        rating
+    }
+}
+
+export function handleAddUserRating(raterId, ratedId, rating) {
+    return (dispatch) => {
+        return saveUserRatings({
+            raterId,
+            ratedId,
+            rating
+        }).then(() => dispatch(addUserRating(raterId, ratedId, rating)))
     }
 }
 
@@ -126,5 +147,22 @@ export function handleUnblock(id, authed) {
             id,
             authed
         }).then(() => dispatch(Unblock(id, authed)))
+    }
+}
+
+function addTeacherEvaluation(id, status) {
+    return {
+        type: ADD_TEACHER_EVALUATION,
+        id,
+        status
+    }
+}
+
+export function handleTeacherEvaluation(id, status) {
+    return (dispatch) => {
+        return saveTeacherEvaluation({
+            id,
+            status
+        }).then(() => dispatch(addTeacherEvaluation(id, status)))
     }
 }

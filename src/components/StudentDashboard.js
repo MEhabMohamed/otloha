@@ -102,7 +102,6 @@ function StudentDashboard ({ users , authedUser , students }) {
             >
                 <Paper
                     sx={{
-                        height:60,
                         pt: 1,
                         px: 1,
                         width: "100%",

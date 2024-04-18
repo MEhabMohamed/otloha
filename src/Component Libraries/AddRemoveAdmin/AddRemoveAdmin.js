@@ -17,6 +17,7 @@ function SetNewAdmin() {
 
   let [adminEmail, setAdminEmail] = React.useState('');
   let [removeEmail, setRemoveEmail] = React.useState('');
+  console.log(removeEmail)
 
   const dispatch = useDispatch();
 
@@ -28,7 +29,11 @@ function SetNewAdmin() {
 
   const handleRemove = (event) => {
     event.preventDefault();
-    removeEmail !== "" && dispatch(handleDeleteAdmin(removeEmail));
+    removeEmail !== "" 
+    && dispatch(
+      handleDeleteAdmin(removeEmail
+        .split('@')[0].replace(/\s+/g, '').trim().toLowerCase())
+    );
     setRemoveEmail("");
   };
 
@@ -49,7 +54,7 @@ function SetNewAdmin() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Set or Remove admin
+            Set or Remove Admin
           </Typography>
           <Box
             component="form"

@@ -74,7 +74,7 @@ function EditUser({ users , authedUser , widthSet}) {
                 onClick={handleClick}
                 color="primary"
                 variant="contained"
-                size="medium"
+                size="small"
                 fullWidth
             >
                 Edit user
