@@ -12,15 +12,31 @@ import heart from '../Resources/heart.png';
 import earning from '../Resources/earning.png';
 import $ from "jquery";
 import { handleAddBlock } from "../actions/user";
+import FilterSelector from "../Component Libraries/Teacher/FilterSelector";
+import DatePick from "../Component Libraries/Date/DatePicker";
 
-function TeacherDashboard ({ users , authedUser , teachers }) {
+function TeacherDashboard () {
 
     let [search, setSearch] = useState('');
     let [check, setCheck] = useState(false);
     let [userCheck, setUserCheck] = useState(false);
     let [currentPage, setCurrentPage] = useState(1);
+    let [teacherFilter, setTeacherFilter] = useState(null);
+    let [teacherFilterSelector, setTeacherFilterSelector] = useState("");
+    let [fromDate, setFromDate] = useState(null);
+    let [toDate, setToDate] = useState(null);
+    let [joinedFrom, setJoinedFrom] = useState(null);
+    let [joinedTo, setJoinedTo] = useState(null);
     let lastIndex = currentPage * 10;
     let firstIndex = lastIndex - 10;
+
+    let users = JSON.parse(localStorage.getItem("users"));
+    let authedUser = JSON.parse(localStorage.getItem("authedUser")) !== null ?
+    JSON.parse(localStorage.getItem("authedUser"))[0] : null;
+    let userTeachers = Object.values(users);
+    let teachers = userTeachers.length > 0 ? userTeachers.filter(({description}) =>
+    description === 'teacher')
+    .sort((a, b) => b.joiningDate - a.joiningDate) : [''];
 
     let dispatch = useDispatch();
 
@@ -42,6 +58,17 @@ function TeacherDashboard ({ users , authedUser , teachers }) {
         }
     }
 
+    function rating( teacher , stars ) {
+        let ratingSum = 0;
+        teacher.raters.map(({rating}) => ratingSum += rating);
+        let rating = ratingSum/teacher.raters.raters.length;
+
+        return {
+            rating: teacher.raters.length > 0
+            ? (rating === stars) && teacher : !teacher
+        }
+    }
+
     function filteredTeacher() {
         return {
             teacher: teachers.filter((teacher) =>
@@ -49,7 +76,73 @@ function TeacherDashboard ({ users , authedUser , teachers }) {
             .filter((teacher) => search !== "" ? 
             (teacher.email.includes(search)
             || teacher.name.toLowerCase().includes(search))
-            : teacher),
+            : teacher)
+            .filter((teacher) => fromDate !== null
+            ? teacher.bDate >= Date.parse(fromDate)
+            : teacher)
+            .filter((teacher) => toDate !== null
+            ? teacher.bDate <= Date.parse(toDate)
+            : teacher)
+            .filter((teacher) => joinedFrom !== null
+            ? teacher.joiningDate >= Date.parse(joinedFrom)
+            : teacher)
+            .filter((teacher) => joinedTo !== null
+            ? teacher.joiningDate <= Date.parse(joinedTo)
+            : teacher)
+            .filter((teacher) => {
+                switch(teacherFilter) {
+                    case "Approved":
+                        return teacher.status === "Approved"
+                    case "Rejected":
+                        return teacher.status === "Rejected"
+                    case "Pending":
+                        return teacher.status === "Pending"
+                    case "paid":
+                        return teacher.due === "paid"
+                    case "volunteer":
+                        return teacher.due === "volunteer"
+                    default:
+                        return teacher
+                }
+            })
+            .filter((teacher) => {
+                switch(teacherFilterSelector) {
+                    case "Verified":
+                        return teacher.verified
+                    case "Not Verified":
+                        return !teacher.verified
+                    case "Active":
+                        return teacher.active
+                    case "Not Active":
+                        return !teacher.active
+                    case "Profile Active":
+                        return teacher.active
+                    case "Profile Not Active":
+                        return !teacher.active
+                    case "Beginner":
+                        return teacher.level === "Beginner"
+                    case "Intermediate":
+                        return teacher.level === "Intermediate"
+                    case "Advanced":
+                        return teacher.level === "Advanced"
+                    case "Male":
+                        return teacher.gender === "male"
+                    case "Female":
+                        return teacher.gender === "female"
+                    case "Rated 5 stars":
+                        return rating(teacher , 5).rating
+                    case "Rated 4 stars":
+                        return rating(teacher , 4).rating
+                    case "Rated 3 stars":
+                        return rating(teacher , 3).rating
+                    case "Rated 2 stars":
+                        return rating(teacher , 2).rating
+                    case "Rated 1 star":
+                        return rating(teacher , 1).rating
+                    default:
+                        return teacher
+                }
+            }),
             checked: teachers.filter((teacher) =>
             !users[authedUser].blockList.includes(teacher.id))
             .filter((teacher) => search !== "" ? 
@@ -66,8 +159,10 @@ function TeacherDashboard ({ users , authedUser , teachers }) {
     return (
         <Grid
             container
+            direction="column"
             sx={{
-                pt: 12
+                pt: 12,
+                px: 1
             }}
             spacing={1}
         >
@@ -82,36 +177,45 @@ function TeacherDashboard ({ users , authedUser , teachers }) {
                     pic={contacts}
                     text="All teachers"
                     counter={teachers.length}
+                    handleClick={() => {
+                        setTeacherFilter(null);
+                        setTeacherFilterSelector('');
+                    }}
                 />
                 <DataBlock
                     size={2}
                     pic={waiting}
                     text="Pending"
                     counter={teachers.filter(({status}) => status === "Pending").length}
+                    handleClick={() => setTeacherFilter("Pending")}
                 />
                 <DataBlock
                     size={2}
                     pic={accept}
                     text="Approved"
                     counter={teachers.filter(({status}) => status === "Approved").length}
+                    handleClick={() => setTeacherFilter("Approved")}
                 />
                 <DataBlock
                     size={2}
                     pic={reject}
                     text="Rejected"
                     counter={teachers.filter(({status}) => status === "Rejected").length}
+                    handleClick={() => setTeacherFilter("Rejected")}
                 />
                 <DataBlock
                     size={2}
                     pic={earning}
                     text="Paid"
                     counter={teachers.filter(({due}) => due === "paid").length}
+                    handleClick={() => setTeacherFilter("paid")}
                 />
                 <DataBlock
                     size={2}
                     pic={heart}
                     text="Volunteer"
                     counter={teachers.filter(({due}) => due === "volunteer").length}
+                    handleClick={() => setTeacherFilter("volunteer")}
                 />
             </Grid>
             <Grid
@@ -120,23 +224,22 @@ function TeacherDashboard ({ users , authedUser , teachers }) {
                 direction="column"
                 spacing={1}
                 xs={12}
-                sm={9}
-                ml={1}
+                sm={12}
             >
             <Paper
                 sx={{
-                    pt: 1,
+                    minHeight: 60,
                     px: 1,
-                    width: "100%",
+                    pt: 1,
                     mt: 1,
-                    ml: 1,
+                    ml: 1
                 }}
             >
                 <Grid
                     item
                     container
-                    gap={1}
                     justifyContent="right"
+                    gap={1}
                 >
                     <Grid
                         item
@@ -155,7 +258,10 @@ function TeacherDashboard ({ users , authedUser , teachers }) {
                             value={check}
                         />
                     </Grid>
-                    <Grid item>
+                    <Grid
+                        item
+                        md={4}
+                    >
                         <TextField
                             id="teacher-search"
                             label="search"
@@ -165,13 +271,25 @@ function TeacherDashboard ({ users , authedUser , teachers }) {
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </Grid>
+                    <Grid
+                        item
+                        md={2}
+                    >
+                        <FilterSelector
+                            filter={teacherFilterSelector}
+                            setter={setTeacherFilterSelector}
+                            identify="teacher-dashboard"
+                        />
+                    </Grid>
                     <Button
                         variant="contained"
                         type="submit"
                         size="medium"
                         onClick={() => {
                             setSearch('');
-                            $("#teacher-search").val('')
+                            $("#teacher-search").val('');
+                            setTeacherFilter(null);
+                            setTeacherFilterSelector('');
                         }}
                     >
                         Reset
@@ -207,6 +325,68 @@ function TeacherDashboard ({ users , authedUser , teachers }) {
                         </Button>
                     </Grid>
                 </Paper>
+                <Paper
+                    sx={{
+                        minHeight: 60,
+                        px: 1,
+                        pt: 1,
+                        mt: 1,
+                        ml: 1
+                    }}
+                >
+                    <Grid
+                        item
+                        container
+                        justifyContent="right"
+                        gap={1}
+                        spacing={1}
+                    >
+                        <Grid
+                            item
+                            md={2.9}
+                        >
+                           <DatePick
+                                value={fromDate}
+                                choose={setFromDate}
+                                label="Birth Date From..."
+                                setWidth="auto"
+                            />
+                        </Grid>
+                        <Grid
+                            item
+                            md={2.9}
+                        >
+                             <DatePick
+                                value={toDate}
+                                choose={setToDate}
+                                label="Up to..."
+                                setWidth="auto"
+                            />
+                        </Grid>
+                        <Grid
+                            item
+                            md={2.9}
+                        >
+                           <DatePick
+                                value={joinedFrom}
+                                choose={setJoinedFrom}
+                                label="Date Joined..."
+                                setWidth="auto"
+                            />
+                        </Grid>
+                        <Grid
+                            item
+                            md={2.9}
+                        >
+                             <DatePick
+                                value={joinedTo}
+                                choose={setJoinedTo}
+                                label="Up to..."
+                                setWidth="auto"
+                            />
+                        </Grid>
+                    </Grid>
+                </Paper>
                 {filteredTeacher().teacher.filter((teacher) =>
                 !users[authedUser].blockList.includes(teacher.id))
                 .map(({id}) => (
@@ -239,16 +419,4 @@ function TeacherDashboard ({ users , authedUser , teachers }) {
     )
 };
 
-function mapStateToProps ({ users , authedUser }) {
-    let userTeachers = Object.values(users);
-    let teachers = userTeachers.length > 0 ? userTeachers.filter(({description}) =>
-    description === 'teacher')
-    .sort((a, b) => b.joiningDate - a.joiningDate) : ['']
-    return {
-        teachers,
-        users,
-        authedUser: authedUser !== null ? authedUser[0] : null,
-    }
-};
-
-export default connect(mapStateToProps)(TeacherDashboard)
+export default connect()(TeacherDashboard)

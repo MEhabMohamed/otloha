@@ -15,15 +15,27 @@ export default function GenderSelect({ gender , setter }) {
     <Box sx={{ minWidth: 120 }}>
       <FormControl
           fullWidth
-          required
+          sx={{
+            justifyContent: "center"
+          }}
         >
-        <InputLabel id="gender-select-label">Gender</InputLabel>
+        <InputLabel
+          id="gender-select-label"
+          sx={{
+            mt: -0.75
+          }}
+        >
+          Gender
+        </InputLabel>
         <Select
           labelId="gender-select-label"
           id="gender-select"
           value={gender}
           label="Gender"
           onChange={handleChange}
+          sx={{
+            maxHeight: 42
+          }}
         >
           <MenuItem value="male">Male</MenuItem>
           <MenuItem value="female">Female</MenuItem>

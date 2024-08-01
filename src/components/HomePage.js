@@ -1,23 +1,61 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Grid } from "@mui/material";
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
-import WorldMap from "react-svg-worldmap";
+import { WorldMap } from "react-svg-worldmap";
 import { countries } from "../Component Libraries/CountrySelect/Countries";
 import DatePick from "../Component Libraries/Date/DatePicker";
 import CountrySelector from "../Component Libraries/CountrySelect/CountrySelector";
 import Locales from "../Component Libraries/Language/Language";
 import GenderSelect from "../Component Libraries/GenderSelect/GenderSelect";
 import HomeData from "../Component Libraries/HomeData/HomeData";
+import { ClientId, gapiLoaded, gisLoaded, handleAuthClick, handleCallbackResponse, handleSignoutClick } from "../helpers/drive";
 
-function HomePage ({ users , theme , recitations }) {
+function HomePage ({ theme }) {
+
+    /* global gapi */
+    /* global google */
 
     let [fromDate, setFromDate] = useState(null);
     let [toDate, setToDate] = useState(null);
     let [filteredCountry, setCountry] = useState(null);
     let [lang, setLang] = useState('arEG');
     let [gender , setGender] = useState('');
+
+    function handleDeleteFile(fileId) {
+        let request = gapi.client.drive.files.delete({
+          'fileId': fileId
+        });
+        request.execute((resp) => {
+            console.log(resp)
+        });
+    }
+
+    useEffect(() => {
+        
+        google.accounts.id.initialize({
+            client_id: ClientId,
+            callback: handleCallbackResponse
+        })
+
+        google.accounts.id.renderButton(
+            document.getElementById('signInDiv'),
+            { theme: "outline", size: "large" }
+        )
+
+        gapiLoaded();
+        gisLoaded();
+        document.getElementById('authorize_button').style.display = 'block';
+
+        /**
+         * Enables user interaction after all libraries are loaded.
+         */
+
+    }, [])
+    
+    let users = JSON.parse(localStorage.getItem("users"));
+    let recitations = JSON.parse(localStorage.getItem("recitations"));
 
     function filteredUser() {
         return {
@@ -90,12 +128,18 @@ function HomePage ({ users , theme , recitations }) {
                 },
                 gap: 2,
             }}>
-            <Grid item container md={12} gap={2} sx={{
-                justifyContent: {
-                    md: "right",
-                    xs: "center"
-                }
-            }}>
+            <Grid
+                item
+                container
+                md={12}
+                gap={2}
+                sx={{
+                    justifyContent: {
+                        md: "right",
+                        xs: "center"
+                    },
+                }}
+            >
                 <DatePick
                     value={fromDate}
                     choose={setFromDate}
@@ -124,7 +168,7 @@ function HomePage ({ users , theme , recitations }) {
                 <Button
                     variant="contained"
                     type="submit"
-                    size="large"
+                    size="medium"
                     onClick={() => {
                         setCountry(null);
                         setFromDate(null);
@@ -139,12 +183,19 @@ function HomePage ({ users , theme , recitations }) {
             <Grid
                 item
                 md={5}
+                sm={12}
                 textAlign="center"
+                justifyContent="center"
             >
                 <Paper
                     sx={{
-                        borderRadius: "50%",
-                        p: {
+                        borderRadius: "47%",
+                        px: {
+                            md: 0,
+                            sm: 3,
+                            xs: 1
+                        },
+                        py: {
                             md: 6,
                             sm: 3,
                             xs: 3
@@ -355,15 +406,33 @@ function HomePage ({ users , theme , recitations }) {
                     ]}  
                 />
             </Grid>
+            <div id="signInDiv"></div>
+            <button
+                id="authorize_button"
+                onClick={handleAuthClick}
+                style={{
+                    display: "none"
+                }}
+            >
+                Authorize
+            </button>
+            <button
+                id="signout_button"
+                onClick={handleSignoutClick}
+                style={{
+                    display: "none"
+                }}
+            >
+                Sign Out
+            </button>
+            <button
+                onClick={() => handleDeleteFile("1ZEnPO4AgqwRUssvR-si-DhjQnzLhCt_4")}
+            >
+                Delete
+            </button>
+            <pre id="content" style={{whiteSpace: "pre-wrap"}}></pre>
         </Grid>
     )
 };
 
-function mapStateToProps ({ users , recitations }) {
-    return {
-        users,
-        recitations
-    }
-};
-
-export default connect(mapStateToProps)(HomePage)
+export default connect()(HomePage)

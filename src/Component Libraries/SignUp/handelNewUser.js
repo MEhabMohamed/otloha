@@ -19,7 +19,8 @@ export default function handleNewUser(
         bDate
     ) {
     const id = email.split('@')[0].replace(/\s+/g, '').trim().toLowerCase();
-    if ((username !== '') && (pass !== '') && (email !== '')) {
+    if ((username !== '') && (pass !== '') 
+    && (email !== '') && (country !== null) && (bDate !== null)) {
         if (pass.length < 8) {
             AlertShow($('#pass-alert'), setPassAlert, "Please use min 8 characters!");
             } else {

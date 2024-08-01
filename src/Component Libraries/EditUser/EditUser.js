@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { connect, useDispatch } from "react-redux";
 import $ from "jquery";
 import Button from '@mui/material/Button';
@@ -15,14 +15,17 @@ import female from "../../Resources/female.jpeg";
 import BasicAlerts from "../Alert/Alert";
 import AlertShow from "../Alert/AlertShow";
 
-function EditUser({ users , authedUser , widthSet}) {
+function EditUser({ widthSet }) {
 
-    let ePass = useRef('');
     let [pass, setPass] = useState('');
-    let newPic = useRef('');
+    let [newPic, setNewPic] = useState('');
     let [passAlert, setPassAlert] = useState('');
+
     const dispatch = useDispatch();
-    ePass.current = pass;
+
+    let users = JSON.parse(localStorage.getItem("users"));
+    let authedUser = JSON.parse(localStorage.getItem("authedUser")) !== null ? 
+    JSON.parse(localStorage.getItem("authedUser"))[0] : null;
 
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -37,22 +40,16 @@ function EditUser({ users , authedUser , widthSet}) {
         readURL(e.target, $('#editedPic'), $('#edited-get-pic'), {'width': '2rem',
         'height': '2rem',
         'position': 'absolute',
-        'margin': '55px 0 auto 65px'})
-        if (e.target.files[0] !== (undefined && "")) {
-        newPic.current = e.target.files[0].name.slice(-4) === (".jpg" || ".png" || "jpeg")
-        ? e.target.files[0] : "";
-        e.target.files[0].name.slice(-4) === (".jpg" || ".png" || "jpeg")
-        && dispatch(handleEditPic(authedUser, e.target.files[0]))
-        }
+        'margin': '55px 0 auto 65px'}, setNewPic, newPic)
     }
 
     function submitPassEditer(e) {
         e.preventDefault();
-        if (ePass.current.length >= 8) {
-            if (ePass.current === users[authedUser].password) {
+        if (pass.length >= 8) {
+            if (pass === users[authedUser].password) {
                 AlertShow($('#edit-pass-alert'), setPassAlert, "Password did not change!");
             } else {
-            dispatch(handleEditPassword(authedUser, ePass.current));
+            dispatch(handleEditPassword(authedUser, pass));
             setPass('');
             handleClose();
             }
@@ -102,7 +99,7 @@ function EditUser({ users , authedUser , widthSet}) {
                         <img 
                             id="editedPic" 
                             src={users[authedUser].avatar !== ""
-                            ? URL.createObjectURL(users[authedUser].avatar)
+                            ? users[authedUser].avatar
                             : (users[authedUser].gender === 'male' ? male : female)}
                             alt="no internet :(" 
                             style={{ borderRadius: '50%',
@@ -185,6 +182,8 @@ function EditUser({ users , authedUser , widthSet}) {
                                 }}
                                 onClick={(e) => {
                                     submitPassEditer(e);
+                                    newPic !== ""
+                                    && dispatch(handleEditPic(authedUser, newPic));
                                     $('#edited-new-pass').val('');
                                     $('#edited-pass-show').hide();
                                 }}>
@@ -196,11 +195,4 @@ function EditUser({ users , authedUser , widthSet}) {
     )
 }
 
-function mapStateToProps({ users , authedUser }) {
-    return {
-        users,
-        authedUser: authedUser !== null ? authedUser[0] : null,
-    }
-}
-
-export default connect(mapStateToProps)(EditUser)
+export default connect()(EditUser)

@@ -464,10 +464,13 @@ export default function getLPTheme(mode) {
         styleOverrides: {
           root: ({ theme }) => ({
             borderRadius: '99px',
-            color: gray[500],
-            fontWeight: 500,
+            color: "black",
+            fontWeight: "bolder",
+            marginBottom: 1,
+            backgroundColor: alpha(gray[400], 0.6),
             ...(theme.palette.mode === 'dark' && {
-              color: gray[300],
+              color: "white",
+              backgroundColor: alpha(brand[600], 0.6)
             }),
           }),
         },

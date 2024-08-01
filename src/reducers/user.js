@@ -1,4 +1,4 @@
-import { ADD_RECITATION, EVALUATE_RECITATION } from "../actions/recitation"
+import { ADD_RECITATION, ADD_RECITATION_RATING, EVALUATE_RECITATION } from "../actions/recitation"
 import { ADD_BLOCK, ADD_USER_RATING, ADD_USER , EDIT_PASSWORD, EDIT_PIC, RECEIVE_USERS, REMOVE_BLOCK, ADD_TEACHER_EVALUATION } from "../actions/user"
 
 export default function users(state={}, action) {
@@ -56,6 +56,10 @@ export default function users(state={}, action) {
                 [action.authed]: {
                     ...state[action.authed],
                     blockList: state[action.authed].blockList.concat([action.id])
+                },
+                [action.id]: {
+                    ...state[action.id],
+                    active: false
                 }
             }
         case REMOVE_BLOCK:
@@ -65,6 +69,10 @@ export default function users(state={}, action) {
                     ...state[action.authed],
                     blockList: state[action.authed].blockList
                     .filter((i) => i !== action.id)
+                },
+                [action.id]: {
+                    ...state[action.id],
+                    active: true
                 }
             }
         case EVALUATE_RECITATION:
@@ -72,7 +80,8 @@ export default function users(state={}, action) {
                 ...state,
                 [action.authed]: {
                     ...state[action.authed],
-                    evaluatedRecitations: state[action.authed].evaluatedRecitations.concat([action.id])
+                    evaluatedRecitations: state[action.authed].evaluatedRecitations
+                    .concat([action.id])
                 }
             }
         case ADD_TEACHER_EVALUATION:
@@ -81,6 +90,15 @@ export default function users(state={}, action) {
                 [action.id]: {
                     ...state[action.id],
                     status: action.status
+                }
+            }
+        case ADD_RECITATION_RATING:
+            return {
+                ...state,
+                [action.raterId]: {
+                    ...state[action.raterId],
+                    ratedRecitations: state[action.raterId].ratedRecitations
+                    .concat([action.ratedId])
                 }
             }
         default: 

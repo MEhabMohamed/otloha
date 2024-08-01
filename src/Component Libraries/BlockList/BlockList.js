@@ -7,7 +7,7 @@ import PaginationLink from "../Pagination/Pagination";
 import $ from "jquery";
 import { handleUnblock } from "../../actions/user";
 
-function BlockList ({ authedUser , blockedUsers }) {
+function BlockList () {
 
     let [search, setSearch] = useState("");
     let [userCheck, setUserCheck] = useState(false);
@@ -15,6 +15,12 @@ function BlockList ({ authedUser , blockedUsers }) {
     let [currentPage, setCurrentPage] = useState(1);
     let lastIndex = currentPage * 10;
     let firstIndex = lastIndex - 10;
+
+    let authedUser = JSON.parse(localStorage.getItem("authedUser")) !== null ? 
+    JSON.parse(localStorage.getItem("authedUser"))[0] : null;
+    let users = JSON.parse(localStorage.getItem("users"));
+    let blocked = users[authedUser].blockList;
+    let blockedUsers = blocked.map((block) => users[block]);
 
     const dispatch = useDispatch();
 
@@ -54,143 +60,134 @@ function BlockList ({ authedUser , blockedUsers }) {
         <Grid
             container
             sx={{
-                pt: 12
+                pt: 12,
+                px: 1
             }}
+            spacing={1}
         >
             <Grid
                 item
                 container
-                ml={1}
-                spacing={1}
                 direction="column"
             >
             <Paper
-                    sx={{
-                        height:60,
-                        pt: 1,
-                        px: 1,
-                        width: "100%",
-                        mt: 1,
-                        ml: 1,
-                    }}>
+                sx={{
+                    minHeight: 60,
+                    pt: 1,
+                    px: 1,
+                    mt: 1,
+                }}
+            >
+                <Grid
+                    item
+                    container
+                    gap={1}
+                    justifyContent="right"
+                >
                     <Grid
                         item
-                        container
-                        gap={1}
-                        justifyContent="right"
+                        xs={0.25}
+                        sm={0.25}
+                        md={0.25}
+                        sx={{
+                            textAlign: "center",
+                        }}
                     >
-                        <Grid
-                            item
-                            xs={0.25}
-                            sm={0.25}
-                            md={0.25}
-                            sx={{
-                                textAlign: "center",
-                            }}
-                        >
-                            <Input
-                                id="bulk-blocked-selector"
-                                type="checkbox"
-                                disableUnderline
-                                onChange={handleCheck}
-                                value={check}
-                                />
-                        </Grid>
-                        <Grid item>
-                            <TextField
-                            id="blocked-search"
-                            label="search"
-                            name="search"
-                            fullWidth
-                            autoComplete="search-feild"
-                            onChange={(e) => setSearch(e.target.value)}
+                        <Input
+                            id="bulk-blocked-selector"
+                            type="checkbox"
+                            disableUnderline
+                            onChange={handleCheck}
+                            value={check}
                             />
-                        </Grid>
-                        <Button
+                    </Grid>
+                    <Grid item>
+                        <TextField
+                        id="blocked-search"
+                        label="search"
+                        name="search"
+                        fullWidth
+                        autoComplete="search-feild"
+                        onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </Grid>
+                    <Button
+                    variant="contained"
+                    type="submit"
+                    size="medium"
+                    onClick={() => {
+                        setSearch('');
+                        $("#blocked-search").val('')
+                    }}
+                        >
+                        Reset
+                    </Button>
+                    {document.querySelector("#bulk-blocked-selector") !== null
+                    && ((
+                    (document.querySelector("#bulk-blocked-selector").checked === true)
+                    || userCheck === true) && (
+                        <Typography
+                            variant="body2"
+                            color="text.secondary"
+                        >
+                        {filteredBlock().checked.length} Selected
+                    </Typography>))}
+                    <Button
                         variant="contained"
                         type="submit"
                         size="medium"
                         onClick={() => {
-                            setSearch('');
-                            $("#blocked-search").val('')
+                            filteredBlock().checked
+                            .map(({id}) => dispatch(handleUnblock(id, authedUser)));
+                            $("#bulk-blocked-selector").prop("checked", false);
+                            setCheck(false);
+                            setUserCheck(false);
                         }}
-                            >
-                            Reset
-                        </Button>
-                        {document.querySelector("#bulk-blocked-selector") !== null
-                        && ((
-                        (document.querySelector("#bulk-blocked-selector").checked === true)
-                        || userCheck === true) && (
-                            <Typography
-                                variant="body2"
-                                color="text.secondary"
-                            >
-                            {filteredBlock().checked.length} Selected
-                        </Typography>))}
-                        <Button
-                            variant="contained"
-                            type="submit"
-                            size="medium"
-                            onClick={() => {
-                                filteredBlock().checked
-                                .map(({id}) => dispatch(handleUnblock(id, authedUser)));
-                                $("#bulk-blocked-selector").prop("checked", false);
-                                setCheck(false);
-                                setUserCheck(false);
-                            }}
-                        >
-                            Unblock Selected
-                        </Button>
-                    </Grid>
-                </Paper>
-                {filteredBlock().blockedUser.map((user) => (user.description === "student" ?
-                    <Grid
-                        key={user.id}
-                        id={`${user.id}-li`}
-                        item
-                        mb={1}
                     >
-                        <Student
-                            id={user.id}
-                            type="blocked"
-                            setValue={userCheck}
-                            setter={setUserCheck}
-                        />
-                    </Grid> : 
-                    <Grid
-                        key={user.id}
-                        id={`${user.id}-li`}
-                        item
-                        mb={1}
-                    >
-                        <Teacher
-                            id={user.id}
-                            type="blocked"
-                            setValue={userCheck}
-                            setter={setUserCheck}
-                        />
-                    </Grid>
-                )).slice(firstIndex, lastIndex)}
-                <Grid item>
-                <PaginationLink
-                        showing={Math.ceil(filteredBlock().blockedUser.length/10)}
-                        pageSet={setCurrentPage}
-                        firstIndex={firstIndex}
-                        lastIndex={lastIndex}
-                        total={filteredBlock().blockedUser.length}
-                        />
+                        Unblock Selected
+                    </Button>
                 </Grid>
+            </Paper>
+            {filteredBlock().blockedUser.map((user) => (user.description === "student" ?
+                <Grid
+                    key={user.id}
+                    id={`${user.id}-li`}
+                    item
+                    mb={1}
+                >
+                    <Student
+                        id={user.id}
+                        type="blocked"
+                        setValue={userCheck}
+                        setter={setUserCheck}
+                    />
+                </Grid> : 
+                <Grid
+                    key={user.id}
+                    id={`${user.id}-li`}
+                    item
+                    mb={1}
+                >
+                    <Teacher
+                        id={user.id}
+                        type="blocked"
+                        setValue={userCheck}
+                        setter={setUserCheck}
+                    />
+                </Grid>
+            )).slice(firstIndex, lastIndex)}
+            <Grid item mt={1}>
+                <PaginationLink
+                    showing={Math.ceil(filteredBlock().blockedUser.length/10)}
+                    pageSet={setCurrentPage}
+                    firstIndex={firstIndex}
+                    lastIndex={lastIndex}
+                    total={filteredBlock().blockedUser.length}
+                />
             </Grid>
         </Grid>
+    </Grid>
     )
 };
 
-function mapStateToProps ({ users , authedUser }) {
-    let blocked = users[authedUser[0]].blockList;
-    return {
-        authedUser: authedUser !== null ? authedUser[0] : null,
-        blockedUsers: blocked.map((block) => users[block])
-    }
-};
-
-export default connect(mapStateToProps)(BlockList)
+export default connect()(BlockList)

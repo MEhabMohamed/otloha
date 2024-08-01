@@ -17,7 +17,6 @@ function SetNewAdmin() {
 
   let [adminEmail, setAdminEmail] = React.useState('');
   let [removeEmail, setRemoveEmail] = React.useState('');
-  console.log(removeEmail)
 
   const dispatch = useDispatch();
 

@@ -1,12 +1,26 @@
-let recitations = {};
+let recitations = localStorage.getItem("recitations") !== null
+? JSON.parse(localStorage.getItem("recitations")) : {};
 
-let teachers = {};
+let teachers = localStorage.getItem("teachers") !== null
+? JSON.parse(localStorage.getItem("teachers")) : {};
 
-let students = {};
+let students = localStorage.getItem("students") !== null
+? JSON.parse(localStorage.getItem("students")) : {};
 
-let users = {};
+let users = localStorage.getItem("users") !== null
+? JSON.parse(localStorage.getItem("users")) : {};
 
-let admins = {
+let tajweed = localStorage.getItem("tajweed") !== null
+? JSON.parse(localStorage.getItem("tajweed")) : {levels: {}, lessons: {}};
+
+let levels = localStorage.getItem("levels") !== null
+? JSON.parse(localStorage.getItem("levels")) : {};
+
+let lessons = localStorage.getItem("lessons") !== null
+? JSON.parse(localStorage.getItem("lessons")) : {};
+
+let admins = localStorage.getItem("admins") !== null
+? JSON.parse(localStorage.getItem("admins")) : {
    mohamedelenna90: {
         email: 'mohamedelenna90@gmail.com',
         id: 'mohamedelenna90'
@@ -43,19 +57,43 @@ export function getAdmins() {
     })
 }
 
+export function getTajweeds() {
+    return new Promise((res, rej) => {
+        setTimeout(() => res({...tajweed}), 1000)
+    })
+}
+
+export function getLevels() {
+    return new Promise((res, rej) => {
+        setTimeout(() => res({...levels}), 1000)
+    })
+}
+
+export function getLessons() {
+    return new Promise((res, rej) => {
+        setTimeout(() => res({...lessons}), 1000)
+    })
+}
+
 export const getInitialData = async () => {
     return Promise.all([
       getRecitations(),
       getUsers(),
       getAdmins(),
       getStudents(),
-      getTeachers()
-    ]).then(([recitations, users, admins, students, teachers]) => ({
+      getTeachers(),
+      getTajweeds(),
+      getLevels(),
+      getLessons(),
+    ]).then(([recitations, users, admins, students, teachers, tajweed, levels, lessons]) => ({
         recitations,
         users,
         admins,
         students,
-        teachers
+        teachers,
+        tajweed,
+        levels,
+        lessons
     }))
 }
 
@@ -69,7 +107,7 @@ export function formatDate (timestamp) {
     return time.replace(0, 5) + ' | ' + d.toLocaleDateString()
 }
 
-function formatRecitation ({
+function formatStudentRecitation ({
         verse,
         narration,
         playback,
@@ -94,6 +132,26 @@ function formatRecitation ({
         reviewed: false,
         closed: false
     }
+}
+
+function formatTeacherRecitation ({
+    verse,
+    narration,
+    playback,
+    authed
+}) {
+return {
+    verse,
+    narration,
+    playback,
+    authed,
+    id: generateUID().replace(/[0-9]/g, 'k'),
+    status: "Accepted",
+    raters: [],
+    createdAt: Date.now(),
+    remarkable: false,
+    closed: false
+}
 }
 
 function formatTeacher ({
@@ -124,6 +182,7 @@ function formatTeacher ({
         status: "Pending",
         recitations: [],
         evaluatedRecitations: [],
+        ratedRecitations: [],
         joiningDate: Date.now(),
         verified: false,
         level: 'Beginner',
@@ -163,6 +222,7 @@ function formatStudent ({
         bDate,
         status: "Pending",
         recitations: [],
+        ratedRecitations: [],
         joiningDate: Date.now(),
         verified: false,
         level: 'Beginner',
@@ -180,6 +240,237 @@ function formatAdmin({email}) {
     }
 }
 
+function formatLevel({
+    name,
+    color,
+    value
+}) {
+    return {
+        name,
+        color,
+        value,
+        id: generateUID().replace(/[0-9]/g, 'k'),
+    }
+}
+
+function formatLesson({
+    title,
+    content,
+    level,
+    parentLesson
+}) {
+    return {
+        title,
+        content,
+        level,
+        parentLesson,
+        id: generateUID().replace(/[0-9]/g, 'k'),
+    }
+}
+
+export function saveLevels({
+    name,
+    color,
+    value
+}) {
+    return new Promise((res, rej) => {
+        let formattedLevel;
+
+        formattedLevel = formatLevel({
+            name,
+            color,
+            value
+        })
+
+        setTimeout(() => {
+
+            levels = {
+                ...levels,
+                [formattedLevel.id]: formattedLevel
+            }
+
+            tajweed = {
+                lessons: {
+                    ...lessons
+                },
+                levels: {
+                    ...levels
+                }
+            }
+
+            localStorage.setItem("tajweed", JSON.stringify({
+                ...tajweed
+            }))
+
+            res(formattedLevel)
+        }, 1000)
+    })
+}
+
+export function saveLessons({
+    title,
+    content,
+    level,
+    parentLesson
+}) {
+    return new Promise((res, rej) => {
+        let formattedLesson;
+
+        formattedLesson = formatLesson({
+            title,
+            content,
+            level,
+            parentLesson
+        })
+
+        setTimeout(() => {
+
+            lessons = {
+                ...lessons,
+                [formattedLesson.id]: formattedLesson
+            }
+
+            tajweed = {
+                lessons: {
+                    ...lessons
+                },
+                levels: {
+                    ...levels
+                }
+            }
+
+            localStorage.setItem("tajweed", JSON.stringify({
+                ...tajweed
+            }))
+
+            res(formattedLesson)
+        }, 1000)
+    })
+}
+
+export function saveEditLessons ({id, title, content, level, parentLesson}) {
+    return new Promise((res,rej) => {
+        setTimeout(() => {
+
+            lessons = {
+                ...lessons,
+                [id]: {
+                    ...lessons[id],
+                    title,
+                    content,
+                    level,
+                    parentLesson
+                }
+            }
+
+            localStorage.setItem("lessons", JSON.stringify(lessons))
+
+            tajweed = {
+                lessons: {
+                    ...lessons
+                },
+                levels: {
+                    ...levels
+                }
+            }
+
+            localStorage.setItem("tajweed", JSON.stringify({
+                ...tajweed
+            }))
+
+            res(id)
+        }, 1000)
+    })
+}
+
+export function saveEditLevels ({id, name, color, value}) {
+    return new Promise((res,rej) => {
+        setTimeout(() => {
+
+            levels = {
+                ...levels,
+                [id]: {
+                    ...levels[id],
+                    name,
+                    color,
+                    value
+                }
+            }
+
+            localStorage.setItem("levels", JSON.stringify(levels))
+
+            tajweed = {
+                lessons: {
+                    ...lessons
+                },
+                levels: {
+                    ...levels
+                }
+            }
+
+            localStorage.setItem("tajweed", JSON.stringify({
+                ...tajweed
+            }))
+
+            res(id)
+        }, 1000)
+    })
+}
+
+export function deleteLevels ({id}) {
+    return new Promise((res,rej) => {
+        setTimeout(() => {
+
+            levels = Object
+            .fromEntries(Object.entries(levels).filter(e => e[0] !== id))
+
+            localStorage.setItem("levels", JSON.stringify(levels))
+
+            tajweed = {
+                lessons: {
+                    ...lessons
+                },
+                levels: {
+                    ...levels
+                }
+            }
+
+            localStorage.setItem("tajweed", JSON.stringify({
+                ...tajweed
+            }))
+
+            res(id)
+        }, 1000)
+    })
+}
+
+export function deleteLessons ({id}) {
+    return new Promise((res,rej) => {
+        setTimeout(() => {
+
+            lessons = Object
+            .fromEntries(Object.entries(lessons).filter(e => e[0] !== id))
+
+            localStorage.setItem("lessons", JSON.stringify(lessons))
+
+            tajweed = {
+                lessons: {
+                    ...lessons
+                },
+                levels: {
+                    ...levels
+                }
+            }
+
+            localStorage.setItem("tajweed", JSON.stringify({
+                ...tajweed
+            }))
+
+            res(id)
+        }, 1000)
+    })
+}
+
 export function saveRecitations({
         verse,
         narration,
@@ -187,18 +478,37 @@ export function saveRecitations({
         authed
     }) {
     return new Promise((res,rej) => {
-        const formattedRecitation = formatRecitation({
+
+        let formattedRecitation;
+
+        let users = JSON.parse(localStorage.getItem("users"));
+        let recitations = JSON.parse(localStorage.getItem("recitations"));
+
+        users[authed].description === "teacher" ?
+
+        formattedRecitation = formatTeacherRecitation({
             verse,
             narration,
             playback,
-            authed
+            authed,
+        }) : formattedRecitation = formatStudentRecitation({
+            verse,
+            narration,
+            playback,
+            authed,
         })
+
         setTimeout(() => {
 
             recitations = {
                 ...recitations,
                 [formattedRecitation.id]: formattedRecitation
             }
+
+            localStorage.setItem("recitations", JSON.stringify({
+                ...recitations,
+                [formattedRecitation.id]: formattedRecitation
+            }))
 
             users[authed].description === "teacher" ?
             teachers = {
@@ -221,6 +531,11 @@ export function saveRecitations({
                 ...teachers,
                 ...students
             }
+
+            localStorage.setItem("users", JSON.stringify({
+                ...students,
+                ...teachers
+            }))
 
             res(formattedRecitation)
         }, 1000)
@@ -266,6 +581,15 @@ export function saveStudent({
                 ...teachers
             }
 
+            localStorage.setItem("students", JSON.stringify({
+                ...students,
+            }))
+
+            localStorage.setItem("users", JSON.stringify({
+                ...students,
+                ...teachers
+            }))
+
             res(formattedUser)
         }, 1000)
     })
@@ -309,6 +633,15 @@ export function saveTeacher({
                     ...students,
                     ...teachers
                 }
+
+                localStorage.setItem("teachers", JSON.stringify({
+                    ...teachers
+                }))
+
+                localStorage.setItem("users", JSON.stringify({
+                    ...students,
+                    ...teachers
+                }))
     
                 res(formattedUser)
             }, 1000)
@@ -326,6 +659,11 @@ export function saveAdmins ({email}) {
                 [formattedAdmin.id]: formattedAdmin
             }
 
+            localStorage.setItem("admins", JSON.stringify({
+                ...admins,
+                [formattedAdmin.id]: formattedAdmin
+            }))
+
             res(formattedAdmin)
         }, 1000)
     })
@@ -337,6 +675,9 @@ export function deleteAdmins ({id}) {
 
             admins = Object
             .fromEntries(Object.entries(admins).filter(e => e[0] !== id))
+
+            localStorage.setItem("admins", JSON.stringify(Object
+                .fromEntries(Object.entries(admins).filter(e => e[0] !== id))))
 
             res(id)
         }, 1000)
@@ -350,6 +691,10 @@ export function savePasses ({
     return new Promise((res,rej) => {
         
         setTimeout(() => {
+
+            let users = JSON.parse(localStorage.getItem("users"));
+            let teachers = JSON.parse(localStorage.getItem("teachers"));
+            let students = JSON.parse(localStorage.getItem("students"));
 
             users[id].description === "teacher" ?
             teachers = {
@@ -371,6 +716,20 @@ export function savePasses ({
                 ...students
             }
 
+            users[id].description === "teacher" ?
+
+            localStorage.setItem("teachers", JSON.stringify({
+                ...teachers
+            })) : localStorage.setItem("students", JSON.stringify({
+                ...students,
+            }))
+
+
+            localStorage.setItem("users", JSON.stringify({
+                ...students,
+                ...teachers
+            }))
+
             res(password)
         }, 1000)
     })
@@ -384,6 +743,10 @@ export function saveUserRatings ({
 return new Promise((res,rej) => {
     
     setTimeout(() => {
+
+        let users = JSON.parse(localStorage.getItem("users"));
+        let teachers = JSON.parse(localStorage.getItem("teachers"));
+        let students = JSON.parse(localStorage.getItem("students"));
 
         users[ratedId].description === "teacher" ?
         teachers = {
@@ -420,6 +783,19 @@ return new Promise((res,rej) => {
             ...students
         }
 
+        users[ratedId].description === "teacher" ?
+
+        localStorage.setItem("teachers", JSON.stringify({
+            ...teachers
+        })) : localStorage.setItem("students", JSON.stringify({
+            ...students,
+        }))
+
+        localStorage.setItem("users", JSON.stringify({
+            ...students,
+            ...teachers
+        }))
+
         res(raterId, ratedId, rating)
     }, 1000)
 })
@@ -434,14 +810,62 @@ return new Promise((res,rej) => {
     
     setTimeout(() => {
 
+        let recitations = JSON.parse(localStorage.getItem("recitations"));
+
         recitations = {
             ...recitations,
             [ratedId]: {
                 ...recitations[ratedId],
                 raters: recitations[ratedId].raters.concat([{raterId, rating}]),
-                rating: recitations[ratedId].rating += rating
             }
         }
+
+        localStorage.setItem("recitations", JSON.stringify({
+            ...recitations,
+            [ratedId]: {
+                ...recitations[ratedId],
+                raters: recitations[ratedId].raters.concat([{raterId, rating}]),
+            }
+        }))
+
+        let users = JSON.parse(localStorage.getItem("users"));
+        let teachers = JSON.parse(localStorage.getItem("teachers"));
+        let students = JSON.parse(localStorage.getItem("students"));
+
+        users[raterId].description === "teacher" ?
+        teachers = {
+            ...teachers,
+            [raterId]: {
+                ...teachers[raterId],
+                ratedRecitations: teachers[raterId].ratedRecitations
+                .concat([ratedId])
+            }
+        } : students = {
+            ...students,
+            [raterId]: {
+                ...students[raterId],
+                ratedRecitations: students[raterId].ratedRecitations
+                .concat([ratedId])
+            }
+        }
+
+        users = {
+            ...teachers,
+            ...students
+        }
+
+        users[ratedId].description === "teacher" ?
+
+        localStorage.setItem("teachers", JSON.stringify({
+            ...teachers
+        })) : localStorage.setItem("students", JSON.stringify({
+            ...students,
+        }))
+
+        localStorage.setItem("users", JSON.stringify({
+            ...students,
+            ...teachers
+        }))
 
         res(raterId, ratedId, rating)
     }, 1000)
@@ -455,6 +879,10 @@ export function savePics({
     return new Promise((res,rej) => {
         
         setTimeout(() => {
+
+            let users = JSON.parse(localStorage.getItem("users"));
+            let teachers = JSON.parse(localStorage.getItem("teachers"));
+            let students = JSON.parse(localStorage.getItem("students"));
 
             users[id].description === "teacher" ?
             teachers = {
@@ -476,6 +904,19 @@ export function savePics({
                 ...students
             }
 
+            users[id].description === "teacher" ?
+
+            localStorage.setItem("teachers", JSON.stringify({
+                ...teachers
+            })) : localStorage.setItem("students", JSON.stringify({
+                ...students,
+            }))
+
+            localStorage.setItem("users", JSON.stringify({
+                ...students,
+                ...teachers
+            }))
+
             res(pic)
         }, 1000)
     })
@@ -489,25 +930,54 @@ export function saveBlocks({
 
         setTimeout(() => {
 
-            users[authed].description === "teacher" ?
-            teachers = {
-                ...teachers,
-                [authed]: {
-                    ...teachers[authed],
-                    blockList: teachers[authed].blockList.concat([id])
+            let users = JSON.parse(localStorage.getItem("users"));
+            let teachers = JSON.parse(localStorage.getItem("teachers"));
+            let students = JSON.parse(localStorage.getItem("students"));
+
+            if (users[authed].description === "teacher") {
+
+                teachers = {
+                    ...teachers,
+                    [authed]: {
+                        ...teachers[authed],
+                        blockList: teachers[authed].blockList.concat([id])
+                    }
+                };
+
+                students = {
+                    ...students,
+                    [id]: {
+                        ...students[id],
+                        active: false
+                    }
                 }
-            } : students = {
-                ...students,
-                [authed]: {
-                    ...students[authed],
-                    blockList: students[authed].blockList.concat([id])
+            } else {
+                students = {
+                    ...students,
+                    [authed]: {
+                        ...students[authed],
+                        blockList: students[authed].blockList.concat([id])
+                    }
                 }
-            };
+            }
 
             users = {
                 ...teachers,
                 ...students
             }
+
+            users[id].description === "teacher" ?
+
+            localStorage.setItem("teachers", JSON.stringify({
+                ...teachers
+            })) : localStorage.setItem("students", JSON.stringify({
+                ...students,
+            }))
+
+            localStorage.setItem("users", JSON.stringify({
+                ...students,
+                ...teachers
+            }))
 
             res(id)
         }, 1000)
@@ -522,25 +992,54 @@ export function saveUnblocks({
 
         setTimeout(() => {
 
-            users[authed].description === "teacher" ?
-            teachers = {
-                ...teachers,
-                [authed]: {
-                    ...teachers[authed],
-                    blockList: teachers[authed].blockList.filter((i) => i !== id)
+            let users = JSON.parse(localStorage.getItem("users"));
+            let teachers = JSON.parse(localStorage.getItem("teachers"));
+            let students = JSON.parse(localStorage.getItem("students"));
+
+            if (users[authed].description === "teacher") {
+
+                teachers = {
+                    ...teachers,
+                    [authed]: {
+                        ...teachers[authed],
+                        blockList: teachers[authed].blockList.filter((i) => i !== id)
+                    }
+                };
+
+                students = {
+                    ...students,
+                    [id]: {
+                        ...students[id],
+                        active: true
+                    }
                 }
-            } : students = {
-                ...students,
-                [authed]: {
-                    ...students[authed],
-                    blockList: students[authed].blockList.filter((i) => i !== id)
+            } else {
+                students = {
+                    ...students,
+                    [authed]: {
+                        ...students[authed],
+                        blockList: students[authed].blockList.filter((i) => i !== id)
+                    }
                 }
-            };
+            }
 
             users = {
                 ...teachers,
                 ...students
             }
+
+            users[id].description === "teacher" ?
+
+            localStorage.setItem("teachers", JSON.stringify({
+                ...teachers
+            })) : localStorage.setItem("students", JSON.stringify({
+                ...students,
+            }))
+
+            localStorage.setItem("users", JSON.stringify({
+                ...students,
+                ...teachers
+            }))
 
             res(id)
         }, 1000)
@@ -559,6 +1058,9 @@ export function saveEvaluations({
 
         setTimeout(() => {
 
+            let recitations = JSON.parse(localStorage.getItem("recitations"));
+            let teachers = JSON.parse(localStorage.getItem("teachers"));
+
             recitations = {
                 ...recitations,
                 [id]: {
@@ -572,6 +1074,20 @@ export function saveEvaluations({
                     report
                 }
             }
+
+            localStorage.setItem("recitations", JSON.stringify({
+                ...recitations,
+                [id]: {
+                    ...recitations[id],
+                    evaluatedAt: Date.now(),
+                    status,
+                    teacher: {
+                        name,
+                        avatar
+                    },
+                    report
+                }
+            }))
 
             teachers = {
                 ...teachers,
@@ -587,6 +1103,15 @@ export function saveEvaluations({
                 ...students
             }
 
+            localStorage.setItem("teachers", JSON.stringify({
+                ...teachers
+            }))
+
+            localStorage.setItem("users", JSON.stringify({
+                ...students,
+                ...teachers
+            }))
+
             res(id)
         }, 1000)
     })
@@ -596,6 +1121,8 @@ export function saveTeacherEvaluation({id, status}) {
     return new Promise((res, rej) => {
 
         setTimeout(() => {
+
+            let teachers = JSON.parse(localStorage.getItem("teachers"));
 
             teachers = {
                 ...teachers,
@@ -610,8 +1137,16 @@ export function saveTeacherEvaluation({id, status}) {
                 ...students
             }
 
+            localStorage.setItem("teachers", JSON.stringify({
+                ...teachers
+            }))
+
+            localStorage.setItem("users", JSON.stringify({
+                ...students,
+                ...teachers
+            }))
+
             res(id, status)
         })
     }) 
 }
-

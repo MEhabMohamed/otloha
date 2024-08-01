@@ -12,10 +12,13 @@ import { formatDate } from '../../helpers/savers';
 import MediaPlayer from '../MediaPlayer/MediaPlayer';
 import Evaluate from '../Evaluation/Evaluation';
 import Button from '@mui/material/Button';
-import { handleEvaluateRecitation } from '../../actions/recitation';
+import BasicRating from '../Rating/Rating';
+import { handleAddRecitationRating, handleEvaluateRecitation } from '../../actions/recitation';
 import AlertShow from '../Alert/AlertShow';
+import star from '../../Resources/star-light.png';
 import $ from 'jquery';
 import BasicAlerts from '../Alert/Alert';
+
 
 const Img = styled('img')({
   margin: 'auto',
@@ -25,11 +28,23 @@ const Img = styled('img')({
   borderRadius: '50%',
 });
 
-function RecitationProfile({ users, recitation , id , index , authedUser }) {
+function RecitationProfile({ id }) {
 
   let [evaluation, setEvaluation] = React.useState('');
   let [report, setReport] = React.useState('');
   let [evaluationAlert, setEvaluationAlert] = React.useState('');
+  let authedUser = JSON.parse(localStorage.getItem("authedUser")) !== null ? 
+  JSON.parse(localStorage.getItem("authedUser"))[0] : null;
+  let users = JSON.parse(localStorage.getItem("users"));
+  let recitations = JSON.parse(localStorage.getItem("recitations"));
+  let index = Object.keys(recitations).length
+  - Object.keys(recitations).sort((a, b,) =>
+  recitations[b].createdAt - recitations[a].createdAt).indexOf(id);
+  let recitation = recitations[id];
+
+  let ratingSum = 0;
+
+  recitation !== null && recitation.raters.map(({rating}) => ratingSum += rating);
 
   const dispatch = useDispatch();
 
@@ -98,7 +113,7 @@ function RecitationProfile({ users, recitation , id , index , authedUser }) {
                 }}
                 alt="complex"
                 src={users[recitation.authed].avatar !== ""
-                ? URL.createObjectURL(users[recitation.authed].avatar)
+                ? users[recitation.authed].avatar
                 : (users[recitation.authed].gender === 'male' ? male : female)} />
             </ButtonBase>
             <Typography variant="subtitle1" sx={{
@@ -106,9 +121,27 @@ function RecitationProfile({ users, recitation , id , index , authedUser }) {
             }}>
               {users[recitation.authed].name}
             </Typography>
+            {recitation.remarkable && 
+              <Grid
+                  item
+                  sx={{
+                  textAlign: "center"
+                  }}
+                >
+                <Img sx={{ width: 20, height: 20 }} alt="complex" src={star} />
+              </Grid>}
             <Typography variant="body2" color="text.secondary">
               ID {index}
             </Typography>
+            <Grid item justifyContent="center" container>
+              <BasicRating
+                ratingType={handleAddRecitationRating}
+                rating={ratingSum/recitation.raters.length}
+                rated={((recitation.authed === authedUser)
+                  || (users[authedUser].ratedRecitations.includes(id)))}
+                ratedId={id}
+              />
+            </Grid>
             {users[recitation.authed].description === "student"
             && <Typography
                   variant="body2"
@@ -124,7 +157,8 @@ function RecitationProfile({ users, recitation , id , index , authedUser }) {
             <Typography variant="body2">
               Created at:{formatDate(recitation.createdAt)}
             </Typography>
-            {recitation.evaluatedAt !== "" &&
+            {((recitation.evaluatedAt !== "")
+            && (users[recitation.authed].description === "student")) &&
             <Typography variant="body2">
                Evaluated at:{formatDate(recitation.evaluatedAt)}
             </Typography>
@@ -170,7 +204,7 @@ function RecitationProfile({ users, recitation , id , index , authedUser }) {
             }} >
               <MediaPlayer id={id} />
             </Stack>
-            {recitation.status === "Pending" ?
+            {(users[recitation.authed].description === "student") && ((recitation.status === "Pending") ?
             <Grid item>
               {((users[authedUser].description === "teacher")
               && (users[recitation.authed].description === "student"))
@@ -249,22 +283,10 @@ function RecitationProfile({ users, recitation , id , index , authedUser }) {
                   {recitation.teacher.name}
                 </Typography>
                 </Grid>
-            </Grid>}
+            </Grid>)}
           </Grid>
         </Grid>
   );
 }
 
-function mapStateToProps ({users , recitations , authedUser}, {id}) {
-    let index = Object.keys(recitations).sort((a, b,) =>
-    recitations[b].createdAt - recitations[a].createdAt).indexOf(id)
-    return {
-        users,
-        id,
-        recitation: recitations[id],
-        index: Object.keys(recitations).length - index,
-        authedUser: authedUser !== null ? authedUser[0] : null,
-    }
-};
-
-export default connect(mapStateToProps)(RecitationProfile)
+export default connect()(RecitationProfile)

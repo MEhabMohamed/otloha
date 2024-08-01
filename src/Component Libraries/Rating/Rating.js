@@ -3,9 +3,11 @@ import Box from '@mui/material/Box';
 import Rating from '@mui/material/Rating';
 import Typography from '@mui/material/Typography';
 import { connect, useDispatch } from 'react-redux';
-import { handleAddUserRating } from '../../actions/user';
 
-function BasicRating({ level , rating , rated , ratedId , authedUser}) {
+function BasicRating({ level , rating , rated , ratedId , ratingType}) {
+
+    let authedUser = JSON.parse(localStorage.getItem("authedUser")) !== null ? 
+    JSON.parse(localStorage.getItem("authedUser"))[0] : null;
 
     const dispatch = useDispatch();
 
@@ -23,7 +25,7 @@ function BasicRating({ level , rating , rated , ratedId , authedUser}) {
             name="simple-controlled"
             value={rating}
             onChange={(event, newValue) => {
-                dispatch(handleAddUserRating(authedUser, ratedId, newValue));
+                dispatch(ratingType(authedUser, ratedId, newValue));
             }}
             size='small'
             sx={{
@@ -35,11 +37,4 @@ function BasicRating({ level , rating , rated , ratedId , authedUser}) {
     );
 }
 
-function mapStateToProps ({users , authedUser}) {
-    return {
-        users,
-        authedUser: authedUser !== null ? authedUser[0] : null,
-    }
-  };
-
-export default connect(mapStateToProps)(BasicRating)
+export default connect()(BasicRating)

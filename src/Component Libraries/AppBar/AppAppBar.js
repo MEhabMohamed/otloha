@@ -17,6 +17,7 @@ import { useNavigate } from 'react-router-dom';
 import SignOut from '../SignOut/SignOut';
 import EditUser from '../EditUser/EditUser';
 import { connect } from 'react-redux';
+import { Menu, Stack } from '@mui/material';
 
 const logoStyle = {
   width: '5rem',
@@ -24,10 +25,20 @@ const logoStyle = {
   cursor: 'pointer',
 };
 
-function AppAppBar({ mode , toggleColorMode , auth , admins }) {
+function AppAppBar({ mode , toggleColorMode , auth }) {
 
   const [open, setOpen] = React.useState(false);
+  let admins = JSON.parse(localStorage.getItem("admins"));
   const navigate = useNavigate();
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const openMenu = Boolean(anchorEl);
+  const handleClick = (event) => {
+      setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+      setAnchorEl(null);
+  };
 
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
@@ -36,7 +47,7 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
   return (
     <div>
       <AppBar
-        position="fixed"
+        position="absolute"
         sx={{
           boxShadow: 0,
           bgcolor: 'transparent',
@@ -88,6 +99,7 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
                 alt="otloha"
                 onClick={() => navigate('./')}
               />
+              {auth !== null &&
               <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                 <MenuItem
                   onClick={() => navigate('./teachers')}
@@ -95,7 +107,7 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
                 >
                   <Typography
                     sx={{
-                      fontSize: "12px"
+                      font: "bold 14px Monotype corsiva, cursive"
                     }}
                     color="text.primary"
                     fontWeight="bolder"
@@ -109,7 +121,7 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
                 >
                   <Typography
                     sx={{
-                      fontSize: "12px"
+                      font: "bold 14px Monotype corsiva, cursive"
                     }}
                     color="text.primary"
                     fontWeight="bolder"
@@ -123,7 +135,7 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
                 >
                   <Typography
                     sx={{
-                      fontSize: "12px"
+                      font: "bold 14px Monotype corsiva, cursive"
                     }}
                     color="text.primary"
                     fontWeight="bolder"
@@ -137,7 +149,7 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
                 >
                   <Typography
                     sx={{
-                      fontSize: "12px"
+                      font: "bold 14px Monotype corsiva, cursive"
                     }}
                     color="text.primary"
                     fontWeight="bolder"
@@ -151,7 +163,7 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
                 >
                   <Typography
                     sx={{
-                      fontSize: "12px"
+                      font: "bold 14px Monotype corsiva, cursive"
                     }}
                     color="text.primary"
                     fontWeight="bolder"
@@ -159,14 +171,87 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
                     Block List
                   </Typography>
                 </MenuItem>
-                {Object.keys(admins).includes(auth)
+                <MenuItem
+                  sx={{ py: '6px', px: '12px' }}
+                >
+                  <Stack
+                      id={`tajweed-chooser`}
+                  >
+                  <Typography
+                      id={`tajweed-chooser-button`}
+                      aria-controls={openMenu ? 'edited-positioned-menu' : undefined}
+                      aria-haspopup="true"
+                      aria-expanded={openMenu ? 'true' : undefined}
+                      onClick={handleClick}
+                      sx={{
+                        font: "bold 14px Monotype corsiva, cursive"
+                      }}
+                      color="text.primary"
+                      fontWeight="bolder"
+                  >
+                      Tajweed
+                  </Typography>
+                  <Menu
+                          id="tajweed-positioned-menu"
+                          aria-labelledby="tajweed-positioned-button"
+                          anchorEl={anchorEl}
+                          open={openMenu}
+                          onClose={handleClose}
+                          anchorOrigin={{
+                          vertical: 'bottom',
+                          horizontal: 'center',
+                          }}
+                          transformOrigin={{
+                          vertical: 'bottom',
+                          horizontal: 'center',
+                          }}
+                          sx={{
+                              px: 2
+                          }}
+                      >
+                          <MenuItem>
+                              <Typography
+                                  sx={{
+                                    font: "bold 14px Monotype corsiva, cursive"
+                                  }}
+                                  color="text.primary"
+                                  fontWeight="bolder"
+                                  onClick={() => {
+                                      navigate(`../tajweed/levels`)
+                                      handleClose()
+                                  }}
+                                  id={`levels-button`}>
+                                  Levels
+                              </Typography>
+                          </MenuItem>
+                          <MenuItem>
+                          <React.Fragment>
+                              <Typography
+                                  sx={{
+                                    font: "bold 14px Monotype corsiva, cursive"
+                                  }}
+                                  color="text.primary"
+                                  fontWeight="bolder"
+                                  onClick={() => {
+                                    navigate(`../tajweed/lessons`)
+                                    handleClose()
+                                  }}
+                                  id={`lessons-button`}>
+                                  Lessons
+                              </Typography>
+                              </React.Fragment>
+                          </MenuItem>
+                      </Menu>
+                </Stack>
+                </MenuItem>
+                {admins !== (null || undefined) //&& (Object.keys(admins).includes(auth)
                 && <MenuItem
                   onClick={() => navigate('./new-admin')}
                   sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography
                     sx={{
-                      fontSize: "12px"
+                      font: "bold 14px Monotype corsiva, cursive"
                     }}
                     color="text.primary"
                     fontWeight="bolder"
@@ -174,7 +259,7 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
                     &#43;/&#8722; Admins
                   </Typography>
                 </MenuItem>}
-              </Box>
+              </Box>}
             </Box>
             <Box
               sx={{
@@ -248,8 +333,46 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
                   >
                     <ToggleColorMode mode={mode} toggleColorMode={toggleColorMode} />
                   </Box>
-                  <MenuItem
-                      onClick={() => navigate('./teachers')}
+                  {auth !== null &&
+                  <Box>
+                    <MenuItem
+                        onClick={() => navigate('./teachers')}
+                        sx={{ py: '6px', px: '12px' }}
+                      >
+                        <Typography
+                          variant="body2"
+                          color="text.primary"
+                          fontWeight="bolder"
+                        >
+                          Teachers
+                        </Typography>
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => navigate('./students')}
+                      sx={{ py: '6px', px: '12px' }}
+                      >
+                      <Typography
+                        variant="body2"
+                        color="text.primary"
+                        fontWeight="bolder"
+                      >
+                        Students
+                      </Typography>
+                    </MenuItem>
+                    <MenuItem
+                        onClick={() => navigate('./recitations')}
+                        sx={{ py: '6px', px: '12px' }}
+                      >
+                        <Typography
+                          variant="body2"
+                          color="text.primary"
+                          fontWeight="bolder"
+                        >
+                          Recitations
+                        </Typography>
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => navigate('./new-recitation')}
                       sx={{ py: '6px', px: '12px' }}
                     >
                       <Typography
@@ -257,35 +380,11 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
                         color="text.primary"
                         fontWeight="bolder"
                       >
-                        Teachers
+                        New recitation
                       </Typography>
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => navigate('./students')}
-                    sx={{ py: '6px', px: '12px' }}
-                    >
-                    <Typography
-                      variant="body2"
-                      color="text.primary"
-                      fontWeight="bolder"
-                    >
-                      Students
-                    </Typography>
-                  </MenuItem>
-                  <MenuItem
-                      onClick={() => navigate('./recitations')}
-                      sx={{ py: '6px', px: '12px' }}
-                    >
-                      <Typography
-                        variant="body2"
-                        color="text.primary"
-                        fontWeight="bolder"
-                      >
-                        Recitations
-                      </Typography>
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => navigate('./new-recitation')}
+                    </MenuItem>
+                    <MenuItem
+                    onClick={() => navigate('./blocked')}
                     sx={{ py: '6px', px: '12px' }}
                   >
                     <Typography
@@ -293,21 +392,21 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
                       color="text.primary"
                       fontWeight="bolder"
                     >
-                      New recitation
+                      Block List
                     </Typography>
                   </MenuItem>
                   <MenuItem
-                  onClick={() => navigate('./blocked')}
+                  onClick={() => navigate('./tajweed/levels')}
                   sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography
-                    variant="body2"
                     color="text.primary"
                     fontWeight="bolder"
                   >
-                    Block List
+                    Tajweed
                   </Typography>
                 </MenuItem>
+                </Box>}
                   <Divider />
                   <MenuItem>
                     { auth !== null && <EditUser widthSet="100%"/>}
@@ -351,10 +450,4 @@ AppAppBar.propTypes = {
   toggleColorMode: PropTypes.func.isRequired,
 };
 
-function mapStateToProps({ admins }) {
-  return {
-    admins
-  }
-}
-
-export default connect(mapStateToProps)(AppAppBar);
+export default connect()(AppAppBar);

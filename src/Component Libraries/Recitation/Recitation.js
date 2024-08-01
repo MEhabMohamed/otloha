@@ -10,8 +10,11 @@ import male from '../../Resources/male.jpg';
 import female from '../../Resources/female.jpeg';
 import { formatDate } from '../../helpers/savers';
 import MediaPlayer from '../MediaPlayer/MediaPlayer';
+import BasicRating from '../Rating/Rating';
 import { Link } from 'react-router-dom';
 import mushaf from '../../Resources/mushaf.png';
+import star from '../../Resources/star-light.png';
+import { handleAddRecitationRating } from '../../actions/recitation';
 
 const Img = styled('img')({
   margin: 'auto',
@@ -21,7 +24,19 @@ const Img = styled('img')({
   borderRadius: '50%',
 });
 
-function Recitation({users, recitation , id, index , authedUser}) {
+function Recitation({id}) {
+
+  let ratingSum = 0;
+
+  let users = JSON.parse(localStorage.getItem("users"));
+  let recitations = JSON.parse(localStorage.getItem("recitations"));
+  let recitation = recitations[id];
+  let authedUser = JSON.parse(localStorage.getItem("authedUser")) !== null ? 
+  JSON.parse(localStorage.getItem("authedUser"))[0] : null;
+  let index = Object.keys(recitations).length - Object.keys(recitations).sort((a, b,) =>
+  recitations[b].createdAt - recitations[a].createdAt).indexOf(id);
+  recitation.raters.map(({rating}) => ratingSum += rating);
+
   return (
       <Paper
         sx={{
@@ -60,7 +75,7 @@ function Recitation({users, recitation , id, index , authedUser}) {
                 }}
                 alt="complex"
                 src={users[recitation.authed].avatar !== ""
-                ? URL.createObjectURL(users[recitation.authed].avatar)
+                ? users[recitation.authed].avatar
                 : (users[recitation.authed].gender === 'male' ? male : female)}
               />
             </ButtonBase>
@@ -73,15 +88,33 @@ function Recitation({users, recitation , id, index , authedUser}) {
             container
           >
             <Grid item container>
-              <Grid item md={4}>
+              <Grid item container md={5}>
                 <Typography variant="body1" fontWeight="bolder">
                   {users[recitation.authed].name}
                 </Typography>
+                <Grid item mt={0.75}>
+                  <BasicRating
+                    ratingType={handleAddRecitationRating}
+                    rating={ratingSum/recitation.raters.length}
+                    rated={((recitation.authed === authedUser)
+                      || (users[authedUser].ratedRecitations.includes(id)))}
+                    ratedId={id}
+                  />
+                </Grid>
               </Grid>
-              <Grid item container md={8}>
+              <Grid item container md={7}>
                 <Typography variant="body1" color="text.secondary">
                   ID {index}
                 </Typography>
+                {recitation.remarkable &&
+                <Grid
+                  item
+                  sx={{
+                  textAlign: "center"
+                  }}
+                >
+                      <Img sx={{ width: 20, height: 20 }} alt="complex" src={star} />
+                </Grid>}
                 {users[recitation.authed].description === "student"
                 && <Stack variant="body2" sx={{
                   mx: 2,
@@ -109,7 +142,7 @@ function Recitation({users, recitation , id, index , authedUser}) {
                   </Typography> : 
                   (recitation.status === "Reported" &&
                   <Typography sx={{
-                    background: "rgba(242, 8, 8, 0.66)",
+                    background: "rgba(134, 56, 8, 0.58)",
                     font: "bold 12px Georgia, serif",
                     p: 0.5,
                     borderRadius: "25px"
@@ -133,7 +166,8 @@ function Recitation({users, recitation , id, index , authedUser}) {
             </Grid>
             <Grid item sx={{
               mt: {
-                md: recitation.status !== "Pending"
+                md: (recitation.status !== "Pending"
+                && users[recitation.authed].description === "student")
                 ? (recitation.status === "Reported" ? -4 : -9)
                 : -2
               }
@@ -141,7 +175,7 @@ function Recitation({users, recitation , id, index , authedUser}) {
               <Typography variant="body2" color="text.secondary">
                 Created at:{formatDate(recitation.createdAt)}
               </Typography>
-              {recitation.evaluatedAt !== "" &&
+              {((recitation.evaluatedAt !== "") && (users[recitation.authed].description === "student")) &&
                 <Typography variant="body2" color="text.secondary">
                   Evaluated at:{formatDate(recitation.evaluatedAt)}
                 </Typography>
@@ -156,7 +190,7 @@ function Recitation({users, recitation , id, index , authedUser}) {
               </Typography>
               {recitation.status === "Reported" && 
                 <Typography variant="body2" sx={{
-                    background: "rgba(242, 8, 8, 0.66)",
+                    background: "rgba(134, 56, 8, 0.58)",
                     textAlign: "center",
                     mt: 1,
                     fontWeight: "bold",
@@ -174,8 +208,15 @@ function Recitation({users, recitation , id, index , authedUser}) {
             md={3.9}
             textAlign='center'
           >
-            <MediaPlayer id={id} />
-            {recitation.teacher.name !== "" &&
+            <Stack
+              sx={{ 
+                mb: 1,
+                alignItems: "center",
+              }}
+            >
+              <MediaPlayer id={id} />
+            </Stack>
+            {((recitation.teacher !== undefined && recitation.teacher.name !== "")) &&
             <Grid item container mt={1}>
                 <Grid item xs={12} md={5} sx={{
                   height: 75,
@@ -236,13 +277,4 @@ function Recitation({users, recitation , id, index , authedUser}) {
   );
 }
 
-function mapStateToProps ({users , recitations, authedUser}, {id}) {
-    return {
-        users,
-        id,
-        recitation: recitations[id],
-        authedUser: authedUser !== null ? authedUser[0] : null,
-    }
-};
-
-export default connect(mapStateToProps)(Recitation)
+export default connect()(Recitation)

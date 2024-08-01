@@ -9,9 +9,12 @@ export default function DatePick({ value , choose , label , setWidth}) {
       <DatePicker
         value={value}
         onChange={(e) =>
-        choose(e.$d)} label={label ? label : ""}
+          e !== null ? choose(e.$d) : choose(null)
+        }
+        label={label ? label : ""}
         sx={{
-          width: setWidth
+          width: setWidth,
+          maxHeight: 30
         }}
       />
     </LocalizationProvider>

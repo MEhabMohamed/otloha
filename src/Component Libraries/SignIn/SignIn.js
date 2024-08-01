@@ -34,17 +34,30 @@ const showPassStyle = {
   display: 'none'
 }
 
-function SignInSide({ usermails , users }) {
+function SignInSide() {
 
   let [emailValidateAlert, setEmailValidateAlert] = React.useState('');
   let [passValidateAlert, setPassValidateAlert] = React.useState('');
+
+  let users = JSON.parse(localStorage.getItem("users"));
+  let usermails = users !== (undefined || null)
+  ? Object.values(users).map(({email}) => email) : [];
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    validateUser(usermails, users, data.get('email'), data.get('password'), dispatch, setAuthedUser, navigate, setEmailValidateAlert, setPassValidateAlert)
+    validateUser(
+      usermails,
+      users,
+      data.get('email'),
+      data.get('password'),
+      dispatch,
+      setAuthedUser,
+      navigate,
+      setEmailValidateAlert,
+      setPassValidateAlert)
   };
 
   return (

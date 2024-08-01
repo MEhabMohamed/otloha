@@ -48,7 +48,11 @@ const outputStyle = {
 	margin: 'auto 20px auto 5px'
 }
 
-function Player ({ quran , id , recitations }) {
+function Player ({ id }) {
+
+    let recitations = Object.keys(JSON.parse(localStorage.getItem("recitations")));
+    let recite = JSON.parse(localStorage.getItem("recitations"));
+    let quran = [recite[id].playback];
 
     let [volume, setVolume] = useState(100);
     let [playBackTime, setPlayBackTime] = useState(0);
@@ -144,18 +148,23 @@ function Player ({ quran , id , recitations }) {
             style={audioStyle}
             id={`${id.slice(-6)}-audio-player-container`}
         >
-            <audio 
-                preload='metadata'
-                id={`${id.slice(-6)}-audio`}
-                onEnded={() => {
-                    stop();
-                }} 
-                onLoadedMetadata={() => {
-                    setMax(document.querySelector(`#${id.slice(-6)}-audio`).duration);
-                    displayDuration();
-                    setSliderMax();
-            }}/>
-
+            <iframe
+                width="420"
+                height="220"
+                title={recite[id].verse.surah}
+                src={`https://drive.google.com/file/d/${recite[id].playback.slice(41)}/preview`}>
+                <audio 
+                    preload='metadata'
+                    id={`${id.slice(-6)}-audio`}
+                    onEnded={() => {
+                        stop();
+                    }} 
+                    onLoadedMetadata={() => {
+                        setMax(document.querySelector(`#${id.slice(-6)}-audio`).duration);
+                        displayDuration();
+                        setSliderMax();
+                }}/>
+            </iframe>
             <img 
                 className="audio-controls" 
                 src={playPic} 
@@ -286,12 +295,4 @@ function Player ({ quran , id , recitations }) {
     )
 };
 
-function mapStateToProps ({ recitations } , {id}) {
-    let recite = [recitations[id].playback]
-    return {
-        quran: recite,
-        recitations: Object.keys(recitations)
-    }
-};
-
-export default connect(mapStateToProps)(Player)
+export default connect()(Player)

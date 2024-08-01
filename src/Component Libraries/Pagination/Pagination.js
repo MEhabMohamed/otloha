@@ -23,7 +23,7 @@ export default function PaginationLink({
       sx={{
         background: '#0d88c242',
         alignItems: "center",
-        borderRadius: "25px"
+        borderRadius: "25px",
       }}
     >
       <Typography

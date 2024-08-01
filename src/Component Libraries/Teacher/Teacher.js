@@ -22,7 +22,7 @@ import femaleSymbol from '../../Resources/female-symbol.png';
 import LongMenu from '../DottedMenu/DottedMenu';
 import BasicRating from '../Rating/Rating';
 import TeacherEvaluationSelect from './TeacherEvaluation';
-import { handleTeacherEvaluation } from '../../actions/user';
+import { handleAddUserRating, handleTeacherEvaluation } from '../../actions/user';
 
 const Img = styled('img')({
   margin: 'auto',
@@ -33,21 +33,28 @@ const Img = styled('img')({
 });
 
 function Teacher({
-                  users,
-                  authedUser,
                   id,
-                  recitations,
-                  recites,
-                  earnings,
-                  dues,
-                  pendingRecites,
                   type,
                   setter,
                   setValue,
-                  admins
                 }) {
 
   let ratingSum = 0;
+
+  let authedUser = JSON.parse(localStorage.getItem("authedUser")) !== null ? 
+  JSON.parse(localStorage.getItem("authedUser"))[0] : null;
+  let users = JSON.parse(localStorage.getItem("users"));
+  let recitations = JSON.parse(localStorage.getItem("recitations"));
+  let recites = users[id].evaluatedRecitations;
+  let pendingRecites = Object.keys(recitations).filter((i) =>
+  users[recitations[i].authed].description === "student");
+  let admins = Object.keys(JSON.parse(localStorage.getItem("admins")));
+
+  let earningSum = 0;
+  let dueSum = 0;
+
+  users[id].earnings.map((i) => earningSum += i);
+  users[id].dues.map((i) => dueSum += i);
 
   users[id].raters.map(({rating}) => ratingSum += rating);
   let [evaluation, setEvaluation] = React.useState('');
@@ -71,7 +78,7 @@ function Teacher({
     <Paper
       sx={{
         width: "100%",
-        pt: "3px"
+        pt: "3px",
       }}
     >
       <Grid
@@ -87,7 +94,7 @@ function Teacher({
           justifyContent: {
             md: "left",
             sm: "center"
-          }
+          },
         }}
         >
         {authedUser !== id &&
@@ -129,7 +136,7 @@ function Teacher({
                 }}
                 alt="teacher-pic"
                 src={users[id].avatar !== ""
-                ? URL.createObjectURL(users[id].avatar)
+                ? users[id].avatar
                 : (users[id].gender === 'male' ? male : female)}
               />
             </ButtonBase>
@@ -241,6 +248,7 @@ function Teacher({
                   rated={((users[id].id === authedUser)
                   || (users[authedUser].rated.includes(id)))}
                   ratedId={id}
+                  ratingType={handleAddUserRating}
                 />
             </Grid>
             <Grid item>
@@ -355,7 +363,7 @@ function Teacher({
             }}
           >
             {((admins.includes(authedUser)) && (id !== authedUser)
-            && (users[id].status === "Pending"))
+            && (users[id].status === "Pending") && (!admins.includes(id)))
             && <Grid
               item
               container
@@ -365,7 +373,8 @@ function Teacher({
                   xs: 3,
                   sm: 3,
                   md: 1.8
-                }
+                },
+                justifyContent: "center"
               }}
             >
               <Grid item md={9}>
@@ -396,7 +405,8 @@ function Teacher({
                     mt: {
                       md: ((id === authedUser)
                       || (users[id].status !== "Pending")
-                      || (!admins.includes(authedUser)))
+                      || (!admins.includes(authedUser))
+                      || (admins.includes(id)))
                       ? ((id === authedUser) ? 4.7 : 5.2) : "auto",
                     }
                   }}
@@ -439,7 +449,7 @@ function Teacher({
                   >
                     <StatsFormer
                       image={earning}
-                      num={earnings.toFixed(2)}
+                      num={earningSum.toFixed(2)}
                       text="Earnings"
                     />
                   </Grid>
@@ -451,7 +461,7 @@ function Teacher({
                   >
                     <StatsFormer
                       image={due}
-                      num={dues.toFixed(2)}
+                      num={dueSum.toFixed(2)}
                       text="Dues"
                     />
                   </Grid>
@@ -463,7 +473,9 @@ function Teacher({
                     font: 'bold 15px "Monotype Corsiva", cursive',
                     mt: {
                       md: ((id === authedUser)
-                      || (users[id].status !== "Pending"))
+                      || (users[id].status !== "Pending")
+                      || (!admins.includes(authedUser))
+                      || (admins.includes(id)))
                       ? 3 : "auto",
                     }
                   }}
@@ -499,26 +511,4 @@ function Teacher({
   );
 }
 
-function mapStateToProps ({users , authedUser , recitations , admins}, {id}) {
-
-  let earningSum = 0;
-  let dueSum = 0;
-
-  users[id].earnings.map((i) => earningSum += i);
-  users[id].dues.map((i) => dueSum += i);
-
-  return {
-      admins: Object.keys(admins),
-      users,
-      id,
-      authedUser: authedUser !== null ? authedUser[0] : null,
-      recitations,
-      recites: users[id].evaluatedRecitations,
-      pendingRecites: Object.keys(recitations).filter((i) =>
-      users[recitations[i].authed].description === "student"),
-      earnings: earningSum,
-      dues: dueSum,
-  }
-};
-
-export default connect(mapStateToProps)(Teacher)
+export default connect()(Teacher)

@@ -12,7 +12,11 @@ export default function TeacherEvaluationSelect({ evaluation , setter , identify
   };
 
   return (
-    <Box>
+    <Box
+      sx={{
+        minWidth: 140
+      }}
+    >
       <FormControl
           fullWidth
           required

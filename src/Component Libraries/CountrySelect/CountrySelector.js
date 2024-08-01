@@ -5,14 +5,14 @@ import Autocomplete from '@mui/material/Autocomplete';
 import { connect } from 'react-redux';
 import { countries } from './Countries';
 
-function CountrySelect({ value, select , identify }) {
+function CountrySelect({ value , select , identify , importance }) {
 
   return (
     <Autocomplete
       id={`${identify}-country-select`}
       options={countries}
       sx={{
-        minWidth: 140,
+        minWidth: 150,
       }}
       autoHighlight
       value={value}
@@ -34,6 +34,7 @@ function CountrySelect({ value, select , identify }) {
       renderInput={(params) => (
         <TextField
           {...params}
+          required={importance}
           label="Select a country!"
           sx={{
             height: "100%"

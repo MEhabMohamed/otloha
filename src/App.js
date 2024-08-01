@@ -21,6 +21,12 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import RecitationProfile from './Component Libraries/Recitation/RecitationProfile';
 import BlockList from './Component Libraries/BlockList/BlockList';
 import SetNewAdmin from './Component Libraries/AddRemoveAdmin/AddRemoveAdmin';
+import TajweedLevels from './Component Libraries/Tajweed/Levels';
+import TajweedLessons from './Component Libraries/Tajweed/Lessons';
+import AddLevel from './Component Libraries/Tajweed/AddLevel';
+import EditLevel from './Component Libraries/Tajweed/EditLevel';
+import AddLesson from './Component Libraries/Tajweed/AddLesson';
+import EditLesson from './Component Libraries/Tajweed/EditLesson';
 
 const PrivateWrapper = ({ auth: isAuthenticated }) => {
   if (isAuthenticated !== null) {
@@ -36,7 +42,16 @@ function NotFound () {
     )
 }
 
-function App({ authedUser , initial , recitations }) {
+function App({ initial }) {
+
+  let authedUser = JSON.parse(localStorage.getItem("authedUser")) !== null ? 
+  JSON.parse(localStorage.getItem("authedUser"))[0] : null;
+  let recitations = JSON.parse(localStorage.getItem("recitations")) !== null ? 
+  Object.keys(JSON.parse(localStorage.getItem("recitations"))) : [];
+  let levels = JSON.parse(localStorage.getItem('tajweed')) !== null ?
+    Object.values(JSON.parse(localStorage.getItem('tajweed')).levels) : {}
+  let lessons = JSON.parse(localStorage.getItem('tajweed')) !== null ?
+    Object.values(JSON.parse(localStorage.getItem('tajweed')).lessons) : {}
 
   const isAuthed = authedUser;
   let checkAuth = useRef(null);
@@ -88,6 +103,18 @@ function App({ authedUser , initial , recitations }) {
               <Route path='/students' element={<StudentDashboard />} />
               <Route path='/recitations' element={<RecitationDashboard />} />
               <Route path='/blocked' element={<BlockList />} />
+              <Route path='/tajweed/levels' element={<TajweedLevels />} />
+              <Route path='/tajweed/lessons' element={<TajweedLessons />} />
+              <Route path='/tajweed/level' element={<AddLevel />} />
+              <Route path='/tajweed/lesson' element={<AddLesson />} />
+              {levels.map((level) => {
+                return <Route path={`/tajweed/edit-level/${level.id}`}
+                element={<EditLevel id={level.id} />} />
+              })}
+              {lessons.map((lesson) => {
+                return <Route path={`/tajweed/edit-lesson/${lesson.id}`}
+                element={<EditLesson id={lesson.id} />} />
+              })}
               {recitations.map((id =>
                 <Route
                   path={`/recitations/${id}`}

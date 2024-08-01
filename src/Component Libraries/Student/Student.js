@@ -11,13 +11,14 @@ import { Container, Input } from '@mui/material';
 import total from '../../Resources/blue-circle.png';
 import maleSymbol from '../../Resources/male-symbol.png';
 import femaleSymbol from '../../Resources/female-symbol.png';
-import star from '../../Resources/star.png';
+import BasicRating from '../Rating/Rating';
 import accept from '../../Resources/accept.png';
 import pending from '../../Resources/waiting.png';
 import reject from '../../Resources/reject.png';
 import report from '../../Resources/report.png';
 import StatsFormer from '../StatsFormer/StatsFormer';
 import LongMenu from '../DottedMenu/DottedMenu';
+import { handleAddUserRating } from '../../actions/user';
 
 const Img = styled('img')({
   margin: 'auto',
@@ -28,15 +29,17 @@ const Img = styled('img')({
 });
 
 function Student({
-    users,
     type,
-    authedUser,
     id,
-    recites,
-    recitations,
     setter,
     setValue
   }) {
+
+  let authedUser = JSON.parse(localStorage.getItem("authedUser")) !== null ? 
+  JSON.parse(localStorage.getItem("authedUser"))[0] : null;
+  let users = JSON.parse(localStorage.getItem("users"));
+  let recitations = JSON.parse(localStorage.getItem("recitations"));
+  let recites = users[id].recitations;
 
   const handleCheck = () => {
     if (setValue === false) {
@@ -45,6 +48,10 @@ function Student({
         setter(false)
     }
   }
+
+  let ratingSum = 0;
+
+  users[id].raters.map(({rating}) => ratingSum += rating);
 
   return (
     <Paper
@@ -206,24 +213,14 @@ function Student({
                 >
                 Unverified 
                 </Typography> }
-                <Typography
-                  sx={{
-                    font: 'bold 10px Helvetica, serif',
-                    color: 'rgba(163, 153, 9, 0.849)',
-                    mt: 0.5
-                  }}
-                >
-                  {users[id].level}&nbsp;
-                  <img
-                    src={star}
-                    alt='star'
-                    style={{
-                      width: '10px',
-                      height: '10px',
-                    }}
-                  />
-                  {`${users[id].rating.toFixed(2)}`}
-                </Typography>
+                <BasicRating
+                  level={users[id].level}
+                  ratingType={handleAddUserRating}
+                  rating={ratingSum/users[id].raters.length}
+                  rated={((users[id].id === authedUser)
+                  || (users[authedUser].rated.includes(id)))}
+                  ratedId={id}
+                />
                 <Typography
                 sx={{
                   font: 'bold 10px Helvetica, serif',
@@ -344,14 +341,4 @@ function Student({
   );
 }
 
-function mapStateToProps ({users , authedUser , recitations}, {id}) {
-    return {
-        users,
-        id,
-        authedUser: authedUser !== null ? authedUser[0] : null,
-        recitations,
-        recites: users[id].recitations
-    }
-};
-
-export default connect(mapStateToProps)(Student)
+export default connect()(Student)

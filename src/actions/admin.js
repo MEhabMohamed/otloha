@@ -21,6 +21,7 @@ export function handleAddAdmin (email) {
 }
 
 export function receiveAdmins(admins) {
+    localStorage.setItem("admins", JSON.stringify(admins))
     return {
         type: RECEIVE_ADMINS,
         admins

@@ -40,19 +40,22 @@ const showPassStyle = {
   display: 'none'
 }
 
-function SignUp({ usermails }) {
+function SignUp() {
 
     let [newFirstName, setnewFirstName] = React.useState('');
     let [newLastName, setnewLastName] = React.useState('');
     let [newPass, setnewPass] = React.useState('');
     let [newEmail, setnewEmail] = React.useState('');
-    let newPic = React.useRef('');
+    let [newPic, setNewPic] = React.useState('');
     let [newCountry, setnewCountry] = React.useState(null);
     let [narration, setNarration] = React.useState('');
     let [lang, setLang] = React.useState('arEG');
     let [bDate, setBDate] = React.useState(null);
     let [emailAlert, setEmailAlert] = React.useState('');
     let [passAlert, setPassAlert] = React.useState('');
+    let users = JSON.parse(localStorage.getItem("users"));
+    let usermails = users !== (undefined || null)
+    ? Object.values(users).map(({email}) => email) : [];
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -68,7 +71,7 @@ function SignUp({ usermails }) {
         newPass,
         newCountry,
         data.get('description'),
-        newEmail, newPic.current,
+        newEmail, newPic,
         data.get('gender'),
         dispatch,
         navigate,
@@ -85,7 +88,7 @@ function SignUp({ usermails }) {
         newPass,
         newCountry,
         data.get('description'),
-        newEmail, newPic.current,
+        newEmail, newPic,
         data.get('gender'),
         dispatch,
         navigate,
@@ -105,10 +108,7 @@ function SignUp({ usermails }) {
       'height': '2rem',
       'position': 'absolute',
       'margin': '4rem 0 2rem -1.5rem'
-  })
-    newPic.current = e.target.files[0].name.slice(-4)
-    === (".jpg" || ".png" || "jpeg") ? e.target.files[0]
-    : "";
+  }, setNewPic, newPic)
   }
 
   return (
@@ -313,6 +313,7 @@ function SignUp({ usermails }) {
               </Grid>
               <Grid item xs={12}>
                 <CountrySelector
+                  importance={true}
                   value={newCountry}
                   select={setnewCountry}
                   identify="signup"
@@ -384,11 +385,4 @@ function SignUp({ usermails }) {
   );
 }
 
-function mapStateToProps({ users }) {
-  let usermails = Object.values(users).map(({email}) => email)
-  return {
-      usermails
-  }
-}
-
-export default connect(mapStateToProps)(SignUp)
+export default connect()(SignUp)

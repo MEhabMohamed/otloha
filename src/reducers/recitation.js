@@ -1,6 +1,6 @@
 import { ADD_RECITATION , RECEIVE_RECITATIONS , EVALUATE_RECITATION, ADD_RECITATION_RATING } from "../actions/recitation"
 
-export default function recitations (state=[], action) {
+export default function recitations (state={}, action) {
     switch (action.type) {
         case ADD_RECITATION:
             return {
