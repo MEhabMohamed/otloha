@@ -24,17 +24,16 @@ const Img = styled('img')({
   borderRadius: '50%',
 });
 
-function Recitation({id}) {
+function Recitation({id, users, recitations, authedUser}) {
 
   let ratingSum = 0;
 
-  let users = JSON.parse(localStorage.getItem("users"));
-  let recitations = JSON.parse(localStorage.getItem("recitations"));
   let recitation = recitations[id];
-  let authedUser = JSON.parse(localStorage.getItem("authedUser")) !== null ? 
-  JSON.parse(localStorage.getItem("authedUser"))[0] : null;
-  let index = Object.keys(recitations).length - Object.keys(recitations).sort((a, b,) =>
+
+  let index = Object.keys(recitations).length - Object.keys(recitations)
+  .sort((a, b,) =>
   recitations[b].createdAt - recitations[a].createdAt).indexOf(id);
+
   recitation.raters.map(({rating}) => ratingSum += rating);
 
   return (
@@ -277,4 +276,12 @@ function Recitation({id}) {
   );
 }
 
-export default connect()(Recitation)
+function mapStateToProps({users, authedUser, recitations}) {
+  return {
+      users,
+      authedUser: authedUser !== null ? authedUser[0] : null,
+      recitations
+  }
+}
+
+export default connect(mapStateToProps)(Recitation)

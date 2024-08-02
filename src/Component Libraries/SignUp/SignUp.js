@@ -108,7 +108,7 @@ function SignUp() {
       'height': '2rem',
       'position': 'absolute',
       'margin': '4rem 0 2rem -1.5rem'
-  }, setNewPic, newPic)
+  }, setNewPic)
   }
 
   return (

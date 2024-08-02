@@ -4,10 +4,7 @@ import Rating from '@mui/material/Rating';
 import Typography from '@mui/material/Typography';
 import { connect, useDispatch } from 'react-redux';
 
-function BasicRating({ level , rating , rated , ratedId , ratingType}) {
-
-    let authedUser = JSON.parse(localStorage.getItem("authedUser")) !== null ? 
-    JSON.parse(localStorage.getItem("authedUser"))[0] : null;
+function BasicRating({ level, rating, rated, ratedId, ratingType, authedUser}) {
 
     const dispatch = useDispatch();
 
@@ -37,4 +34,10 @@ function BasicRating({ level , rating , rated , ratedId , ratingType}) {
     );
 }
 
-export default connect()(BasicRating)
+function mapStateToProps({authedUser}) {
+    return {
+        authedUser: authedUser !== null ? authedUser[0] : null
+    }
+}
+
+export default connect(mapStateToProps)(BasicRating)

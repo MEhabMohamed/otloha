@@ -15,7 +15,7 @@ import { handleAddBlock } from "../actions/user";
 import FilterSelector from "../Component Libraries/Teacher/FilterSelector";
 import DatePick from "../Component Libraries/Date/DatePicker";
 
-function TeacherDashboard () {
+function TeacherDashboard ({ users, authedUser }) {
 
     let [search, setSearch] = useState('');
     let [check, setCheck] = useState(false);
@@ -30,9 +30,6 @@ function TeacherDashboard () {
     let lastIndex = currentPage * 10;
     let firstIndex = lastIndex - 10;
 
-    let users = JSON.parse(localStorage.getItem("users"));
-    let authedUser = JSON.parse(localStorage.getItem("authedUser")) !== null ?
-    JSON.parse(localStorage.getItem("authedUser"))[0] : null;
     let userTeachers = Object.values(users);
     let teachers = userTeachers.length > 0 ? userTeachers.filter(({description}) =>
     description === 'teacher')
@@ -419,4 +416,11 @@ function TeacherDashboard () {
     )
 };
 
-export default connect()(TeacherDashboard)
+function mapStateToProps({users, authedUser}) {
+    return {
+        users,
+        authedUser: authedUser !== null ? authedUser[0] : null
+    }
+}
+
+export default connect(mapStateToProps)(TeacherDashboard)

@@ -28,18 +28,16 @@ const Img = styled('img')({
   borderRadius: '50%',
 });
 
-function RecitationProfile({ id }) {
+function RecitationProfile({ id, users, authedUser, recitations }) {
 
   let [evaluation, setEvaluation] = React.useState('');
   let [report, setReport] = React.useState('');
   let [evaluationAlert, setEvaluationAlert] = React.useState('');
-  let authedUser = JSON.parse(localStorage.getItem("authedUser")) !== null ? 
-  JSON.parse(localStorage.getItem("authedUser"))[0] : null;
-  let users = JSON.parse(localStorage.getItem("users"));
-  let recitations = JSON.parse(localStorage.getItem("recitations"));
+
   let index = Object.keys(recitations).length
   - Object.keys(recitations).sort((a, b,) =>
   recitations[b].createdAt - recitations[a].createdAt).indexOf(id);
+
   let recitation = recitations[id];
 
   let ratingSum = 0;
@@ -289,4 +287,12 @@ function RecitationProfile({ id }) {
   );
 }
 
-export default connect()(RecitationProfile)
+function mapStateToProps({users, authedUser, recitations}) {
+  return {
+      users,
+      authedUser: authedUser !== null ? authedUser[0] : null,
+      recitations
+  }
+}
+
+export default connect(mapStateToProps)(RecitationProfile)

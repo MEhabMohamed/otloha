@@ -34,12 +34,11 @@ const showPassStyle = {
   display: 'none'
 }
 
-function SignInSide() {
+function SignInSide({ users }) {
 
   let [emailValidateAlert, setEmailValidateAlert] = React.useState('');
   let [passValidateAlert, setPassValidateAlert] = React.useState('');
 
-  let users = JSON.parse(localStorage.getItem("users"));
   let usermails = users !== (undefined || null)
   ? Object.values(users).map(({email}) => email) : [];
   const navigate = useNavigate();

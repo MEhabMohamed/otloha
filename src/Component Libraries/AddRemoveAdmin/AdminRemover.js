@@ -4,11 +4,7 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { connect } from 'react-redux';
 
-function AdminRemove({ value , select }) {
-
-  let admins = JSON.parse(localStorage.getItem("admins"));
-  let authedUser = JSON.parse(localStorage.getItem("authedUser")) !== null ? 
-  JSON.parse(localStorage.getItem("authedUser"))[0] : null;
+function AdminRemove({ value , select , admins , authedUser }) {
   
   return (
     <Autocomplete
@@ -47,4 +43,11 @@ function AdminRemove({ value , select }) {
   );
 }
 
-export default connect()(AdminRemove)
+function mapStateToProps({admins, authedUser}) {
+  return {
+      admins,
+      authedUser: authedUser !== null ? authedUser[0] : null
+  }
+}
+
+export default connect(mapStateToProps)(AdminRemove)

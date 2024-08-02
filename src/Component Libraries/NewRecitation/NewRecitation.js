@@ -12,7 +12,7 @@ import AlertShow from "../Alert/AlertShow";
 import BasicAlerts from "../Alert/Alert";
 import { useNavigate } from 'react-router-dom';
 
-function NewRecitation() {
+function NewRecitation({ authedUser }) {
 
     let verse = useRef('');
     let [narration, setNarration] = useState('');
@@ -33,8 +33,6 @@ function NewRecitation() {
         fullTo: toAyah,
         surah
     };
-    let authedUser = JSON.parse(localStorage.getItem("authedUser")) !== null ? 
-    JSON.parse(localStorage.getItem("authedUser"))[0] : null;
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -128,37 +126,9 @@ function NewRecitation() {
                                     const supportedTypes = ['audio/wav', 'audio/mpeg', 'audio/ogg']
                                     if (supportedTypes.includes(e.target.files[0].type)) {
                                         const reader = new FileReader();
-                                        /* global gapi */
-
-                                        function handleDeleteFile(fileId) {
-                                            let request = gapi.client.drive.files.delete({
-                                                'fileId': fileId
-                                            });
-                                            request.execute((resp) => {
-                                                console.log(resp)
-                                            });
-                                        }
-
-                                        gapi.client.drive.files.create({
-                                            'content-type': e.target.files[0].type,
-                                            uploadType: 'resumable',
-                                            name: e.target.files[0].name,
-                                            mimeType: e.target.files[0].type,
-                                            fields: 'id, name, kind, size',
-                                            parents: ["1F5TfCPx_uB1zpExYgpDx5zua2MG1HUbP"]
-                                        }).then(response => {
-                                            handleDeleteFile(playback.slice(41));
-                                            setPlayback(`http://docs.google.com/uc?export=open&id=${response.result.id}`);
-                                            fetch(`https://www.googleapis.com/upload/drive/v3/files/${response.result.id}`, {
-                                                method: 'PATCH',
-                                                headers: new Headers({
-                                                    'Authorization': `Bearer ${gapi.client.getToken().access_token}`,
-                                                    'Content-Type': e.target.files[0].type,
-                                                    'content-range': '*/*'
-                                                }),
-                                                body: e.target.files[0]
-                                            }).then(res => console.log(res))
-                                        });
+                                        reader.onload = function (e) {
+                                            setPlayback(e.target.result)
+                                        };
                                         reader.readAsDataURL(e.target.files[0]);
                                         document.querySelector('#file-name').textContent
                                         = e.target.files[0].name.split(".")[0];
@@ -246,4 +216,10 @@ function NewRecitation() {
     )
 }
 
-export default connect()(NewRecitation)
+function mapStateToProps({authedUser}) {
+    return {
+        authedUser: authedUser !== null ? authedUser[0] : null
+    }
+}
+
+export default connect(mapStateToProps)(NewRecitation)

@@ -12,7 +12,7 @@ import { handleAddBlock } from "../actions/user";
 import FilterSelector from "../Component Libraries/Student/FilterSelector";
 import DatePick from "../Component Libraries/Date/DatePicker";
 
-function StudentDashboard () {
+function StudentDashboard ({ users, authedUser }) {
 
     let [search, setSearch] = useState('');
     let [check, setCheck] = useState(false);
@@ -27,9 +27,6 @@ function StudentDashboard () {
     let lastIndex = currentPage * 10;
     let firstIndex = lastIndex - 10;
 
-    let users = JSON.parse(localStorage.getItem("users"));
-    let authedUser = JSON.parse(localStorage.getItem("authedUser")) !== null ? 
-    JSON.parse(localStorage.getItem("authedUser"))[0] : null;
     let userStudents = Object.values(users);
     let students = userStudents.length > 0 ? userStudents.filter(({description}) =>
     description === 'student')
@@ -369,4 +366,11 @@ function StudentDashboard () {
     )
 };
 
-export default connect()(StudentDashboard)
+function mapStateToProps({users, authedUser}) {
+    return {
+        users,
+        authedUser: authedUser !== null ? authedUser[0] : null
+    }
+}
+
+export default connect(mapStateToProps)(StudentDashboard)

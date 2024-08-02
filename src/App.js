@@ -42,16 +42,7 @@ function NotFound () {
     )
 }
 
-function App({ initial }) {
-
-  let authedUser = JSON.parse(localStorage.getItem("authedUser")) !== null ? 
-  JSON.parse(localStorage.getItem("authedUser"))[0] : null;
-  let recitations = JSON.parse(localStorage.getItem("recitations")) !== null ? 
-  Object.keys(JSON.parse(localStorage.getItem("recitations"))) : [];
-  let levels = JSON.parse(localStorage.getItem('tajweed')) !== null ?
-    Object.values(JSON.parse(localStorage.getItem('tajweed')).levels) : {}
-  let lessons = JSON.parse(localStorage.getItem('tajweed')) !== null ?
-    Object.values(JSON.parse(localStorage.getItem('tajweed')).lessons) : {}
+function App({ initial, authedUser, recitations, levels, lessons }) {
 
   const isAuthed = authedUser;
   let checkAuth = useRef(null);
@@ -130,11 +121,13 @@ function App({ initial }) {
   );
 }
 
-function mapStateToProps({ authedUser , admins , recitations }) {
+function mapStateToProps({ authedUser, admins, recitations, tajweed }) {
   return {
     authedUser: authedUser !== null ? authedUser[0] : null,
     admins: Object.keys(admins),
-    recitations: Object.keys(recitations)
+    recitations: Object.keys(recitations),
+    levels: tajweed !== null ? Object.values(tajweed.levels) : {},
+    lessons: tajweed !== null ? Object.values(tajweed.lessons) : {}
   }
 }
 

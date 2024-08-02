@@ -9,7 +9,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { handleAddLesson } from '../../actions/tajweed';
 
-function AddLesson() {
+function AddLesson({ levels, lessons }) {
 
     let [newTitle, setNewTitle] = useState('');
     let [newContent, setNewContent] = useState('');
@@ -23,12 +23,6 @@ function AddLesson() {
     const handleChangeLesson = (event) => {
         setNewParentLesson(event.target.value);
     };
-
-    let levels = JSON.parse(localStorage.getItem('tajweed')) !== null ?
-    JSON.parse(localStorage.getItem('tajweed')).levels : {}
-
-    let lessons = JSON.parse(localStorage.getItem('tajweed')) !== null ?
-    JSON.parse(localStorage.getItem('tajweed')).lessons : {}
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -142,4 +136,11 @@ function AddLesson() {
     )
 }
 
-export default connect()(AddLesson)
+function mapStateToProps({ tajweed }) {
+    return {
+        levels: tajweed !== null ? tajweed.levels : {},
+        lessons: tajweed !== null ? tajweed.lessons : {}
+    }
+}
+
+export default connect(mapStateToProps)(AddLesson)

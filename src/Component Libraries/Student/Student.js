@@ -32,13 +32,12 @@ function Student({
     type,
     id,
     setter,
-    setValue
+    setValue,
+    authedUser,
+    users,
+    recitations
   }) {
-
-  let authedUser = JSON.parse(localStorage.getItem("authedUser")) !== null ? 
-  JSON.parse(localStorage.getItem("authedUser"))[0] : null;
-  let users = JSON.parse(localStorage.getItem("users"));
-  let recitations = JSON.parse(localStorage.getItem("recitations"));
+  
   let recites = users[id].recitations;
 
   const handleCheck = () => {
@@ -341,4 +340,12 @@ function Student({
   );
 }
 
-export default connect()(Student)
+function mapStateToProps({users, authedUser, recitations}) {
+  return {
+      users,
+      authedUser: authedUser !== null ? authedUser[0] : null,
+      recitations
+  }
+}
+
+export default connect(mapStateToProps)(Student)

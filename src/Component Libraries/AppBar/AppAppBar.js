@@ -25,10 +25,9 @@ const logoStyle = {
   cursor: 'pointer',
 };
 
-function AppAppBar({ mode , toggleColorMode , auth }) {
+function AppAppBar({ mode , toggleColorMode , auth , admins }) {
 
   const [open, setOpen] = React.useState(false);
-  let admins = JSON.parse(localStorage.getItem("admins"));
   const navigate = useNavigate();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -450,4 +449,10 @@ AppAppBar.propTypes = {
   toggleColorMode: PropTypes.func.isRequired,
 };
 
-export default connect()(AppAppBar);
+function mapStateToProps({admins}) {
+  return {
+      admins
+  }
+}
+
+export default connect(mapStateToProps)(AppAppBar);

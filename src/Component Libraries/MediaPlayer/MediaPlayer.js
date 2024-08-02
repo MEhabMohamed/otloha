@@ -48,10 +48,8 @@ const outputStyle = {
 	margin: 'auto 20px auto 5px'
 }
 
-function Player ({ id }) {
+function Player ({ id, recite, recitations }) {
 
-    let recitations = Object.keys(JSON.parse(localStorage.getItem("recitations")));
-    let recite = JSON.parse(localStorage.getItem("recitations"));
     let quran = [recite[id].playback];
 
     let [volume, setVolume] = useState(100);
@@ -148,12 +146,7 @@ function Player ({ id }) {
             style={audioStyle}
             id={`${id.slice(-6)}-audio-player-container`}
         >
-            <iframe
-                width="420"
-                height="220"
-                title={recite[id].verse.surah}
-                src={`https://drive.google.com/file/d/${recite[id].playback.slice(41)}/preview`}>
-                <audio 
+            <audio 
                     preload='metadata'
                     id={`${id.slice(-6)}-audio`}
                     onEnded={() => {
@@ -164,7 +157,6 @@ function Player ({ id }) {
                         displayDuration();
                         setSliderMax();
                 }}/>
-            </iframe>
             <img 
                 className="audio-controls" 
                 src={playPic} 
@@ -295,4 +287,11 @@ function Player ({ id }) {
     )
 };
 
-export default connect()(Player)
+function mapStateToProps({recitations}) {
+    return {
+        recitations: Object.keys(recitations),
+        recite: recitations
+    }
+}
+
+export default connect(mapStateToProps)(Player)

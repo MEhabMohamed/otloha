@@ -4,10 +4,7 @@ import { connect, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { handleEditLevel } from '../../actions/tajweed';
 
-function EditLevel({id}) {
-
-    let levels = JSON.parse(localStorage.getItem('tajweed')) !== null ?
-    JSON.parse(localStorage.getItem('tajweed')).levels : {}
+function EditLevel({ id, levels }) {
 
     let [newName, setNewName] = useState(levels[id].name);
     let [newColor, setNewColor] = useState(levels[id].color);
@@ -100,4 +97,10 @@ function EditLevel({id}) {
     )
 }
 
-export default connect()(EditLevel)
+function mapStateToProps({ tajweed }) {
+    return {
+        levels: tajweed !== null ? tajweed.levels : {},
+    }
+}
+
+export default connect(mapStateToProps)(EditLevel)

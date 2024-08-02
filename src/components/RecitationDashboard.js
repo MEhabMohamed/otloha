@@ -14,7 +14,7 @@ import $ from "jquery";
 import FilteredRecitation from "../Component Libraries/Recitation/FilteredRecitation";
 import FilterSelector from "../Component Libraries/Recitation/FilterSelector";
 
-function RecitationDashboard () {
+function RecitationDashboard ({users, recitations}) {
 
     let [search, setSearch] = useState('');
     let [fromDate, setFromDate] = useState(null);
@@ -26,9 +26,7 @@ function RecitationDashboard () {
     let [currentPage, setCurrentPage] = useState(1);
     let lastIndex = currentPage * 10;
     let firstIndex = lastIndex - 10;
-
-    let users = JSON.parse(localStorage.getItem("users"));
-    let recitations = JSON.parse(localStorage.getItem("recitations"));
+    
     let recites = Object.keys(recitations)
     .sort((a, b,) => recitations[b].createdAt - recitations[a].createdAt)
     let evals = Object.values(recitations)
@@ -305,6 +303,13 @@ function RecitationDashboard () {
             </Grid>
         </Grid>
     )
-}  
+}
 
-export default connect()(RecitationDashboard)
+function mapStateToProps({users, recitations}) {
+    return {
+        users,
+        recitations
+    }
+}
+
+export default connect(mapStateToProps)(RecitationDashboard)

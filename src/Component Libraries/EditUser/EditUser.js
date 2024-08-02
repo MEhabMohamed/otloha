@@ -15,17 +15,13 @@ import female from "../../Resources/female.jpeg";
 import BasicAlerts from "../Alert/Alert";
 import AlertShow from "../Alert/AlertShow";
 
-function EditUser({ widthSet }) {
+function EditUser({ widthSet, users, authedUser }) {
 
     let [pass, setPass] = useState('');
     let [newPic, setNewPic] = useState('');
     let [passAlert, setPassAlert] = useState('');
 
     const dispatch = useDispatch();
-
-    let users = JSON.parse(localStorage.getItem("users"));
-    let authedUser = JSON.parse(localStorage.getItem("authedUser")) !== null ? 
-    JSON.parse(localStorage.getItem("authedUser"))[0] : null;
 
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -40,7 +36,7 @@ function EditUser({ widthSet }) {
         readURL(e.target, $('#editedPic'), $('#edited-get-pic'), {'width': '2rem',
         'height': '2rem',
         'position': 'absolute',
-        'margin': '55px 0 auto 65px'}, setNewPic, newPic)
+        'margin': '55px 0 auto 65px'}, setNewPic)
     }
 
     function submitPassEditer(e) {
@@ -195,4 +191,11 @@ function EditUser({ widthSet }) {
     )
 }
 
-export default connect()(EditUser)
+function mapStateToProps({users, authedUser}) {
+    return {
+        users,
+        authedUser: authedUser !== null ? authedUser[0] : null
+    }
+}
+
+export default connect(mapStateToProps)(EditUser)

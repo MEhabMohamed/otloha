@@ -53,7 +53,6 @@ export default function SignOut() {
         <DialogActions>
           <Button onClick={() => {
             dispatch(signOut())
-            localStorage.setItem("authedUser", null)
           }}>Yes</Button>
           <Button onClick={handleClose}>No</Button>
         </DialogActions>

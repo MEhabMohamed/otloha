@@ -37,18 +37,18 @@ function Teacher({
                   type,
                   setter,
                   setValue,
+                  users,
+                  authedUser,
+                  recitations,
+                  admins
                 }) {
 
   let ratingSum = 0;
 
-  let authedUser = JSON.parse(localStorage.getItem("authedUser")) !== null ? 
-  JSON.parse(localStorage.getItem("authedUser"))[0] : null;
-  let users = JSON.parse(localStorage.getItem("users"));
-  let recitations = JSON.parse(localStorage.getItem("recitations"));
   let recites = users[id].evaluatedRecitations;
+
   let pendingRecites = Object.keys(recitations).filter((i) =>
   users[recitations[i].authed].description === "student");
-  let admins = Object.keys(JSON.parse(localStorage.getItem("admins")));
 
   let earningSum = 0;
   let dueSum = 0;
@@ -511,4 +511,13 @@ function Teacher({
   );
 }
 
-export default connect()(Teacher)
+function mapStateToProps({users, authedUser, recitations, admins}) {
+  return {
+      users,
+      authedUser: authedUser !== null ? authedUser[0] : null,
+      recitations,
+      admins: Object.keys(admins)
+  }
+}
+
+export default connect(mapStateToProps)(Teacher)

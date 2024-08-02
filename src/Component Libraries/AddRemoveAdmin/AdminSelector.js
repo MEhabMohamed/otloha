@@ -4,12 +4,7 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { connect } from 'react-redux';
 
-function AdminSelect({ value , select }) {
-
-  let authedUser = JSON.parse(localStorage.getItem("authedUser")) !== null ? 
-  JSON.parse(localStorage.getItem("authedUser"))[0] : null;
-  let admins = JSON.parse(localStorage.getItem("admins"));
-  let users = JSON.parse(localStorage.getItem("users"));
+function AdminSelect({ value, select, admins, users, authedUser }) {
 
   return (
     <Autocomplete
@@ -49,4 +44,12 @@ function AdminSelect({ value , select }) {
   );
 }
 
-export default connect()(AdminSelect)
+function mapStateToProps({users, authedUser, admins}) {
+  return {
+      users,
+      authedUser: authedUser !== null ? authedUser[0] : null,
+      admins
+  }
+}
+
+export default connect(mapStateToProps)(AdminSelect)

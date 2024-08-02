@@ -21,7 +21,7 @@ import { Stack } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
 import { handleDeleteLevel } from '../../actions/tajweed';
 
-function TajweedLevels() {
+function TajweedLevels({ levels }) {
 
     let [searchLevel, setSerachLevel] = useState('');
     const [page, setPage] = useState(0);
@@ -54,8 +54,6 @@ function TajweedLevels() {
     };
 
     const navigate = useNavigate();
-    let levels = JSON.parse(localStorage.getItem('tajweed')) !== null ?
-    JSON.parse(localStorage.getItem('tajweed')).levels : {}
 
     const columnsLevel = [
         { id: 'ID', label: 'ID', minWidth: 100 },
@@ -261,4 +259,10 @@ function TajweedLevels() {
     )
 }
 
-export default connect()(TajweedLevels)
+function mapStateToProps({ tajweed }) {
+    return {
+        levels: tajweed !== null ? tajweed.levels : {},
+    }
+}
+
+export default connect(mapStateToProps)(TajweedLevels)

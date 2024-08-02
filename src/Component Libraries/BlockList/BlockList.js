@@ -7,7 +7,7 @@ import PaginationLink from "../Pagination/Pagination";
 import $ from "jquery";
 import { handleUnblock } from "../../actions/user";
 
-function BlockList () {
+function BlockList ({ authedUser, users }) {
 
     let [search, setSearch] = useState("");
     let [userCheck, setUserCheck] = useState(false);
@@ -16,9 +16,6 @@ function BlockList () {
     let lastIndex = currentPage * 10;
     let firstIndex = lastIndex - 10;
 
-    let authedUser = JSON.parse(localStorage.getItem("authedUser")) !== null ? 
-    JSON.parse(localStorage.getItem("authedUser"))[0] : null;
-    let users = JSON.parse(localStorage.getItem("users"));
     let blocked = users[authedUser].blockList;
     let blockedUsers = blocked.map((block) => users[block]);
 
@@ -190,4 +187,11 @@ function BlockList () {
     )
 };
 
-export default connect()(BlockList)
+function mapStateToProps({users, authedUser}) {
+    return {
+        users,
+        authedUser: authedUser !== null ? authedUser[0] : null
+    }
+}
+
+export default connect(mapStateToProps)(BlockList)

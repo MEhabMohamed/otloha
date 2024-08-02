@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
 import { Grid } from "@mui/material";
 import Paper from '@mui/material/Paper';
@@ -10,52 +10,14 @@ import CountrySelector from "../Component Libraries/CountrySelect/CountrySelecto
 import Locales from "../Component Libraries/Language/Language";
 import GenderSelect from "../Component Libraries/GenderSelect/GenderSelect";
 import HomeData from "../Component Libraries/HomeData/HomeData";
-import { ClientId, gapiLoaded, gisLoaded, handleAuthClick, handleCallbackResponse, handleSignoutClick } from "../helpers/drive";
 
-function HomePage ({ theme }) {
-
-    /* global gapi */
-    /* global google */
+function HomePage ({ theme, users, recitations }) {
 
     let [fromDate, setFromDate] = useState(null);
     let [toDate, setToDate] = useState(null);
     let [filteredCountry, setCountry] = useState(null);
     let [lang, setLang] = useState('arEG');
     let [gender , setGender] = useState('');
-
-    function handleDeleteFile(fileId) {
-        let request = gapi.client.drive.files.delete({
-          'fileId': fileId
-        });
-        request.execute((resp) => {
-            console.log(resp)
-        });
-    }
-
-    useEffect(() => {
-        
-        google.accounts.id.initialize({
-            client_id: ClientId,
-            callback: handleCallbackResponse
-        })
-
-        google.accounts.id.renderButton(
-            document.getElementById('signInDiv'),
-            { theme: "outline", size: "large" }
-        )
-
-        gapiLoaded();
-        gisLoaded();
-        document.getElementById('authorize_button').style.display = 'block';
-
-        /**
-         * Enables user interaction after all libraries are loaded.
-         */
-
-    }, [])
-    
-    let users = JSON.parse(localStorage.getItem("users"));
-    let recitations = JSON.parse(localStorage.getItem("recitations"));
 
     function filteredUser() {
         return {
@@ -406,33 +368,15 @@ function HomePage ({ theme }) {
                     ]}  
                 />
             </Grid>
-            <div id="signInDiv"></div>
-            <button
-                id="authorize_button"
-                onClick={handleAuthClick}
-                style={{
-                    display: "none"
-                }}
-            >
-                Authorize
-            </button>
-            <button
-                id="signout_button"
-                onClick={handleSignoutClick}
-                style={{
-                    display: "none"
-                }}
-            >
-                Sign Out
-            </button>
-            <button
-                onClick={() => handleDeleteFile("1ZEnPO4AgqwRUssvR-si-DhjQnzLhCt_4")}
-            >
-                Delete
-            </button>
-            <pre id="content" style={{whiteSpace: "pre-wrap"}}></pre>
         </Grid>
     )
 };
 
-export default connect()(HomePage)
+function mapStateToProps({users, recitations}) {
+    return {
+        users,
+        recitations
+    }
+}
+
+export default connect(mapStateToProps)(HomePage)

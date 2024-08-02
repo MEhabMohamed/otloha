@@ -8,13 +8,10 @@ import { handleAddBlock, handleUnblock } from '../../actions/user';
 
 const ITEM_HEIGHT = 48;
 
-function LongMenu({ id }) {
+function LongMenu({ id, users, authedUser}) {
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
-  let authedUser = JSON.parse(localStorage.getItem("authedUser")) !== null ? 
-  JSON.parse(localStorage.getItem("authedUser"))[0] : null;
-  let users = JSON.parse(localStorage.getItem("users"));
   const dispatch = useDispatch();
 
   const handleClick = (event) => {

@@ -21,7 +21,7 @@ import { Stack } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
 import { handleDeleteLesson } from '../../actions/tajweed';
 
-function TajweedLessons() {
+function TajweedLessons({ lessons }) {
 
     let [searchLesson, setSearchLesson] = useState('');
     const [page, setPage] = useState(0);
@@ -54,8 +54,6 @@ function TajweedLessons() {
     };
 
     const navigate = useNavigate();
-    let lessons = JSON.parse(localStorage.getItem('tajweed')) !== null ?
-    JSON.parse(localStorage.getItem('tajweed')).lessons : {}
 
     const columnsLesson = [
         { id: 'ID', label: 'ID', minWidth: 100 },
@@ -260,4 +258,10 @@ function TajweedLessons() {
     )
 }
 
-export default connect()(TajweedLessons)
+function mapStateToProps({ tajweed }) {
+    return {
+        lessons: tajweed !== null ? tajweed.lessons : {}
+    }
+}
+
+export default connect(mapStateToProps)(TajweedLessons)
