@@ -1,7 +1,6 @@
 {
   "name": "otloha",
   "version": "0.1.0",
-  "homepage": "https://otloha-7sbwb5oti-mehabmohameds-projects.vercel.app",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.11.4",
