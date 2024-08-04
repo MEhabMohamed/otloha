@@ -236,9 +236,9 @@ function Recitation({id, users, recitations, authedUser}) {
                         users[Object.keys(users)
                        .filter((id) => users[id].name === recitation.teacher.name)
                        .toString()].avatar) !== "" ?
-                       URL.createObjectURL(users[Object.keys(users)
+                       users[Object.keys(users)
                        .filter((id) => users[id].name === recitation.teacher.name)
-                       .toString()].avatar) :
+                       .toString()].avatar :
                         (recitation.teacher.avatar !== "" ? recitation.teacher.avatar : 
                         (users[Object.keys(users)
                        .filter((id) => users[id].name === recitation.teacher.name)

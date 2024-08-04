@@ -109,7 +109,7 @@ function Student({
                 }}
                 alt="student-pic"
                 src={users[id].avatar !== ""
-                ? URL.createObjectURL(users[id].avatar)
+                ? users[id].avatar
                 : (users[id].gender === 'male' ? male : female)}
               />
             </ButtonBase>
