@@ -37,7 +37,7 @@ function NewRecitation({ authedUser }) {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    $.getJSON('http://api.alquran.cloud/v1/quran/quran-uthmani',
+    $.getJSON('https://drive.google.com/file/d/1xJGW2ICUiISO_dvmQ0H-2QvLkAwudem3/view?usp=sharing',
     (data) => setMushaf(data));
 
     function handleSubmitText (e) {
