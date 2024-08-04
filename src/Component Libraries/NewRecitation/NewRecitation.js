@@ -11,6 +11,7 @@ import plus from "../../Resources/plus.png";
 import AlertShow from "../Alert/AlertShow";
 import BasicAlerts from "../Alert/Alert";
 import { useNavigate } from 'react-router-dom';
+import mushaf from '../../helpers/Mushaf.json'
 
 function NewRecitation({ authedUser }) {
 
@@ -18,7 +19,6 @@ function NewRecitation({ authedUser }) {
     let [narration, setNarration] = useState('');
     let [playback, setPlayback] = useState('');
     let [alarm, setAlarm] = useState('');
-    let [mushaf, setMushaf] = React.useState('');
     let [surah, setSurah] = useState('');
     let [fromAyah, setFromAyah] = useState('');
     let [fromAyahNumber, setFromAyahNumber] = useState(0);
@@ -36,9 +36,6 @@ function NewRecitation({ authedUser }) {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
-    $.getJSON('https://drive.google.com/file/d/1xJGW2ICUiISO_dvmQ0H-2QvLkAwudem3/view?usp=sharing',
-    (data) => setMushaf(data));
 
     function handleSubmitText (e) {
         e.preventDefault();
