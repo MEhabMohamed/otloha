@@ -126,8 +126,8 @@ function mapStateToProps({ authedUser, admins, recitations, tajweed }) {
     authedUser: authedUser !== null ? authedUser[0] : null,
     admins: Object.keys(admins),
     recitations: Object.keys(recitations),
-    levels: tajweed !== null ? Object.values(tajweed.levels) : {},
-    lessons: tajweed !== null ? Object.values(tajweed.lessons) : {}
+    levels: tajweed.levels !== undefined ? Object.values(tajweed.levels) : [],
+    lessons: tajweed.lessons !== undefined ? Object.values(tajweed.lessons) : []
   }
 }
 

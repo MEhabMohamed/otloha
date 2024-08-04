@@ -7,8 +7,7 @@ import { receiveUsers } from "./user"
 export default function handleInitialData () {
     return (dispatch) => {
         return getInitialData()
-            .then(({ recitations, users, admins,
-                tajweed
+            .then(({ recitations, users, admins, tajweed
               }) => {
             dispatch(receiveRecitations(recitations));
             dispatch(receiveUsers(users));
