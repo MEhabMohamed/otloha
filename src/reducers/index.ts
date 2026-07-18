@@ -6,9 +6,9 @@ import admins from './admin';
 import tajweed from './tajweed';
 
 export default combineReducers({
-    recitations,
-    users,
-    authedUser,
-    admins,
-    tajweed
-})
+  recitations,
+  users,
+  authedUser,
+  admins,
+  tajweed
+});

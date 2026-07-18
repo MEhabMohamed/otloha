@@ -40,7 +40,7 @@ const showPassStyle = {
   display: 'none'
 }
 
-function SignUp() {
+function SignUp({ users }) {
 
     let [newFirstName, setnewFirstName] = React.useState('');
     let [newLastName, setnewLastName] = React.useState('');
@@ -53,7 +53,6 @@ function SignUp() {
     let [bDate, setBDate] = React.useState(null);
     let [emailAlert, setEmailAlert] = React.useState('');
     let [passAlert, setPassAlert] = React.useState('');
-    let users = JSON.parse(localStorage.getItem("users"));
     let usermails = users !== (undefined || null)
     ? Object.values(users).map(({email}) => email) : [];
     const dispatch = useDispatch();
@@ -385,4 +384,10 @@ function SignUp() {
   );
 }
 
-export default connect()(SignUp)
+function mapStateToProps({ users }) {
+  return {
+    users
+  };
+}
+
+export default connect(mapStateToProps)(SignUp)

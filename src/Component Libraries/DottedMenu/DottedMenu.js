@@ -4,11 +4,11 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { connect, useDispatch } from 'react-redux';
-import { handleAddBlock, handleUnblock } from '../../actions/user';
+import { handleAddBlock, handleUnblock, handleDeleteUser } from '../../actions/user';
 
 const ITEM_HEIGHT = 48;
 
-function LongMenu({ id, users, authedUser}) {
+function LongMenu({ id, users, authedUser, admins}) {
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -64,15 +64,30 @@ function LongMenu({ id, users, authedUser}) {
             }}>
             Block
           </MenuItem>}
+        {admins.includes(authedUser) && (
+          <MenuItem
+            key={"delete"}
+            onClick={() => {
+              if (window.confirm("Are you sure you want to delete this user? This cannot be undone.")) {
+                dispatch(handleDeleteUser(id));
+              }
+              return setAnchorEl(null);
+            }}
+            sx={{ color: 'red' }}
+          >
+            Delete User
+          </MenuItem>
+        )}
       </Menu>
     </div>
   );
 }
 
-function mapStateToProps ({users , authedUser}) {
+function mapStateToProps ({users , authedUser, admins}) {
   return {
       users,
       authedUser: authedUser !== null ? authedUser[0] : null,
+      admins: Object.keys(admins),
   }
 };
 

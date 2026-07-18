@@ -13,7 +13,8 @@ import MediaPlayer from '../MediaPlayer/MediaPlayer';
 import Evaluate from '../Evaluation/Evaluation';
 import Button from '@mui/material/Button';
 import BasicRating from '../Rating/Rating';
-import { handleAddRecitationRating, handleEvaluateRecitation } from '../../actions/recitation';
+import { handleAddRecitationRating, handleEvaluateRecitation, handleDeleteRecitation } from '../../actions/recitation';
+import { useNavigate, useParams } from 'react-router-dom';
 import AlertShow from '../Alert/AlertShow';
 import star from '../../Resources/star-light.png';
 import $ from 'jquery';
@@ -28,23 +29,41 @@ const Img = styled('img')({
   borderRadius: '50%',
 });
 
-function RecitationProfile({ id, users, authedUser, recitations }) {
+function RecitationProfile({ id: propId, users, authedUser, recitations, admins }) {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { id: paramId } = useParams();
+  const id = propId || paramId;
 
   let [evaluation, setEvaluation] = React.useState('');
   let [report, setReport] = React.useState('');
   let [evaluationAlert, setEvaluationAlert] = React.useState('');
 
-  let index = Object.keys(recitations).length
-  - Object.keys(recitations).sort((a, b,) =>
-  recitations[b].createdAt - recitations[a].createdAt).indexOf(id);
-
   let recitation = recitations[id];
 
+  if (!recitation || !users[recitation.authed] || !users[authedUser]) {
+    return (
+      <Typography sx={{ pt: 12, textAlign: "center", fontWeight: 500 }}>
+        Loading recitation details...
+      </Typography>
+    );
+  }
+
+  let index = Object.keys(recitations).length
+  - Object.keys(recitations).sort((a, b) =>
+  (recitations[b]?.createdAt || 0) - (recitations[a]?.createdAt || 0)).indexOf(id);
+
   let ratingSum = 0;
+  if (recitation.raters) {
+    recitation.raters.forEach(({ rating }) => {
+      ratingSum += rating;
+    });
+  }
 
-  recitation !== null && recitation.raters.map(({rating}) => ratingSum += rating);
-
-  const dispatch = useDispatch();
+  const teacherId = Object.keys(users).find(
+    (uid) => users[uid] && users[uid].name === (recitation.teacher && recitation.teacher.name)
+  );
+  const teacherUser = teacherId ? users[teacherId] : null;
 
   function handleEvaluation(e) {
       e.preventDefault();
@@ -243,19 +262,13 @@ function RecitationProfile({ id, users, authedUser, recitations }) {
                     <Img
                       sx={{ width: 70, height: 70 }}
                       alt="teacher-pic"
-                      src={(recitation.teacher.name && 
-                        users[Object.keys(users)
-                       .filter((id) => users[id].name === recitation.teacher.name)
-                       .toString()].avatar) !== "" ?
-                       users[Object.keys(users)
-                       .filter((id) => users[id].name === recitation.teacher.name)
-                       .toString()].avatar :
-                        (recitation.teacher.avatar !== ""
-                        ? recitation.teacher.avatar : 
-                        (users[Object.keys(users)
-                       .filter((id) => users[id].name === recitation.teacher.name)
-                       .toString()]
-                       .gender === 'male' ? male : female))} 
+                      src={
+                        (teacherUser && teacherUser.avatar !== "")
+                        ? teacherUser.avatar
+                        : (recitation.teacher.avatar !== ""
+                          ? recitation.teacher.avatar
+                          : (teacherUser && teacherUser.gender === 'female' ? female : male))
+                      }
                     />
                   </ButtonBase>
                 </Grid>
@@ -282,16 +295,40 @@ function RecitationProfile({ id, users, authedUser, recitations }) {
                 </Typography>
                 </Grid>
             </Grid>)}
+            {admins.includes(authedUser) && (
+              <Grid item xs={12} sx={{ mt: 3 }}>
+                <Button
+                  variant="contained"
+                  color="error"
+                  fullWidth
+                  onClick={() => {
+                    if (window.confirm("Are you sure you want to delete this recitation? This cannot be undone.")) {
+                      dispatch(handleDeleteRecitation(id));
+                      navigate('/recitations');
+                    }
+                  }}
+                  sx={{
+                    backgroundColor: "#d32f2f",
+                    "&:hover": {
+                      backgroundColor: "#c62828",
+                    }
+                  }}
+                >
+                  Delete Recitation
+                </Button>
+              </Grid>
+            )}
           </Grid>
         </Grid>
   );
 }
 
-function mapStateToProps({users, authedUser, recitations}) {
+function mapStateToProps({users, authedUser, recitations, admins}) {
   return {
       users,
       authedUser: authedUser !== null ? authedUser[0] : null,
-      recitations
+      recitations,
+      admins: Object.keys(admins)
   }
 }
 
