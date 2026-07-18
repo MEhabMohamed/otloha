@@ -94,6 +94,24 @@ function SignInSide({ users }) {
       return;
     }
 
+    if (provider === 'twitter') {
+      const rootUrl = 'https://twitter.com/i/oauth2/authorize';
+      const codeVerifier = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      localStorage.setItem('twitter_code_verifier', codeVerifier);
+      const options = {
+        response_type: 'code',
+        client_id: 'YXBFWk9xdE5MMmt6ZkpiOHV4VFk6MTpjaQ',
+        redirect_uri: 'http://localhost:3000',
+        scope: 'users.read tweet.read offline.access',
+        state: 'twitter',
+        code_challenge: codeVerifier,
+        code_challenge_method: 'plain',
+      };
+      const qs = new URLSearchParams(options);
+      window.location.href = `${rootUrl}?${qs.toString()}`;
+      return;
+    }
+
     try {
       const tokenRes = await fetch(`/api/auth/social-token?provider=${provider}`);
       if (!tokenRes.ok) {

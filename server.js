@@ -975,6 +975,144 @@ app.post('/api/auth/facebook-register', async (req, res) => {
   }
 });
 
+// Real Twitter login endpoint (exchanges auth code, checks user existence)
+app.post('/api/auth/twitter-login', async (req, res) => {
+  const { code, codeVerifier } = req.body;
+  if (!code || !codeVerifier) {
+    return res.status(400).json({ error: 'Code and codeVerifier are required' });
+  }
+
+  try {
+    const authHeader = 'Basic ' + Buffer.from(`${process.env.TWITTER_CLIENT_ID || ''}:${process.env.TWITTER_CLIENT_SECRET || ''}`).toString('base64');
+    
+    const tokenRes = await fetch('https://api.twitter.com/2/oauth2/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': authHeader,
+      },
+      body: new URLSearchParams({
+        code,
+        grant_type: 'authorization_code',
+        redirect_uri: 'http://localhost:3000',
+        code_verifier: codeVerifier,
+      }),
+    });
+
+    if (!tokenRes.ok) {
+      const errorText = await tokenRes.text();
+      console.error('Twitter token exchange error:', errorText);
+      return res.status(tokenRes.status).json({ error: 'Failed to exchange Twitter code' });
+    }
+
+    const tokens = await tokenRes.json();
+
+    const profileRes = await fetch('https://api.twitter.com/2/users/me?' + new URLSearchParams({
+      'user.fields': 'profile_image_url,username,name',
+    }), {
+      headers: {
+        Authorization: `Bearer ${tokens.access_token}`,
+      },
+    });
+
+    if (!profileRes.ok) {
+      return res.status(profileRes.status).json({ error: 'Failed to fetch Twitter profile' });
+    }
+
+    const responseData = await profileRes.json();
+    const profile = responseData.data;
+    if (!profile) {
+      return res.status(500).json({ error: 'No user profile data returned from Twitter' });
+    }
+
+    const userId = `twitter_${profile.id}`;
+
+    const userExist = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
+    if (userExist.rows.length > 0) {
+      const user = userExist.rows[0];
+      const sessionPayload = {
+        id: userId,
+        exp: Date.now() + 24 * 60 * 60 * 1000
+      };
+      const sessionToken = signToken(sessionPayload);
+      res.cookie('session_token', sessionToken, {
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000,
+        path: '/'
+      });
+      return res.json({ registered: true, id: userId, user });
+    } else {
+      const avatarUrl = profile.profile_image_url ? profile.profile_image_url.replace('_normal', '_400x400') : '';
+      return res.json({
+        registered: false,
+        id: userId,
+        profile: {
+          name: profile.name || profile.username,
+          email: `${profile.username || 'twitter_user'}@twitter.com`,
+          avatar: avatarUrl,
+        }
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Real Twitter register endpoint (saves onboarding profile)
+app.post('/api/auth/twitter-register', async (req, res) => {
+  const { id, name, email, avatar, gender, country, description, narration, lang, bDate, due } = req.body;
+
+  try {
+    await pool.query(
+      'INSERT INTO users (id, name, email, gender, avatar, country, password, description, narration, lang, "bDate", status, recitations, "ratedRecitations", "joiningDate", verified, level, active, raters, rated, "blockList", due) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)',
+      [
+        id,
+        name,
+        email,
+        gender,
+        avatar,
+        JSON.stringify(country),
+        'social_login_no_password',
+        description,
+        narration,
+        lang,
+        bDate,
+        'Active',
+        '[]',
+        '[]',
+        Date.now(),
+        true,
+        'Beginner',
+        true,
+        '[]',
+        '[]',
+        '[]',
+        due
+      ]
+    );
+
+    const sessionPayload = {
+      id,
+      exp: Date.now() + 24 * 60 * 60 * 1000
+    };
+    const sessionToken = signToken(sessionPayload);
+    res.cookie('session_token', sessionToken, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000,
+      path: '/'
+    });
+
+    const userRes = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+    const user = userRes.rows[0];
+
+    res.json({ success: true, id, user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Session management
 app.post('/api/session', (req, res) => {
   const { id } = req.body;

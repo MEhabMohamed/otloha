@@ -67,7 +67,13 @@ export default function CompleteProfile() {
     };
 
     try {
-      const endpoint = profile.provider === 'facebook' ? '/api/auth/facebook-register' : '/api/auth/google-register';
+      let endpoint = '/api/auth/google-register';
+      if (profile.provider === 'facebook') {
+        endpoint = '/api/auth/facebook-register';
+      } else if (profile.provider === 'twitter') {
+        endpoint = '/api/auth/twitter-register';
+      }
+      
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {

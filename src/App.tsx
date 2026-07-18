@@ -66,18 +66,31 @@ function App({ initial, authedUser, recitations, levels, lessons }: any) {
         if (code) {
           window.history.replaceState({}, document.title, window.location.pathname);
           setLoading(true);
-          const isFacebook = state === 'facebook';
-          const endpoint = isFacebook ? '/api/auth/facebook-login' : '/api/auth/google-login';
+          
+          let endpoint = '/api/auth/google-login';
+          let bodyPayload: any = { code };
+          let provider = 'google';
+          
+          if (state === 'facebook') {
+            endpoint = '/api/auth/facebook-login';
+            provider = 'facebook';
+          } else if (state === 'twitter') {
+            endpoint = '/api/auth/twitter-login';
+            provider = 'twitter';
+            const codeVerifier = localStorage.getItem('twitter_code_verifier') || '';
+            bodyPayload.codeVerifier = codeVerifier;
+            localStorage.removeItem('twitter_code_verifier');
+          }
           
           fetch(endpoint, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ code }),
+            body: JSON.stringify(bodyPayload),
           })
             .then((res) => {
-              if (!res.ok) throw new Error(`${isFacebook ? 'Facebook' : 'Google'} OAuth failed`);
+              if (!res.ok) throw new Error(`${provider.charAt(0).toUpperCase() + provider.slice(1)} OAuth failed`);
               return res.json();
             })
             .then((data) => {
@@ -89,7 +102,7 @@ function App({ initial, authedUser, recitations, levels, lessons }: any) {
                   name: data.profile.name,
                   email: data.profile.email,
                   avatar: data.profile.avatar,
-                  provider: isFacebook ? 'facebook' : 'google',
+                  provider: provider,
                 }));
                 window.location.href = '/complete-profile';
               }
