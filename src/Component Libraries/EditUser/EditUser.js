@@ -22,6 +22,7 @@ function EditUser({ widthSet, users, authedUser }) {
     let [passAlert, setPassAlert] = useState('');
 
     const dispatch = useDispatch();
+    const currentUser = users[authedUser] || { avatar: '', gender: 'male', password: '' };
 
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -42,7 +43,7 @@ function EditUser({ widthSet, users, authedUser }) {
     function submitPassEditer(e) {
         e.preventDefault();
         if (pass.length >= 8) {
-            if (pass === users[authedUser].password) {
+            if (pass === currentUser.password) {
                 AlertShow($('#edit-pass-alert'), setPassAlert, "Password did not change!");
             } else {
             dispatch(handleEditPassword(authedUser, pass));
@@ -94,9 +95,9 @@ function EditUser({ widthSet, users, authedUser }) {
                     <MenuItem sx={{ justifyContent: "center" }}>
                         <img 
                             id="editedPic" 
-                            src={users[authedUser].avatar !== ""
-                            ? users[authedUser].avatar
-                            : (users[authedUser].gender === 'male' ? male : female)}
+                            src={currentUser.avatar !== ""
+                            ? currentUser.avatar
+                            : (currentUser.gender === 'male' ? male : female)}
                             alt="no internet :(" 
                             style={{ borderRadius: '50%',
                             width: 80,

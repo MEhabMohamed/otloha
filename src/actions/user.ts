@@ -12,7 +12,7 @@ export const ADD_USER_RATING = 'ADD_USER_RATING';
 export const ADD_TEACHER_EVALUATION = 'ADD_TEACHER_EVALUATION';
 export const DELETE_USER = 'DELETE_USER';
 
-function addUser(user: any) {
+export function addUser(user: any) {
   return {
     type: ADD_USER,
     user

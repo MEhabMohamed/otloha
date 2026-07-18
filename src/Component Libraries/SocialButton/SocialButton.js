@@ -1,12 +1,11 @@
 import Button from '@mui/material/Button';
 
-export default function SocialButton({ source , alternate , text}) {
+export default function SocialButton({ source , alternate , text, onClick}) {
     return (
         <Button 
-        component="a"
-        href='#'
         color="primary"
         variant="outlined"
+        onClick={onClick}
         sx={{
             ":hover": {
                 color: 'black'

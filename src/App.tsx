@@ -19,6 +19,7 @@ const NewRecitation = lazy(() => import('./Component Libraries/NewRecitation/New
 const SignUp = lazy(() => import('./Component Libraries/SignUp/SignUp'));
 const SignInSide = lazy(() => import('./Component Libraries/SignIn/SignIn'));
 const StudentDashboard = lazy(() => import('./components/StudentDashboard'));
+const CompleteProfile = lazy(() => import('./Component Libraries/SignUp/CompleteProfile'));
 const HomePage = lazy(() => import('./components/HomePage'));
 const RecitationProfile = lazy(() => import('./Component Libraries/Recitation/RecitationProfile'));
 const BlockList = lazy(() => import('./Component Libraries/BlockList/BlockList'));
@@ -58,7 +59,49 @@ function App({ initial, authedUser, recitations, levels, lessons }: any) {
 
   useEffect(() => {
     initial()
-      .then(() => setLoading(false))
+      .then(() => {
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('code');
+        const state = params.get('state');
+        if (code) {
+          window.history.replaceState({}, document.title, window.location.pathname);
+          setLoading(true);
+          const isFacebook = state === 'facebook';
+          const endpoint = isFacebook ? '/api/auth/facebook-login' : '/api/auth/google-login';
+          
+          fetch(endpoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ code }),
+          })
+            .then((res) => {
+              if (!res.ok) throw new Error(`${isFacebook ? 'Facebook' : 'Google'} OAuth failed`);
+              return res.json();
+            })
+            .then((data) => {
+              if (data.registered) {
+                initial().then(() => setLoading(false)).catch(() => setLoading(false));
+              } else {
+                sessionStorage.setItem('onboarding_profile', JSON.stringify({
+                  id: data.id,
+                  name: data.profile.name,
+                  email: data.profile.email,
+                  avatar: data.profile.avatar,
+                  provider: isFacebook ? 'facebook' : 'google',
+                }));
+                window.location.href = '/complete-profile';
+              }
+            })
+            .catch((err) => {
+              console.error(err);
+              setLoading(false);
+            });
+        } else {
+          setLoading(false);
+        }
+      })
       .catch(() => setLoading(false));
   }, [initial]);
 
@@ -123,10 +166,12 @@ function App({ initial, authedUser, recitations, levels, lessons }: any) {
             <Routes>
               {isAuthed === null && <Route path="/createuser" element={<SignUp />} />}
               {isAuthed === null && <Route path="/" element={<SignInSide />} />}
+              {isAuthed === null && <Route path="/complete-profile" element={<CompleteProfile />} />}
               <Route element={<PrivateWrapper auth={isAuthed} />}>
                 <Route path="*" element={<NotFound />} />
                 <Route path="/" element={<HomePage theme={mode} />} />
                 <Route path="/createuser" element={<SignUp />} />
+                <Route path="/complete-profile" element={<CompleteProfile />} />
                 <Route path="/new-recitation" element={<NewRecitation />} />
                 <Route path="new-admin" element={<SetNewAdmin />} />
                 <Route path="/teachers" element={<TeacherDashboard />} />

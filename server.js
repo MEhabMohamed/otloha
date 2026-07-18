@@ -4,6 +4,7 @@ const { Pool } = require('pg');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const app = express();
 const port = process.env.SERVER_PORT || 5000;
@@ -579,21 +580,429 @@ app.put('/api/users/:id/status', async (req, res) => {
   }
 });
 
-let activeSessionUser = null;
+const JWT_SECRET = process.env.JWT_SECRET || 'otloha-super-secret-key-1234567890';
+
+// Simple JWT-like tokens using HMAC SHA256
+function signToken(payload) {
+  const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
+  const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const signature = crypto.createHmac('sha256', JWT_SECRET)
+    .update(`${header}.${body}`)
+    .digest('base64url');
+  return `${header}.${body}.${signature}`;
+}
+
+function verifyToken(token) {
+  try {
+    if (!token) return null;
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const [header, body, signature] = parts;
+    const expectedSignature = crypto.createHmac('sha256', JWT_SECRET)
+      .update(`${header}.${body}`)
+      .digest('base64url');
+    if (signature !== expectedSignature) return null;
+    const payload = JSON.parse(Buffer.from(body, 'base64url').toString('utf8'));
+    if (payload.exp && Date.now() > payload.exp) {
+      return null; // Expired
+    }
+    return payload;
+  } catch (err) {
+    return null;
+  }
+}
+
+// Cookie parser helper
+function getCookie(req, name) {
+  const rc = req.headers.cookie;
+  if (!rc) return null;
+  const cookies = rc.split(';').reduce((acc, cookie) => {
+    const parts = cookie.split('=');
+    acc[parts.shift().trim()] = decodeURIComponent(parts.join('='));
+    return acc;
+  }, {});
+  return cookies[name] || null;
+}
+
+const MOCK_PROFILES = {
+  google: {
+    id: 'google_mock_user',
+    name: 'Google Student',
+    email: 'google.student@gmail.com',
+    avatar: 'https://cdn-icons-png.flaticon.com/512/300/300221.png',
+    description: 'student',
+    gender: 'male',
+  },
+  facebook: {
+    id: 'facebook_mock_user',
+    name: 'Facebook Student',
+    email: 'facebook.student@gmail.com',
+    avatar: 'https://cdn-icons-png.flaticon.com/512/124/124010.png',
+    description: 'student',
+    gender: 'female',
+  },
+  twitter: {
+    id: 'twitter_mock_user',
+    name: 'Twitter Student',
+    email: 'twitter.student@gmail.com',
+    avatar: 'https://cdn-icons-png.flaticon.com/512/733/733579.png',
+    description: 'student',
+    gender: 'male',
+  }
+};
+
+// Social token endpoint
+app.get('/api/auth/social-token', (req, res) => {
+  const { provider } = req.query;
+  const profile = MOCK_PROFILES[provider];
+  if (!profile) {
+    return res.status(400).json({ error: 'Invalid social provider' });
+  }
+  const payload = {
+    ...profile,
+    exp: Date.now() + 24 * 60 * 60 * 1000
+  };
+  const token = signToken(payload);
+  res.json({ token });
+});
+
+// Social login endpoint
+app.post('/api/auth/social-login', async (req, res) => {
+  const { token } = req.body;
+  const payload = verifyToken(token);
+  if (!payload) {
+    return res.status(401).json({ error: 'Invalid or expired social token' });
+  }
+
+  try {
+    const userExist = await pool.query('SELECT * FROM users WHERE id = $1', [payload.id]);
+    if (userExist.rows.length === 0) {
+      const defaultCountry = { code: 'US', label: 'United States', phone: '1' };
+      await pool.query(
+        'INSERT INTO users (id, name, email, gender, avatar, country, password, description, narration, lang, "bDate", status, recitations, "ratedRecitations", "joiningDate", verified, level, active, raters, rated, "blockList") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)',
+        [
+          payload.id,
+          payload.name,
+          payload.email,
+          payload.gender,
+          payload.avatar,
+          JSON.stringify(defaultCountry),
+          'social_login_no_password',
+          payload.description,
+          'Hafs',
+          'enUS',
+          String(Date.now()),
+          'Active',
+          '[]',
+          '[]',
+          Date.now(),
+          true,
+          'Beginner',
+          true,
+          '[]',
+          '[]',
+          '[]'
+        ]
+      );
+    }
+
+    const sessionPayload = {
+      id: payload.id,
+      exp: Date.now() + 24 * 60 * 60 * 1000
+    };
+    const sessionToken = signToken(sessionPayload);
+    res.cookie('session_token', sessionToken, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000,
+      path: '/'
+    });
+
+    const userRes = await pool.query('SELECT * FROM users WHERE id = $1', [payload.id]);
+    const user = userRes.rows[0];
+
+    res.json({ success: true, id: payload.id, user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Real Google login endpoint (exchanges auth code, checks user existence)
+app.post('/api/auth/google-login', async (req, res) => {
+  const { code } = req.body;
+  if (!code) {
+    return res.status(400).json({ error: 'Code is required' });
+  }
+
+  try {
+    const tokenRes = await fetch(process.env.GOOGLE_TOKEN_URI || 'https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        code,
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET,
+        redirect_uri: 'http://localhost:3000',
+        grant_type: 'authorization_code',
+      }),
+    });
+
+    if (!tokenRes.ok) {
+      const errorText = await tokenRes.text();
+      console.error('Google token exchange error:', errorText);
+      return res.status(tokenRes.status).json({ error: 'Failed to exchange Google code' });
+    }
+
+    const tokens = await tokenRes.json();
+
+    const profileRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: {
+        Authorization: `Bearer ${tokens.access_token}`,
+      },
+    });
+
+    if (!profileRes.ok) {
+      return res.status(profileRes.status).json({ error: 'Failed to fetch Google profile' });
+    }
+
+    const profile = await profileRes.json();
+    const userId = `google_${profile.sub}`;
+
+    const userExist = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
+    if (userExist.rows.length > 0) {
+      const user = userExist.rows[0];
+      const sessionPayload = {
+        id: userId,
+        exp: Date.now() + 24 * 60 * 60 * 1000
+      };
+      const sessionToken = signToken(sessionPayload);
+      res.cookie('session_token', sessionToken, {
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000,
+        path: '/'
+      });
+      return res.json({ registered: true, id: userId, user });
+    } else {
+      return res.json({
+        registered: false,
+        id: userId,
+        profile: {
+          name: profile.name,
+          email: profile.email,
+          avatar: profile.picture || ''
+        }
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Real Google register endpoint (saves onboarding profile)
+app.post('/api/auth/google-register', async (req, res) => {
+  const { id, name, email, avatar, gender, country, description, narration, lang, bDate, due } = req.body;
+
+  try {
+    await pool.query(
+      'INSERT INTO users (id, name, email, gender, avatar, country, password, description, narration, lang, "bDate", status, recitations, "ratedRecitations", "joiningDate", verified, level, active, raters, rated, "blockList", due) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)',
+      [
+        id,
+        name,
+        email,
+        gender,
+        avatar,
+        JSON.stringify(country),
+        'social_login_no_password',
+        description,
+        narration,
+        lang,
+        bDate,
+        'Active',
+        '[]',
+        '[]',
+        Date.now(),
+        true,
+        'Beginner',
+        true,
+        '[]',
+        '[]',
+        '[]',
+        due
+      ]
+    );
+
+    const sessionPayload = {
+      id,
+      exp: Date.now() + 24 * 60 * 60 * 1000
+    };
+    const sessionToken = signToken(sessionPayload);
+    res.cookie('session_token', sessionToken, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000,
+      path: '/'
+    });
+
+    const userRes = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+    const user = userRes.rows[0];
+
+    res.json({ success: true, id, user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Real Facebook login endpoint (exchanges auth code, checks user existence)
+app.post('/api/auth/facebook-login', async (req, res) => {
+  const { code } = req.body;
+  if (!code) {
+    return res.status(400).json({ error: 'Code is required' });
+  }
+
+  try {
+    const tokenRes = await fetch('https://graph.facebook.com/v18.0/oauth/access_token?' + new URLSearchParams({
+      client_id: process.env.FACEBOOK_APP_ID || '',
+      redirect_uri: 'http://localhost:3000',
+      client_secret: process.env.FACEBOOK_APP_SECRET || '',
+      code,
+    }));
+
+    if (!tokenRes.ok) {
+      const errorText = await tokenRes.text();
+      console.error('Facebook token exchange error:', errorText);
+      return res.status(tokenRes.status).json({ error: 'Failed to exchange Facebook code' });
+    }
+
+    const tokens = await tokenRes.json();
+
+    const profileRes = await fetch('https://graph.facebook.com/me?' + new URLSearchParams({
+      fields: 'id,name,email,picture.type(large)',
+      access_token: tokens.access_token,
+    }));
+
+    if (!profileRes.ok) {
+      return res.status(profileRes.status).json({ error: 'Failed to fetch Facebook profile' });
+    }
+
+    const profile = await profileRes.json();
+    const userId = `facebook_${profile.id}`;
+
+    const userExist = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
+    if (userExist.rows.length > 0) {
+      const user = userExist.rows[0];
+      const sessionPayload = {
+        id: userId,
+        exp: Date.now() + 24 * 60 * 60 * 1000
+      };
+      const sessionToken = signToken(sessionPayload);
+      res.cookie('session_token', sessionToken, {
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000,
+        path: '/'
+      });
+      return res.json({ registered: true, id: userId, user });
+    } else {
+      return res.json({
+        registered: false,
+        id: userId,
+        profile: {
+          name: profile.name,
+          email: profile.email || '',
+          avatar: profile.picture?.data?.url || ''
+        }
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Real Facebook register endpoint (saves onboarding profile)
+app.post('/api/auth/facebook-register', async (req, res) => {
+  const { id, name, email, avatar, gender, country, description, narration, lang, bDate, due } = req.body;
+
+  try {
+    await pool.query(
+      'INSERT INTO users (id, name, email, gender, avatar, country, password, description, narration, lang, "bDate", status, recitations, "ratedRecitations", "joiningDate", verified, level, active, raters, rated, "blockList", due) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)',
+      [
+        id,
+        name,
+        email,
+        gender,
+        avatar,
+        JSON.stringify(country),
+        'social_login_no_password',
+        description,
+        narration,
+        lang,
+        bDate,
+        'Active',
+        '[]',
+        '[]',
+        Date.now(),
+        true,
+        'Beginner',
+        true,
+        '[]',
+        '[]',
+        '[]',
+        due
+      ]
+    );
+
+    const sessionPayload = {
+      id,
+      exp: Date.now() + 24 * 60 * 60 * 1000
+    };
+    const sessionToken = signToken(sessionPayload);
+    res.cookie('session_token', sessionToken, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000,
+      path: '/'
+    });
+
+    const userRes = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+    const user = userRes.rows[0];
+
+    res.json({ success: true, id, user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // Session management
 app.post('/api/session', (req, res) => {
   const { id } = req.body;
-  activeSessionUser = id;
-  res.json({ success: true, id: activeSessionUser });
+  const sessionPayload = {
+    id,
+    exp: Date.now() + 24 * 60 * 60 * 1000
+  };
+  const sessionToken = signToken(sessionPayload);
+  res.cookie('session_token', sessionToken, {
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000,
+    path: '/'
+  });
+  res.json({ success: true, id });
 });
 
 app.get('/api/session', (req, res) => {
-  res.json({ id: activeSessionUser });
+  const token = getCookie(req, 'session_token');
+  const payload = verifyToken(token);
+  if (payload) {
+    res.json({ id: payload.id });
+  } else {
+    res.json({ id: null });
+  }
 });
 
 app.delete('/api/session', (req, res) => {
-  activeSessionUser = null;
+  res.clearCookie('session_token', { path: '/' });
   res.json({ success: true });
 });
 

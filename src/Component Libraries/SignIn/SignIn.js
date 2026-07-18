@@ -14,6 +14,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import validateUser from './userValidation';
 import { setAuthedUser } from '../../actions/authedUsers';
+import { addUser } from '../../actions/user';
 import BasicAlerts from '../Alert/Alert';
 import google from '../../Resources/google.png';
 import fb from '../../Resources/facebook.png';
@@ -57,6 +58,70 @@ function SignInSide({ users }) {
       navigate,
       setEmailValidateAlert,
       setPassValidateAlert)
+  };
+
+  const handleSocialLogin = async (provider) => {
+    if (provider === 'google') {
+      const rootUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
+      const options = {
+        redirect_uri: 'http://localhost:3000',
+        client_id: '185798045507-mabt0pd37023l4vt0qupra8frgvsgmgm.apps.googleusercontent.com',
+        access_type: 'offline',
+        response_type: 'code',
+        prompt: 'consent',
+        state: 'google',
+        scope: [
+          'https://www.googleapis.com/auth/userinfo.profile',
+          'https://www.googleapis.com/auth/userinfo.email',
+        ].join(' '),
+      };
+      const qs = new URLSearchParams(options);
+      window.location.href = `${rootUrl}?${qs.toString()}`;
+      return;
+    }
+
+    if (provider === 'facebook') {
+      const rootUrl = 'https://www.facebook.com/v18.0/dialog/oauth';
+      const options = {
+        redirect_uri: 'http://localhost:3000',
+        client_id: '1362513349344023',
+        response_type: 'code',
+        scope: 'email,public_profile',
+        state: 'facebook',
+      };
+      const qs = new URLSearchParams(options);
+      window.location.href = `${rootUrl}?${qs.toString()}`;
+      return;
+    }
+
+    try {
+      const tokenRes = await fetch(`/api/auth/social-token?provider=${provider}`);
+      if (!tokenRes.ok) {
+        throw new Error('Failed to fetch social token');
+      }
+      const { token } = await tokenRes.json();
+
+      const loginRes = await fetch('/api/auth/social-login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token }),
+      });
+
+      if (!loginRes.ok) {
+        throw new Error('Social login failed');
+      }
+      const { id, user } = await loginRes.json();
+
+      dispatch(addUser(user));
+      dispatch(setAuthedUser(id));
+      localStorage.setItem("authedUser", JSON.stringify([id, Date.now()]));
+      navigate('/');
+      $('#get-pic').show();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -109,9 +174,9 @@ function SignInSide({ users }) {
               my: 5,
               gap: 2
             }}>
-              <SocialButton source={google} alternate="google" text="Google" />
-              <SocialButton source={fb} alternate="facebook" text="Facebook" />
-              <SocialButton source={twitter} alternate="twitter" text="Twitter" />
+              <SocialButton source={google} alternate="google" text="Google" onClick={() => handleSocialLogin('google')} />
+              <SocialButton source={fb} alternate="facebook" text="Facebook" onClick={() => handleSocialLogin('facebook')} />
+              <SocialButton source={twitter} alternate="twitter" text="Twitter" onClick={() => handleSocialLogin('twitter')} />
             </Box>
             <Typography component="span" sx={{ fontSize: 12}}>
               or using Email
