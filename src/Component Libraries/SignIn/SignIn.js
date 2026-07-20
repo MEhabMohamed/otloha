@@ -24,6 +24,12 @@ import showPass from '../../helpers/showpass';
 import eye from '../../Resources/eye.png';
 import $ from 'jquery';
 import Hero from './Hero';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogActions from '@mui/material/DialogActions';
+
 
 const showPassStyle = {
   width: '15px',
@@ -37,6 +43,18 @@ const showPassStyle = {
 
 function SignInSide({ users }) {
 
+  const savedEmail = localStorage.getItem('rememberedEmail') || '';
+  const savedPassword = localStorage.getItem('rememberedPassword') || '';
+
+  const [email, setEmail] = React.useState(savedEmail);
+  const [password, setPassword] = React.useState(savedPassword);
+  const [remember, setRemember] = React.useState(!!savedEmail);
+
+  const [otpOpen, setOtpOpen] = React.useState(false);
+  const [otpCode, setOtpCode] = React.useState('');
+  const [otpStatus, setOtpStatus] = React.useState(''); // 'sending', 'sent', 'error', 'success', 'verifying'
+  const [otpError, setOtpError] = React.useState('');
+
   let [emailValidateAlert, setEmailValidateAlert] = React.useState('');
   let [passValidateAlert, setPassValidateAlert] = React.useState('');
 
@@ -45,19 +63,110 @@ function SignInSide({ users }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  React.useEffect(() => {
+    if (savedPassword) {
+      $('#signin-show-pass').show();
+    }
+  }, [savedPassword]);
+
+  const handleRememberChange = (e) => {
+    const checked = e.target.checked;
+    setRemember(checked);
+    if (!checked) {
+      setEmail('');
+      setPassword('');
+      localStorage.removeItem('rememberedEmail');
+      localStorage.removeItem('rememberedPassword');
+      $('#signin-show-pass').hide();
+    }
+  };
+
+  const handleShowPasswordClick = () => {
+    const passwordInput = document.querySelector('#signin-password');
+    if (passwordInput && passwordInput.type === 'password') {
+      if (remember) {
+        setOtpStatus('sending');
+        setOtpError('');
+        setOtpCode('');
+        setOtpOpen(true);
+        
+        fetch('/api/auth/send-otp', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email })
+        })
+        .then(res => {
+          if (!res.ok) throw new Error('Failed to send code');
+          return res.json();
+        })
+        .then(() => {
+          setOtpStatus('sent');
+        })
+        .catch(err => {
+          console.error(err);
+          setOtpStatus('error');
+          setOtpError('Failed to send verification code. Please try again.');
+        });
+      } else {
+        showPass('signin-password');
+      }
+    } else {
+      showPass('signin-password');
+    }
+  };
+
+  const handleVerifyOtp = () => {
+    if (!otpCode) {
+      setOtpError('Please enter the verification code');
+      return;
+    }
+    setOtpStatus('verifying');
+    
+    fetch('/api/auth/verify-otp', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, code: otpCode })
+    })
+    .then(res => {
+      if (!res.ok) {
+        return res.json().then(data => {
+          throw new Error(data.error || 'Verification failed');
+        });
+      }
+      return res.json();
+    })
+    .then(() => {
+      setOtpStatus('success');
+      setOtpOpen(false);
+      const passwordInput = document.querySelector('#signin-password');
+      if (passwordInput) {
+        passwordInput.type = 'text';
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      setOtpStatus('error');
+      setOtpError(err.message || 'Invalid or expired verification code');
+    });
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
     validateUser(
       usermails,
       users,
-      data.get('email'),
-      data.get('password'),
+      email,
+      password,
       dispatch,
       setAuthedUser,
       navigate,
       setEmailValidateAlert,
-      setPassValidateAlert)
+      setPassValidateAlert,
+      remember)
   };
 
   const handleSocialLogin = async (provider) => {
@@ -215,7 +324,9 @@ function SignInSide({ users }) {
                 label="Email Address"
                 name="email"
                 autoComplete="email"
-                autoFocus
+                autoFocus={!savedEmail}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
               <Grid item xs={12} sx={{ display: "none"}} id="email-validate-alert">
                   <BasicAlerts text={emailValidateAlert} />
@@ -225,7 +336,7 @@ function SignInSide({ users }) {
                 style={showPassStyle} 
                 alt="show-password"
                 id='signin-show-pass'
-                onClick={() => showPass('signin-password')}
+                onClick={handleShowPasswordClick}
                 />
               <TextField
                 margin="normal"
@@ -236,16 +347,28 @@ function SignInSide({ users }) {
                 type="password"
                 id="signin-password"
                 autoComplete="current-password"
+                autoFocus={!!savedEmail}
+                value={password}
                 onChange={(e) => {
-                    $('#signin-show-pass').show()
-                    e.target.value === '' && $('#signin-show-pass').hide()
-                    }}
+                    setPassword(e.target.value);
+                    if (e.target.value !== '') {
+                      $('#signin-show-pass').show();
+                    } else {
+                      $('#signin-show-pass').hide();
+                    }
+                }}
               />
               <Grid item xs={12} sx={{ display: "none"}} id="pass-validate-alert">
                   <BasicAlerts text={passValidateAlert} />
               </Grid>
               <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
+                control={
+                  <Checkbox
+                    checked={remember}
+                    onChange={handleRememberChange}
+                    color="primary"
+                  />
+                }
                 label="Remember me"
               />
               <Button
@@ -269,6 +392,46 @@ function SignInSide({ users }) {
                 </Grid>
               </Grid>
               <Copyright sx={{ mt: 5 }} />
+
+              <Dialog open={otpOpen} onClose={() => setOtpOpen(false)}>
+                <DialogTitle>Show Password Verification</DialogTitle>
+                <DialogContent>
+                  <DialogContentText sx={{ mb: 2 }}>
+                    To show the password, we have sent a verification code to your email: <strong>{email}</strong>.
+                  </DialogContentText>
+                  <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Verification Code"
+                    type="text"
+                    fullWidth
+                    variant="standard"
+                    value={otpCode}
+                    onChange={(e) => setOtpCode(e.target.value)}
+                    error={!!otpError}
+                    helperText={otpError}
+                    disabled={otpStatus === 'verifying'}
+                  />
+                  {otpStatus === 'sending' && (
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                      Sending verification code...
+                    </Typography>
+                  )}
+                  {otpStatus === 'sent' && (
+                    <Typography variant="body2" color="success.main" sx={{ mt: 1 }}>
+                      Verification code sent successfully.
+                    </Typography>
+                  )}
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={() => setOtpOpen(false)} disabled={otpStatus === 'verifying'}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleVerifyOtp} variant="contained" disabled={otpStatus === 'verifying'}>
+                    {otpStatus === 'verifying' ? 'Verifying...' : 'Verify'}
+                  </Button>
+                </DialogActions>
+              </Dialog>
             </Box>
           </Box>
         </Grid>

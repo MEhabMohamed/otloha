@@ -5,6 +5,8 @@ const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+
 
 const app = express();
 const port = process.env.SERVER_PORT || 5000;
@@ -650,6 +652,77 @@ const MOCK_PROFILES = {
     gender: 'male',
   }
 };
+
+// OTP Cache
+const otps = {};
+
+// Transporter configuration for nodemailer
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'mohamedelenna90@gmail.com',
+    pass: 'qdecspuiswnacxdm'
+  }
+});
+
+// Endpoint to send OTP code
+app.post('/api/auth/send-otp', async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
+  }
+
+  // Generate 6-digit code
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  
+  // Set expiry to 5 minutes
+  otps[email] = {
+    code,
+    expires: Date.now() + 5 * 60 * 1000
+  };
+
+  const mailOptions = {
+    from: 'mohamedelenna90@gmail.com',
+    to: email,
+    subject: 'Verification Code to Reveal Password',
+    text: `Your verification code is: ${code}. It is valid for 5 minutes.`,
+    html: `<p>Your verification code is: <strong>${code}</strong></p><p>It is valid for 5 minutes.</p>`
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error sending OTP email:', error);
+    res.status(500).json({ error: 'Failed to send OTP email' });
+  }
+});
+
+// Endpoint to verify OTP code
+app.post('/api/auth/verify-otp', (req, res) => {
+  const { email, code } = req.body;
+  if (!email || !code) {
+    return res.status(400).json({ error: 'Email and code are required' });
+  }
+
+  const record = otps[email];
+  if (!record) {
+    return res.status(400).json({ error: 'No verification code sent to this email' });
+  }
+
+  if (Date.now() > record.expires) {
+    delete otps[email];
+    return res.status(400).json({ error: 'Verification code expired' });
+  }
+
+  if (record.code !== code.trim()) {
+    return res.status(400).json({ error: 'Invalid verification code' });
+  }
+
+  // Clear OTP on success
+  delete otps[email];
+  res.json({ success: true });
+});
 
 // Social token endpoint
 app.get('/api/auth/social-token', (req, res) => {
