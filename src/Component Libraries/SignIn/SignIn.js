@@ -211,34 +211,7 @@ function SignInSide({ users }) {
       return;
     }
 
-    try {
-      const tokenRes = await fetch(`/api/auth/social-token?provider=${provider}`);
-      if (!tokenRes.ok) {
-        throw new Error('Failed to fetch social token');
-      }
-      const { token } = await tokenRes.json();
-
-      const loginRes = await fetch('/api/auth/social-login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token }),
-      });
-
-      if (!loginRes.ok) {
-        throw new Error('Social login failed');
-      }
-      const { id, user } = await loginRes.json();
-
-      dispatch(addUser(user));
-      dispatch(setAuthedUser(id));
-      localStorage.setItem("authedUser", JSON.stringify([id, Date.now()]));
-      navigate('/');
-      $('#get-pic').show();
-    } catch (err) {
-      console.error(err);
-    }
+    console.error(`Unsupported social login provider: ${provider}`);
   };
 
   return (

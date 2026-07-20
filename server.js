@@ -626,33 +626,6 @@ function getCookie(req, name) {
   return cookies[name] || null;
 }
 
-const MOCK_PROFILES = {
-  google: {
-    id: 'google_mock_user',
-    name: 'Google Student',
-    email: 'google.student@gmail.com',
-    avatar: 'https://cdn-icons-png.flaticon.com/512/300/300221.png',
-    description: 'student',
-    gender: 'male',
-  },
-  facebook: {
-    id: 'facebook_mock_user',
-    name: 'Facebook Student',
-    email: 'facebook.student@gmail.com',
-    avatar: 'https://cdn-icons-png.flaticon.com/512/124/124010.png',
-    description: 'student',
-    gender: 'female',
-  },
-  twitter: {
-    id: 'twitter_mock_user',
-    name: 'Twitter Student',
-    email: 'twitter.student@gmail.com',
-    avatar: 'https://cdn-icons-png.flaticon.com/512/733/733579.png',
-    description: 'student',
-    gender: 'male',
-  }
-};
-
 // OTP Cache
 const otps = {};
 
@@ -660,8 +633,8 @@ const otps = {};
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'mohamedelenna90@gmail.com',
-    pass: 'qdecspuiswnacxdm'
+    user: process.env.EMAIL_USER || 'mohamedelenna90@gmail.com',
+    pass: process.env.EMAIL_PASS
   }
 });
 
@@ -682,7 +655,7 @@ app.post('/api/auth/send-otp', async (req, res) => {
   };
 
   const mailOptions = {
-    from: 'mohamedelenna90@gmail.com',
+    from: process.env.EMAIL_USER || 'mohamedelenna90@gmail.com',
     to: email,
     subject: 'Verification Code to Reveal Password',
     text: `Your verification code is: ${code}. It is valid for 5 minutes.`,
@@ -742,7 +715,7 @@ app.post('/api/auth/forgot-password', async (req, res) => {
     const resetLink = `${origin}/reset-password?token=${token}`;
 
     const mailOptions = {
-      from: 'mohamedelenna90@gmail.com',
+      from: process.env.EMAIL_USER || 'mohamedelenna90@gmail.com',
       to: email,
       subject: 'Reset Password Request',
       text: `To reset your password, please click the following link: ${resetLink}. It is valid for 1 hour.`,
@@ -816,81 +789,7 @@ app.put('/api/users/:id/profile', async (req, res) => {
   }
 });
 
-// Social token endpoint
-app.get('/api/auth/social-token', (req, res) => {
-  const { provider } = req.query;
-  const profile = MOCK_PROFILES[provider];
-  if (!profile) {
-    return res.status(400).json({ error: 'Invalid social provider' });
-  }
-  const payload = {
-    ...profile,
-    exp: Date.now() + 24 * 60 * 60 * 1000
-  };
-  const token = signToken(payload);
-  res.json({ token });
-});
 
-// Social login endpoint
-app.post('/api/auth/social-login', async (req, res) => {
-  const { token } = req.body;
-  const payload = verifyToken(token);
-  if (!payload) {
-    return res.status(401).json({ error: 'Invalid or expired social token' });
-  }
-
-  try {
-    const userExist = await pool.query('SELECT * FROM users WHERE id = $1', [payload.id]);
-    if (userExist.rows.length === 0) {
-      const defaultCountry = { code: 'US', label: 'United States', phone: '1' };
-      await pool.query(
-        'INSERT INTO users (id, name, email, gender, avatar, country, password, description, narration, lang, "bDate", status, recitations, "ratedRecitations", "joiningDate", verified, level, active, raters, rated, "blockList") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)',
-        [
-          payload.id,
-          payload.name,
-          payload.email,
-          payload.gender,
-          payload.avatar,
-          JSON.stringify(defaultCountry),
-          'social_login_no_password',
-          payload.description,
-          'Hafs',
-          'enUS',
-          String(Date.now()),
-          'Active',
-          '[]',
-          '[]',
-          Date.now(),
-          true,
-          'Beginner',
-          true,
-          '[]',
-          '[]',
-          '[]'
-        ]
-      );
-    }
-
-    const sessionPayload = {
-      id: payload.id,
-      exp: Date.now() + 24 * 60 * 60 * 1000
-    };
-    const sessionToken = signToken(sessionPayload);
-    res.cookie('session_token', sessionToken, {
-      httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000,
-      path: '/'
-    });
-
-    const userRes = await pool.query('SELECT * FROM users WHERE id = $1', [payload.id]);
-    const user = userRes.rows[0];
-
-    res.json({ success: true, id: payload.id, user });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
-  }
-});
 
 // Real Google login endpoint (exchanges auth code, checks user existence)
 app.post('/api/auth/google-login', async (req, res) => {
