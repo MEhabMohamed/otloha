@@ -1,5 +1,5 @@
 import { ADD_RECITATION, ADD_RECITATION_RATING, EVALUATE_RECITATION } from "../actions/recitation";
-import { ADD_BLOCK, ADD_USER_RATING, ADD_USER, EDIT_PASSWORD, EDIT_PIC, RECEIVE_USERS, REMOVE_BLOCK, ADD_TEACHER_EVALUATION, DELETE_USER } from "../actions/user";
+import { ADD_BLOCK, ADD_USER_RATING, ADD_USER, EDIT_PASSWORD, EDIT_PIC, RECEIVE_USERS, REMOVE_BLOCK, ADD_TEACHER_EVALUATION, DELETE_USER, EDIT_PROFILE_DETAILS } from "../actions/user";
 
 export default function users(state: any = {}, action: any): any {
   switch (action.type) {
@@ -99,6 +99,14 @@ export default function users(state: any = {}, action: any): any {
         [action.raterId]: {
           ...state[action.raterId],
           ratedRecitations: state[action.raterId].ratedRecitations.concat([action.ratedId])
+        }
+      };
+    case EDIT_PROFILE_DETAILS:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          ...action.details
         }
       };
     default:

@@ -30,6 +30,9 @@ const AddLevel = lazy(() => import('./Component Libraries/Tajweed/AddLevel'));
 const EditLevel = lazy(() => import('./Component Libraries/Tajweed/EditLevel'));
 const AddLesson = lazy(() => import('./Component Libraries/Tajweed/AddLesson'));
 const EditLesson = lazy(() => import('./Component Libraries/Tajweed/EditLesson'));
+const ForgotPassword = lazy(() => import('./Component Libraries/SignIn/ForgotPassword'));
+const ResetPassword = lazy(() => import('./Component Libraries/SignIn/ResetPassword'));
+const EditUser = lazy(() => import('./Component Libraries/EditUser/EditUser'));
 
 const PrivateWrapper = ({ auth: isAuthenticated }: { auth: any }) => {
   if (isAuthenticated !== null) {
@@ -180,6 +183,8 @@ function App({ initial, authedUser, recitations, levels, lessons }: any) {
               {isAuthed === null && <Route path="/createuser" element={<SignUp />} />}
               {isAuthed === null && <Route path="/" element={<SignInSide />} />}
               {isAuthed === null && <Route path="/complete-profile" element={<CompleteProfile />} />}
+              {isAuthed === null && <Route path="/forgot-password" element={<ForgotPassword />} />}
+              {isAuthed === null && <Route path="/reset-password" element={<ResetPassword />} />}
               <Route element={<PrivateWrapper auth={isAuthed} />}>
                 <Route path="*" element={<NotFound />} />
                 <Route path="/" element={<HomePage theme={mode} />} />
@@ -198,6 +203,7 @@ function App({ initial, authedUser, recitations, levels, lessons }: any) {
                 <Route path="/tajweed/edit-level/:id" element={<EditLevel id={undefined as any} />} />
                 <Route path="/tajweed/edit-lesson/:id" element={<EditLesson id={undefined as any} />} />
                 <Route path="/recitations/:id" element={<RecitationProfile id={undefined as any} />} />
+                <Route path="/edit-user" element={<EditUser />} />
               </Route>
             </Routes>
           </Suspense>

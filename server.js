@@ -9,7 +9,7 @@ const nodemailer = require('nodemailer');
 
 
 const app = express();
-const port = process.env.SERVER_PORT || 5000;
+const port = process.env.PORT || process.env.SERVER_PORT || 5000;
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
@@ -719,9 +719,101 @@ app.post('/api/auth/verify-otp', (req, res) => {
     return res.status(400).json({ error: 'Invalid verification code' });
   }
 
-  // Clear OTP on success
+// Clear OTP on success
   delete otps[email];
   res.json({ success: true });
+});
+
+// Forgot password request endpoint
+app.post('/api/auth/forgot-password', async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
+  }
+  try {
+    const userRes = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    if (userRes.rows.length === 0) {
+      return res.status(400).json({ error: 'User not found' });
+    }
+    const user = userRes.rows[0];
+    // Generate timed token (expires in 1 hour)
+    const token = signToken({ id: user.id, email, exp: Date.now() + 60 * 60 * 1000, purpose: 'reset' });
+    const origin = req.get('origin') || 'http://localhost:3000';
+    const resetLink = `${origin}/reset-password?token=${token}`;
+
+    const mailOptions = {
+      from: 'mohamedelenna90@gmail.com',
+      to: email,
+      subject: 'Reset Password Request',
+      text: `To reset your password, please click the following link: ${resetLink}. It is valid for 1 hour.`,
+      html: `<p>To reset your password, please click the link below:</p><p><a href="${resetLink}">${resetLink}</a></p><p>It is valid for 1 hour.</p>`
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({ error: 'Failed to process password reset request' });
+  }
+});
+
+// Reset password endpoint
+app.post('/api/auth/reset-password', async (req, res) => {
+  const { token, password } = req.body;
+  if (!token || !password) {
+    return res.status(400).json({ error: 'Token and password are required' });
+  }
+  const payload = verifyToken(token);
+  if (!payload || payload.purpose !== 'reset') {
+    return res.status(400).json({ error: 'Invalid or expired password reset token' });
+  }
+  try {
+    await pool.query('UPDATE users SET password = $1 WHERE id = $2', [password, payload.id]);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({ error: 'Failed to reset password' });
+  }
+});
+
+// Update profile details endpoint
+app.put('/api/users/:id/profile', async (req, res) => {
+  const { id } = req.params;
+  const { name, lang, narration, due } = req.body;
+  try {
+    const fields = [];
+    const values = [];
+    
+    if (name !== undefined) {
+      fields.push(`name = $${fields.length + 1}`);
+      values.push(name);
+    }
+    if (lang !== undefined) {
+      fields.push(`lang = $${fields.length + 1}`);
+      values.push(lang);
+    }
+    if (narration !== undefined) {
+      fields.push(`narration = $${fields.length + 1}`);
+      values.push(narration);
+    }
+    if (due !== undefined) {
+      fields.push(`due = $${fields.length + 1}`);
+      values.push(due);
+    }
+    
+    if (fields.length === 0) {
+      return res.status(400).json({ error: 'No fields to update' });
+    }
+    
+    values.push(id);
+    const query = 'UPDATE users SET ' + fields.join(', ') + ` WHERE id = $${values.length}`;
+    
+    await pool.query(query, values);
+    res.json({ id, name, lang, narration, due });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Social token endpoint
@@ -1216,6 +1308,14 @@ app.delete('/api/session', (req, res) => {
   res.clearCookie('session_token', { path: '/' });
   res.json({ success: true });
 });
+
+// Serve static assets in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'build')));
+  app.get(/.*/, (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'build', 'index.html'));
+  });
+}
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

@@ -282,6 +282,23 @@ export async function savePics(picData: { id: string; pic: string }): Promise<an
   return picData.pic;
 }
 
+export async function saveProfileDetails(profileData: {
+  id: string;
+  name?: string;
+  lang?: string;
+  narration?: string;
+  due?: string;
+}): Promise<any> {
+  const { id, ...body } = profileData;
+  const res = await fetch(`/api/users/${id}/profile`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error('Failed to update profile details');
+  return res.json();
+}
+
 export async function saveBlocks(blockData: { id: string; authed: string }): Promise<any> {
   const res = await fetch('/api/blocks', {
     method: 'POST',

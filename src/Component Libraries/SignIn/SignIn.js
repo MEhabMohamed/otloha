@@ -29,17 +29,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
-
-
-const showPassStyle = {
-  width: '15px',
-  height: '15px',
-  cursor: 'pointer',
-  position: 'absolute',
-  marginTop: '5.9rem',
-  marginLeft: '0.5rem',
-  display: 'none'
-}
+import InputAdornment from '@mui/material/InputAdornment';
 
 function SignInSide({ users }) {
 
@@ -331,13 +321,6 @@ function SignInSide({ users }) {
               <Grid item xs={12} sx={{ display: "none"}} id="email-validate-alert">
                   <BasicAlerts text={emailValidateAlert} />
               </Grid>
-              <img 
-                src={eye} 
-                style={showPassStyle} 
-                alt="show-password"
-                id='signin-show-pass'
-                onClick={handleShowPasswordClick}
-                />
               <TextField
                 margin="normal"
                 required
@@ -349,13 +332,18 @@ function SignInSide({ users }) {
                 autoComplete="current-password"
                 autoFocus={!!savedEmail}
                 value={password}
-                onChange={(e) => {
-                    setPassword(e.target.value);
-                    if (e.target.value !== '') {
-                      $('#signin-show-pass').show();
-                    } else {
-                      $('#signin-show-pass').hide();
-                    }
+                onChange={(e) => setPassword(e.target.value)}
+                InputProps={{
+                  endAdornment: password && (
+                    <InputAdornment position="end">
+                      <img
+                        src={eye}
+                        alt="show-password"
+                        style={{ width: '15px', height: '15px', cursor: 'pointer' }}
+                        onClick={handleShowPasswordClick}
+                      />
+                    </InputAdornment>
+                  )
                 }}
               />
               <Grid item xs={12} sx={{ display: "none"}} id="pass-validate-alert">
@@ -381,7 +369,7 @@ function SignInSide({ users }) {
               </Button>
               <Grid container>
                 <Grid item xs>
-                  <Link to="/createuser">
+                  <Link to="/forgot-password">
                     Forgot password?
                   </Link>
                 </Grid>

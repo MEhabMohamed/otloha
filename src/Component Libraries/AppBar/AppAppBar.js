@@ -15,7 +15,6 @@ import ToggleColorMode from '../ToggleColorMode/ToggleColorMode';
 import otloha from '../../Resources/otloha.png';
 import { useNavigate } from 'react-router-dom';
 import SignOut from '../SignOut/SignOut';
-import EditUser from '../EditUser/EditUser';
 import { connect } from 'react-redux';
 import { Menu, Stack } from '@mui/material';
 
@@ -277,7 +276,16 @@ function AppAppBar({ mode, toggleColorMode, auth, admins }) {
                 color="primary"
                 variant="text"
               >
-                {auth !== null && <EditUser widthSet="auto" />}
+                {auth !== null && (
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    size="small"
+                    onClick={() => navigate('./edit-user')}
+                  >
+                    Edit Profile
+                  </Button>
+                )}
               </Box>
               <Box
                 color="primary"
@@ -467,9 +475,21 @@ function AppAppBar({ mode, toggleColorMode, auth, admins }) {
                       </MenuItem>
                     </Box>}
                   <Divider />
-                  <MenuItem>
-                    {auth !== null && <EditUser widthSet="100%" />}
-                  </MenuItem>
+                  {auth !== null && (
+                    <MenuItem>
+                      <Button
+                        color="primary"
+                        variant="contained"
+                        onClick={() => {
+                          navigate('./edit-user');
+                          setOpen(false);
+                        }}
+                        fullWidth
+                      >
+                        Edit Profile
+                      </Button>
+                    </MenuItem>
+                  )}
                   <MenuItem>
                     <Button
                       color="primary"

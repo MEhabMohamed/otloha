@@ -1,9 +1,10 @@
-import { deleteUser, saveBlocks, savePasses, savePics, saveStudent, saveTeacher, saveTeacherEvaluation, saveUnblocks, saveUserRatings } from "../helpers/savers";
+import { deleteUser, saveBlocks, savePasses, savePics, saveStudent, saveTeacher, saveTeacherEvaluation, saveUnblocks, saveUserRatings, saveProfileDetails } from "../helpers/savers";
 
 export const ADD_USER = 'ADD_USER';
 export const RECEIVE_USERS = 'RECEIVE_USERS';
 export const EDIT_PASSWORD = 'EDIT_PASSWORD';
 export const EDIT_PIC = 'EDIT_PIC';
+export const EDIT_PROFILE_DETAILS = 'EDIT_PROFILE_DETAILS';
 export const RECEIVE_TEACHERS = 'RECEIVE_TEACHERS';
 export const RECEIVE_STUDENTS = 'RECEIVE_STUDENTS';
 export const ADD_BLOCK = 'ADD_BLOCK';
@@ -202,5 +203,27 @@ function removeUser(id: string) {
 export function handleDeleteUser(id: string) {
   return (dispatch: any) => {
     return deleteUser(id).then(() => dispatch(removeUser(id)));
+  };
+}
+
+function editProfileDetails(id: string, details: any) {
+  return {
+    type: EDIT_PROFILE_DETAILS,
+    id,
+    details
+  };
+}
+
+export function handleEditProfileDetails(profileData: {
+  id: string;
+  name?: string;
+  lang?: string;
+  narration?: string;
+  due?: string;
+}) {
+  return (dispatch: any) => {
+    return saveProfileDetails(profileData).then((res) => {
+      dispatch(editProfileDetails(profileData.id, res));
+    });
   };
 }

@@ -1,0 +1,10 @@
+node_modules
+build
+.git
+.gitignore
+.env
+app.log
+*.md
+yarn.lock
+Dockerfile
+.dockerignore
