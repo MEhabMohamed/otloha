@@ -798,6 +798,8 @@ app.post('/api/auth/google-login', async (req, res) => {
     return res.status(400).json({ error: 'Code is required' });
   }
 
+  const redirectUri = req.headers.origin || (req.get('host') && req.get('host').includes('localhost') ? 'http://localhost:3000' : 'https://otloha-app-185798045507.us-central1.run.app');
+
   try {
     const tokenRes = await fetch(process.env.GOOGLE_TOKEN_URI || 'https://oauth2.googleapis.com/token', {
       method: 'POST',
@@ -808,7 +810,7 @@ app.post('/api/auth/google-login', async (req, res) => {
         code,
         client_id: process.env.GOOGLE_CLIENT_ID,
         client_secret: process.env.GOOGLE_CLIENT_SECRET,
-        redirect_uri: 'https://otloha-app-185798045507.us-central1.run.app',
+        redirect_uri: redirectUri,
         grant_type: 'authorization_code',
       }),
     });
@@ -926,10 +928,12 @@ app.post('/api/auth/facebook-login', async (req, res) => {
     return res.status(400).json({ error: 'Code is required' });
   }
 
+  const redirectUri = req.headers.origin || (req.get('host') && req.get('host').includes('localhost') ? 'http://localhost:3000' : 'https://otloha-app-185798045507.us-central1.run.app');
+
   try {
     const tokenRes = await fetch('https://graph.facebook.com/v18.0/oauth/access_token?' + new URLSearchParams({
       client_id: process.env.FACEBOOK_APP_ID || '',
-      redirect_uri: 'https://otloha-app-185798045507.us-central1.run.app',
+      redirect_uri: redirectUri,
       client_secret: process.env.FACEBOOK_APP_SECRET || '',
       code,
     }));
@@ -1046,6 +1050,8 @@ app.post('/api/auth/twitter-login', async (req, res) => {
     return res.status(400).json({ error: 'Code and codeVerifier are required' });
   }
 
+  const redirectUri = req.headers.origin || (req.get('host') && req.get('host').includes('localhost') ? 'http://localhost:3000' : 'https://otloha-app-185798045507.us-central1.run.app');
+
   try {
     const authHeader = 'Basic ' + Buffer.from(`${process.env.TWITTER_CLIENT_ID || ''}:${process.env.TWITTER_CLIENT_SECRET || ''}`).toString('base64');
 
@@ -1058,7 +1064,7 @@ app.post('/api/auth/twitter-login', async (req, res) => {
       body: new URLSearchParams({
         code,
         grant_type: 'authorization_code',
-        redirect_uri: 'https://otloha-app-185798045507.us-central1.run.app',
+        redirect_uri: redirectUri,
         code_verifier: codeVerifier,
       }),
     });

@@ -163,7 +163,7 @@ function SignInSide({ users }) {
     if (provider === 'google') {
       const rootUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
       const options = {
-        redirect_uri: 'http://localhost:3000',
+        redirect_uri: window.location.origin,
         client_id: '185798045507-mabt0pd37023l4vt0qupra8frgvsgmgm.apps.googleusercontent.com',
         access_type: 'offline',
         response_type: 'code',
@@ -182,7 +182,7 @@ function SignInSide({ users }) {
     if (provider === 'facebook') {
       const rootUrl = 'https://www.facebook.com/v18.0/dialog/oauth';
       const options = {
-        redirect_uri: 'http://localhost:3000',
+        redirect_uri: window.location.origin,
         client_id: '1362513349344023',
         response_type: 'code',
         scope: 'email,public_profile',
@@ -200,7 +200,7 @@ function SignInSide({ users }) {
       const options = {
         response_type: 'code',
         client_id: 'YXBFWk9xdE5MMmt6ZkpiOHV4VFk6MTpjaQ',
-        redirect_uri: 'http://localhost:3000',
+        redirect_uri: window.location.origin,
         scope: 'users.read tweet.read offline.access',
         state: 'twitter',
         code_challenge: codeVerifier,
