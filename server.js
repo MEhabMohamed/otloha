@@ -27,7 +27,7 @@ app.post('/api/logs', (req, res) => {
   const { action, newState } = req.body;
   const timestamp = new Date().toISOString();
   const logMessage = `[${timestamp}] ACTION: ${action.type} | Action: ${JSON.stringify(action)} | New State: ${JSON.stringify(newState)}\n`;
-  
+
   try {
     fs.appendFileSync(path.join(__dirname, 'app.log'), logMessage);
     res.status(200).json({ success: true });
@@ -211,10 +211,10 @@ app.post('/api/recitations', async (req, res) => {
   try {
     const userRes = await pool.query('SELECT description FROM users WHERE id = $1', [authed]);
     const isTeacher = userRes.rows.length > 0 && userRes.rows[0].description === 'teacher';
-    
+
     const id = generateUID().replace(/[0-9]/g, 'k');
     const createdAt = Date.now();
-    
+
     let recitation;
     if (isTeacher) {
       recitation = {
@@ -647,7 +647,7 @@ app.post('/api/auth/send-otp', async (req, res) => {
 
   // Generate 6-digit code
   const code = Math.floor(100000 + Math.random() * 900000).toString();
-  
+
   // Set expiry to 5 minutes
   otps[email] = {
     code,
@@ -692,7 +692,7 @@ app.post('/api/auth/verify-otp', (req, res) => {
     return res.status(400).json({ error: 'Invalid verification code' });
   }
 
-// Clear OTP on success
+  // Clear OTP on success
   delete otps[email];
   res.json({ success: true });
 });
@@ -756,7 +756,7 @@ app.put('/api/users/:id/profile', async (req, res) => {
   try {
     const fields = [];
     const values = [];
-    
+
     if (name !== undefined) {
       fields.push(`name = $${fields.length + 1}`);
       values.push(name);
@@ -773,14 +773,14 @@ app.put('/api/users/:id/profile', async (req, res) => {
       fields.push(`due = $${fields.length + 1}`);
       values.push(due);
     }
-    
+
     if (fields.length === 0) {
       return res.status(400).json({ error: 'No fields to update' });
     }
-    
+
     values.push(id);
     const query = 'UPDATE users SET ' + fields.join(', ') + ` WHERE id = $${values.length}`;
-    
+
     await pool.query(query, values);
     res.json({ id, name, lang, narration, due });
   } catch (err) {
@@ -808,7 +808,7 @@ app.post('/api/auth/google-login', async (req, res) => {
         code,
         client_id: process.env.GOOGLE_CLIENT_ID,
         client_secret: process.env.GOOGLE_CLIENT_SECRET,
-        redirect_uri: 'http://localhost:3000',
+        redirect_uri: 'https://otloha-app-185798045507.us-central1.run.app',
         grant_type: 'authorization_code',
       }),
     });
@@ -929,7 +929,7 @@ app.post('/api/auth/facebook-login', async (req, res) => {
   try {
     const tokenRes = await fetch('https://graph.facebook.com/v18.0/oauth/access_token?' + new URLSearchParams({
       client_id: process.env.FACEBOOK_APP_ID || '',
-      redirect_uri: 'http://localhost:3000',
+      redirect_uri: 'https://otloha-app-185798045507.us-central1.run.app',
       client_secret: process.env.FACEBOOK_APP_SECRET || '',
       code,
     }));
@@ -1048,7 +1048,7 @@ app.post('/api/auth/twitter-login', async (req, res) => {
 
   try {
     const authHeader = 'Basic ' + Buffer.from(`${process.env.TWITTER_CLIENT_ID || ''}:${process.env.TWITTER_CLIENT_SECRET || ''}`).toString('base64');
-    
+
     const tokenRes = await fetch('https://api.twitter.com/2/oauth2/token', {
       method: 'POST',
       headers: {
@@ -1058,7 +1058,7 @@ app.post('/api/auth/twitter-login', async (req, res) => {
       body: new URLSearchParams({
         code,
         grant_type: 'authorization_code',
-        redirect_uri: 'http://localhost:3000',
+        redirect_uri: 'https://otloha-app-185798045507.us-central1.run.app',
         code_verifier: codeVerifier,
       }),
     });
