@@ -56,15 +56,13 @@ function App({ initial, authedUser, recitations, levels, lessons }) {
   };
 
   useEffect(() => {
+    initial();
+  }, [initial]);
 
-      setAuth(isAuthed);
-      prefersDarkMode ? setMode('dark') : setMode('light');
-      
-      return () => {
-        initial();
-      }
-      
-  }, [isAuthed, initial, prefersDarkMode])
+  useEffect(() => {
+    setAuth(isAuthed);
+    setMode(prefersDarkMode ? 'dark' : 'light');
+  }, [isAuthed, prefersDarkMode]);
   
   return (
     <ThemeProvider theme={LPtheme}>

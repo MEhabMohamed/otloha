@@ -40,7 +40,7 @@ const showPassStyle = {
   display: 'none'
 }
 
-function SignUp() {
+function SignUp({ users = {} }) {
 
     let [newFirstName, setnewFirstName] = React.useState('');
     let [newLastName, setnewLastName] = React.useState('');
@@ -53,9 +53,11 @@ function SignUp() {
     let [bDate, setBDate] = React.useState(null);
     let [emailAlert, setEmailAlert] = React.useState('');
     let [passAlert, setPassAlert] = React.useState('');
-    let users = JSON.parse(localStorage.getItem("users"));
-    let usermails = users !== (undefined || null)
-    ? Object.values(users).map(({email}) => email) : [];
+    let sessionUsers = users && Object.keys(users).length > 0
+      ? users
+      : (typeof window !== 'undefined' && window.sessionStorage ? JSON.parse(window.sessionStorage.getItem("users") || '{}') : {});
+    let usermails = sessionUsers
+      ? Object.values(sessionUsers).map(({email}) => email) : [];
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -385,4 +387,10 @@ function SignUp() {
   );
 }
 
-export default connect()(SignUp)
+function mapStateToProps ({ users }) {
+  return {
+    users: users || {}
+  };
+}
+
+export default connect(mapStateToProps)(SignUp);

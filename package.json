@@ -36,7 +36,6 @@
     "react-svg-worldmap": "*",
     "redux": "^5.0.1",
     "redux-thunk": "^3.1.0",
-    "sqlite3": "^5.1.7",
     "styled-components": "^6.1.8",
     "util": "^0.12.5",
     "utils": "^0.3.1",

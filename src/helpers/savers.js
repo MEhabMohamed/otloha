@@ -1,82 +1,113 @@
-let recitations = {};
-
-let teachers = {};
-
-let students = {};
-
-let users = {};
-
-let tajweed = {levels: {}, lessons: {}};
-
-let levels = {};
-
-let lessons = {};
-
-let admins = {
-   mohamedelenna90: {
+const DEFAULT_ADMINS = {
+    mohamedelenna90: {
         email: 'mohamedelenna90@gmail.com',
         id: 'mohamedelenna90'
     }
 };
 
+function getSessionData(key, fallback) {
+    if (typeof window === 'undefined' || !window.sessionStorage) {
+        return fallback;
+    }
+    try {
+        const item = window.sessionStorage.getItem(key);
+        if (item !== null && item !== undefined && item !== '') {
+            return JSON.parse(item);
+        }
+    } catch (e) {
+        console.error(`Error reading ${key} from sessionStorage:`, e);
+    }
+    setSessionData(key, fallback);
+    return fallback;
+}
+
+function setSessionData(key, data) {
+    if (typeof window === 'undefined' || !window.sessionStorage) {
+        return;
+    }
+    try {
+        window.sessionStorage.setItem(key, JSON.stringify(data));
+    } catch (e) {
+        console.error(`Error writing ${key} to sessionStorage:`, e);
+    }
+}
+
+// Memory caches initialized from sessionStorage
+let recitations = getSessionData('recitations', {});
+let teachers = getSessionData('teachers', {});
+let students = getSessionData('students', {});
+let users = getSessionData('users', { ...teachers, ...students });
+let levels = getSessionData('levels', {});
+let lessons = getSessionData('lessons', {});
+let tajweed = getSessionData('tajweed', { levels: { ...levels }, lessons: { ...lessons } });
+let admins = getSessionData('admins', DEFAULT_ADMINS);
+
 export function getRecitations() {
-    return new Promise((res, rej) => {
-        setTimeout(() => res({...recitations}), 1000)
-    })
+    return new Promise((res) => {
+        recitations = getSessionData('recitations', recitations);
+        setTimeout(() => res({ ...recitations }), 200);
+    });
 }
 
 export function getUsers() {
-    return new Promise((res, rej) => {
-        setTimeout(() => res({...users}), 1000)
-    })
+    return new Promise((res) => {
+        users = getSessionData('users', users);
+        setTimeout(() => res({ ...users }), 200);
+    });
 }
 
 export function getTeachers() {
-    return new Promise((res, rej) => {
-        setTimeout(() => res({...teachers}), 1000)
-    })
+    return new Promise((res) => {
+        teachers = getSessionData('teachers', teachers);
+        setTimeout(() => res({ ...teachers }), 200);
+    });
 }
 
 export function getStudents() {
-    return new Promise((res, rej) => {
-        setTimeout(() => res({...students}), 1000)
-    })
+    return new Promise((res) => {
+        students = getSessionData('students', students);
+        setTimeout(() => res({ ...students }), 200);
+    });
 }
 
 export function getAdmins() {
-    return new Promise((res, rej) => {
-        setTimeout(() => res({...admins}), 1000)
-    })
+    return new Promise((res) => {
+        admins = getSessionData('admins', admins);
+        setTimeout(() => res({ ...admins }), 200);
+    });
 }
 
 export function getTajweeds() {
-    return new Promise((res, rej) => {
-        setTimeout(() => res({...tajweed}), 1000)
-    })
+    return new Promise((res) => {
+        tajweed = getSessionData('tajweed', tajweed);
+        setTimeout(() => res({ ...tajweed }), 200);
+    });
 }
 
 export function getLevels() {
-    return new Promise((res, rej) => {
-        setTimeout(() => res({...levels}), 1000)
-    })
+    return new Promise((res) => {
+        levels = getSessionData('levels', levels);
+        setTimeout(() => res({ ...levels }), 200);
+    });
 }
 
 export function getLessons() {
-    return new Promise((res, rej) => {
-        setTimeout(() => res({...lessons}), 1000)
-    })
+    return new Promise((res) => {
+        lessons = getSessionData('lessons', lessons);
+        setTimeout(() => res({ ...lessons }), 200);
+    });
 }
 
 export const getInitialData = async () => {
     return Promise.all([
-      getRecitations(),
-      getUsers(),
-      getAdmins(),
-      getStudents(),
-      getTeachers(),
-      getTajweeds(),
-      getLevels(),
-      getLessons(),
+        getRecitations(),
+        getUsers(),
+        getAdmins(),
+        getStudents(),
+        getTeachers(),
+        getTajweeds(),
+        getLevels(),
+        getLessons(),
     ]).then(([recitations, users, admins, students, teachers, tajweed, levels, lessons]) => ({
         recitations,
         users,
@@ -86,17 +117,17 @@ export const getInitialData = async () => {
         tajweed,
         levels,
         lessons
-    }))
-}
+    }));
+};
 
 function generateUID () {
-    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 
 export function formatDate (timestamp) {
-    const d = new Date(timestamp)
-    const time = d.toLocaleTimeString('en-ME')
-    return time.replace(0, 5) + ' | ' + d.toLocaleDateString()
+    const d = new Date(timestamp);
+    const time = d.toLocaleTimeString('en-ME');
+    return time.replace(0, 5) + ' | ' + d.toLocaleDateString();
 }
 
 function formatStudentRecitation ({
@@ -123,7 +154,7 @@ function formatStudentRecitation ({
         report: "",
         reviewed: false,
         closed: false
-    }
+    };
 }
 
 function formatTeacherRecitation ({
@@ -132,18 +163,18 @@ function formatTeacherRecitation ({
     playback,
     authed
 }) {
-return {
-    verse,
-    narration,
-    playback,
-    authed,
-    id: generateUID().replace(/[0-9]/g, 'k'),
-    status: "Accepted",
-    raters: [],
-    createdAt: Date.now(),
-    remarkable: false,
-    closed: false
-}
+    return {
+        verse,
+        narration,
+        playback,
+        authed,
+        id: generateUID().replace(/[0-9]/g, 'k'),
+        status: "Accepted",
+        raters: [],
+        createdAt: Date.now(),
+        remarkable: false,
+        closed: false
+    };
 }
 
 function formatTeacher ({
@@ -184,7 +215,7 @@ function formatTeacher ({
         earnings: [0],
         dues: [0],
         blockList: []
-    }
+    };
 }
 
 function formatStudent ({
@@ -222,14 +253,14 @@ function formatStudent ({
         raters: [],
         rated: [],
         blockList: []
-    }
+    };
 }
 
 function formatAdmin({email}) {
     return {
         id: email.split('@')[0].replace(/\s+/g, '').trim().toLowerCase(),
         email,
-    }
+    };
 }
 
 function formatLevel({
@@ -242,7 +273,7 @@ function formatLevel({
         color,
         value,
         id: generateUID().replace(/[0-9]/g, 'k'),
-    }
+    };
 }
 
 function formatLesson({
@@ -257,7 +288,7 @@ function formatLesson({
         level,
         parentLesson,
         id: generateUID().replace(/[0-9]/g, 'k'),
-    }
+    };
 }
 
 export function saveLevels({
@@ -265,34 +296,33 @@ export function saveLevels({
     color,
     value
 }) {
-    return new Promise((res, rej) => {
-        let formattedLevel;
-
-        formattedLevel = formatLevel({
+    return new Promise((res) => {
+        const formattedLevel = formatLevel({
             name,
             color,
             value
-        })
+        });
+
+        levels = getSessionData('levels', levels);
+        lessons = getSessionData('lessons', lessons);
+
+        levels = {
+            ...levels,
+            [formattedLevel.id]: formattedLevel
+        };
+
+        tajweed = {
+            lessons: { ...lessons },
+            levels: { ...levels }
+        };
+
+        setSessionData('levels', levels);
+        setSessionData('tajweed', tajweed);
 
         setTimeout(() => {
-
-            levels = {
-                ...levels,
-                [formattedLevel.id]: formattedLevel
-            }
-
-            tajweed = {
-                lessons: {
-                    ...lessons
-                },
-                levels: {
-                    ...levels
-                }
-            }
-
-            res(formattedLevel)
-        }, 1000)
-    })
+            res(formattedLevel);
+        }, 200);
+    });
 }
 
 export function saveLessons({
@@ -301,134 +331,135 @@ export function saveLessons({
     level,
     parentLesson
 }) {
-    return new Promise((res, rej) => {
-        let formattedLesson;
-
-        formattedLesson = formatLesson({
+    return new Promise((res) => {
+        const formattedLesson = formatLesson({
             title,
             content,
             level,
             parentLesson
-        })
+        });
+
+        levels = getSessionData('levels', levels);
+        lessons = getSessionData('lessons', lessons);
+
+        lessons = {
+            ...lessons,
+            [formattedLesson.id]: formattedLesson
+        };
+
+        tajweed = {
+            lessons: { ...lessons },
+            levels: { ...levels }
+        };
+
+        setSessionData('lessons', lessons);
+        setSessionData('tajweed', tajweed);
 
         setTimeout(() => {
-
-            lessons = {
-                ...lessons,
-                [formattedLesson.id]: formattedLesson
-            }
-
-            tajweed = {
-                lessons: {
-                    ...lessons
-                },
-                levels: {
-                    ...levels
-                }
-            }
-
-            res(formattedLesson)
-        }, 1000)
-    })
+            res(formattedLesson);
+        }, 200);
+    });
 }
 
 export function saveEditLessons ({id, title, content, level, parentLesson}) {
-    return new Promise((res,rej) => {
+    return new Promise((res) => {
+        levels = getSessionData('levels', levels);
+        lessons = getSessionData('lessons', lessons);
+
+        lessons = {
+            ...lessons,
+            [id]: {
+                ...lessons[id],
+                title,
+                content,
+                level,
+                parentLesson
+            }
+        };
+
+        tajweed = {
+            lessons: { ...lessons },
+            levels: { ...levels }
+        };
+
+        setSessionData('lessons', lessons);
+        setSessionData('tajweed', tajweed);
+
         setTimeout(() => {
-
-            lessons = {
-                ...lessons,
-                [id]: {
-                    ...lessons[id],
-                    title,
-                    content,
-                    level,
-                    parentLesson
-                }
-            }
-
-            tajweed = {
-                lessons: {
-                    ...lessons
-                },
-                levels: {
-                    ...levels
-                }
-            }
-
-            res(id)
-        }, 1000)
-    })
+            res(id);
+        }, 200);
+    });
 }
 
 export function saveEditLevels ({id, name, color, value}) {
-    return new Promise((res,rej) => {
+    return new Promise((res) => {
+        levels = getSessionData('levels', levels);
+        lessons = getSessionData('lessons', lessons);
+
+        levels = {
+            ...levels,
+            [id]: {
+                ...levels[id],
+                name,
+                color,
+                value
+            }
+        };
+
+        tajweed = {
+            lessons: { ...lessons },
+            levels: { ...levels }
+        };
+
+        setSessionData('levels', levels);
+        setSessionData('tajweed', tajweed);
+
         setTimeout(() => {
-
-            levels = {
-                ...levels,
-                [id]: {
-                    ...levels[id],
-                    name,
-                    color,
-                    value
-                }
-            }
-
-            tajweed = {
-                lessons: {
-                    ...lessons
-                },
-                levels: {
-                    ...levels
-                }
-            }
-
-            res(id)
-        }, 1000)
-    })
+            res(id);
+        }, 200);
+    });
 }
 
 export function deleteLevels ({id}) {
-    return new Promise((res,rej) => {
+    return new Promise((res) => {
+        levels = getSessionData('levels', levels);
+        lessons = getSessionData('lessons', lessons);
+
+        levels = Object.fromEntries(Object.entries(levels).filter(e => e[0] !== id));
+
+        tajweed = {
+            lessons: { ...lessons },
+            levels: { ...levels }
+        };
+
+        setSessionData('levels', levels);
+        setSessionData('tajweed', tajweed);
+
         setTimeout(() => {
-
-            levels = Object
-            .fromEntries(Object.entries(levels).filter(e => e[0] !== id))
-
-            tajweed = {
-                lessons: {
-                    ...lessons
-                },
-                levels: {
-                    ...levels
-                }
-            }
-
-            res(id)
-        }, 1000)
-    })
+            res(id);
+        }, 200);
+    });
 }
 
 export function deleteLessons ({id}) {
-    return new Promise((res,rej) => {
+    return new Promise((res) => {
+        levels = getSessionData('levels', levels);
+        lessons = getSessionData('lessons', lessons);
+
+        lessons = Object.fromEntries(Object.entries(lessons).filter(e => e[0] !== id));
+
+        tajweed = {
+            lessons: { ...lessons },
+            levels: { ...levels }
+        };
+
+        setSessionData('lessons', lessons);
+        setSessionData('tajweed', tajweed);
+
         setTimeout(() => {
-
-            lessons = Object
-            .fromEntries(Object.entries(lessons).filter(e => e[0] !== id))
-
-            tajweed = {
-                lessons: {
-                    ...lessons
-                },
-                levels: {
-                    ...levels
-                }
-            }
-
-            res(id)
-        }, 1000)
-    })
+            res(id);
+        }, 200);
+    });
 }
 
 export function saveRecitations({
@@ -437,56 +468,67 @@ export function saveRecitations({
         playback,
         authed
     }) {
-    return new Promise((res,rej) => {
+    return new Promise((res) => {
+        users = getSessionData('users', users);
+        teachers = getSessionData('teachers', teachers);
+        students = getSessionData('students', students);
+        recitations = getSessionData('recitations', recitations);
 
         let formattedRecitation;
 
-        users[authed].description === "teacher" ?
+        if (users[authed] && users[authed].description === "teacher") {
+            formattedRecitation = formatTeacherRecitation({
+                verse,
+                narration,
+                playback,
+                authed,
+            });
+        } else {
+            formattedRecitation = formatStudentRecitation({
+                verse,
+                narration,
+                playback,
+                authed,
+            });
+        }
 
-        formattedRecitation = formatTeacherRecitation({
-            verse,
-            narration,
-            playback,
-            authed,
-        }) : formattedRecitation = formatStudentRecitation({
-            verse,
-            narration,
-            playback,
-            authed,
-        })
+        recitations = {
+            ...recitations,
+            [formattedRecitation.id]: formattedRecitation
+        };
 
-        setTimeout(() => {
-
-            recitations = {
-                ...recitations,
-                [formattedRecitation.id]: formattedRecitation
-            }
-
-            users[authed].description === "teacher" ?
+        if (users[authed] && users[authed].description === "teacher") {
             teachers = {
                 ...teachers,
                 [authed]: {
                     ...teachers[authed],
-                    recitations: teachers[authed].recitations
-                    .concat([formattedRecitation.id])
+                    recitations: (teachers[authed]?.recitations || []).concat([formattedRecitation.id])
                 }
-            } : students = {
+            };
+        } else {
+            students = {
                 ...students,
                 [authed]: {
                     ...students[authed],
-                    recitations: students[authed].recitations
-                    .concat([formattedRecitation.id])
+                    recitations: (students[authed]?.recitations || []).concat([formattedRecitation.id])
                 }
             };
+        }
 
-            users = {
-                ...teachers,
-                ...students
-            }
+        users = {
+            ...teachers,
+            ...students
+        };
 
-            res(formattedRecitation)
-        }, 1000)
-    })
+        setSessionData('recitations', recitations);
+        setSessionData('teachers', teachers);
+        setSessionData('students', students);
+        setSessionData('users', users);
+
+        setTimeout(() => {
+            res(formattedRecitation);
+        }, 200);
+    });
 }
 
 export function saveStudent({
@@ -502,7 +544,7 @@ export function saveStudent({
         lang,
         bDate
     }) {
-    return new Promise((res, rej) => {
+    return new Promise((res) => {
         const formattedUser = formatStudent({
             id,
             name,
@@ -515,22 +557,28 @@ export function saveStudent({
             narration,
             lang,
             bDate
-        })
+        });
+
+        students = getSessionData('students', students);
+        teachers = getSessionData('teachers', teachers);
+
+        students = {
+            ...students,
+            [formattedUser.id]: formattedUser
+        };
+
+        users = {
+            ...students,
+            ...teachers
+        };
+
+        setSessionData('students', students);
+        setSessionData('users', users);
 
         setTimeout(() => {
-            students = {
-                ...students,
-                [formattedUser.id]: formattedUser
-            }
-
-            users = {
-                ...students,
-                ...teachers
-            }
-
-            res(formattedUser)
-        }, 1000)
-    })
+            res(formattedUser);
+        }, 200);
+    });
 }
 
 export function saveTeacher({
@@ -546,96 +594,116 @@ export function saveTeacher({
         lang,
         bDate
     }) {
-    return new Promise((res,rej) => {
-            const formattedUser = formatTeacher({
-                id,
-                name,
-                email,
-                gender,
-                country,
-                avatar,
-                password,
-                description,
-                due,
-                lang,
-                bDate
-            })
+    return new Promise((res) => {
+        const formattedUser = formatTeacher({
+            id,
+            name,
+            email,
+            gender,
+            country,
+            avatar,
+            password,
+            description,
+            due,
+            lang,
+            bDate
+        });
 
-            setTimeout(() => {
-                teachers = {
-                    ...teachers,
-                    [formattedUser.id]: formattedUser
-                }
+        teachers = getSessionData('teachers', teachers);
+        students = getSessionData('students', students);
 
-                users = {
-                    ...students,
-                    ...teachers
-                }
-    
-                res(formattedUser)
-            }, 1000)
-    })
+        teachers = {
+            ...teachers,
+            [formattedUser.id]: formattedUser
+        };
+
+        users = {
+            ...students,
+            ...teachers
+        };
+
+        setSessionData('teachers', teachers);
+        setSessionData('users', users);
+
+        setTimeout(() => {
+            res(formattedUser);
+        }, 200);
+    });
 }
 
 export function saveAdmins ({email}) {
-    return new Promise((res,rej) => {
+    return new Promise((res) => {
         const formattedAdmin = formatAdmin({
             email
-        })
-        setTimeout(() => {
-            admins = {
-                ...admins,
-                [formattedAdmin.id]: formattedAdmin
-            }
+        });
 
-            res(formattedAdmin)
-        }, 1000)
-    })
+        admins = getSessionData('admins', admins);
+        admins = {
+            ...admins,
+            [formattedAdmin.id]: formattedAdmin
+        };
+
+        setSessionData('admins', admins);
+
+        setTimeout(() => {
+            res(formattedAdmin);
+        }, 200);
+    });
 }
 
 export function deleteAdmins ({id}) {
-    return new Promise((res,rej) => {
+    return new Promise((res) => {
+        admins = getSessionData('admins', admins);
+        admins = Object.fromEntries(Object.entries(admins).filter(e => e[0] !== id));
+
+        setSessionData('admins', admins);
+
         setTimeout(() => {
-
-            admins = Object
-            .fromEntries(Object.entries(admins).filter(e => e[0] !== id))
-
-            res(id)
-        }, 1000)
-    })
+            res(id);
+        }, 200);
+    });
 }
 
 export function savePasses ({
         id,
         password
     }) {
-    return new Promise((res,rej) => {
-        
-        setTimeout(() => {
+    return new Promise((res) => {
+        users = getSessionData('users', users);
+        teachers = getSessionData('teachers', teachers);
+        students = getSessionData('students', students);
 
-            users[id].description === "teacher" ?
+        if (users[id] && users[id].description === "teacher") {
             teachers = {
                 ...teachers,
                 [id]: {
                     ...teachers[id],
                     password: password
                 }
-            } : students = {
+            };
+        } else if (students[id]) {
+            students = {
                 ...students,
                 [id]: {
                     ...students[id],
                     password: password
                 }
             };
+        }
 
-            users = {
-                ...teachers,
-                ...students
-            }
+        users = {
+            ...teachers,
+            ...students
+        };
 
-            res(password)
-        }, 1000)
-    })
+        setSessionData('teachers', teachers);
+        setSessionData('students', students);
+        setSessionData('users', users);
+
+        setTimeout(() => {
+            res(password);
+        }, 200);
+    });
 }
 
 export function saveUserRatings ({
@@ -643,48 +711,60 @@ export function saveUserRatings ({
     ratedId,
     rating
 }) {
-return new Promise((res,rej) => {
-    
-    setTimeout(() => {
+    return new Promise((res) => {
+        users = getSessionData('users', users);
+        teachers = getSessionData('teachers', teachers);
+        students = getSessionData('students', students);
 
-        users[ratedId].description === "teacher" ?
-        teachers = {
-            ...teachers,
-            [ratedId]: {
-                ...teachers[ratedId],
-                raters: teachers[ratedId].raters.concat([{raterId, rating}]),
-            },
-        } : students = {
-            ...students,
-            [ratedId]: {
-                ...students[ratedId],
-                raters: students[ratedId].raters.concat([{raterId, rating}]),
-            }
-        };
+        if (users[ratedId] && users[ratedId].description === "teacher") {
+            teachers = {
+                ...teachers,
+                [ratedId]: {
+                    ...teachers[ratedId],
+                    raters: (teachers[ratedId]?.raters || []).concat([{raterId, rating}]),
+                },
+            };
+        } else if (students[ratedId]) {
+            students = {
+                ...students,
+                [ratedId]: {
+                    ...students[ratedId],
+                    raters: (students[ratedId]?.raters || []).concat([{raterId, rating}]),
+                }
+            };
+        }
 
-        users[raterId].description === "teacher" ?
-        teachers = {
-            ...teachers,
-            [raterId]: {
-                ...teachers[raterId],
-                rated: teachers[raterId].rated.concat([ratedId])
-            },
-        } : students = {
-            ...students,
-            [raterId]: {
-                ...students[raterId],
-                rated: students[raterId].rated.concat([ratedId])
-            }
-        };
+        if (users[raterId] && users[raterId].description === "teacher") {
+            teachers = {
+                ...teachers,
+                [raterId]: {
+                    ...teachers[raterId],
+                    rated: (teachers[raterId]?.rated || []).concat([ratedId])
+                },
+            };
+        } else if (students[raterId]) {
+            students = {
+                ...students,
+                [raterId]: {
+                    ...students[raterId],
+                    rated: (students[raterId]?.rated || []).concat([ratedId])
+                }
+            };
+        }
 
         users = {
             ...teachers,
             ...students
-        }
+        };
 
-        res(raterId, ratedId, rating)
-    }, 1000)
-})
+        setSessionData('teachers', teachers);
+        setSessionData('students', students);
+        setSessionData('users', users);
+
+        setTimeout(() => {
+            res(raterId, ratedId, rating);
+        }, 200);
+    });
 }
 
 export function saveRecitationRatings ({
@@ -692,166 +772,200 @@ export function saveRecitationRatings ({
     ratedId,
     rating
 }) {
-return new Promise((res,rej) => {
-    
-    setTimeout(() => {
+    return new Promise((res) => {
+        users = getSessionData('users', users);
+        teachers = getSessionData('teachers', teachers);
+        students = getSessionData('students', students);
+        recitations = getSessionData('recitations', recitations);
 
-        recitations = {
-            ...recitations,
-            [ratedId]: {
-                ...recitations[ratedId],
-                raters: recitations[ratedId].raters.concat([{raterId, rating}]),
-            }
+        if (recitations[ratedId]) {
+            recitations = {
+                ...recitations,
+                [ratedId]: {
+                    ...recitations[ratedId],
+                    raters: (recitations[ratedId]?.raters || []).concat([{raterId, rating}]),
+                }
+            };
         }
 
-        users[raterId].description === "teacher" ?
-        teachers = {
-            ...teachers,
-            [raterId]: {
-                ...teachers[raterId],
-                ratedRecitations: teachers[raterId].ratedRecitations
-                .concat([ratedId])
-            }
-        } : students = {
-            ...students,
-            [raterId]: {
-                ...students[raterId],
-                ratedRecitations: students[raterId].ratedRecitations
-                .concat([ratedId])
-            }
+        if (users[raterId] && users[raterId].description === "teacher") {
+            teachers = {
+                ...teachers,
+                [raterId]: {
+                    ...teachers[raterId],
+                    ratedRecitations: (teachers[raterId]?.ratedRecitations || []).concat([ratedId])
+                }
+            };
+        } else if (students[raterId]) {
+            students = {
+                ...students,
+                [raterId]: {
+                    ...students[raterId],
+                    ratedRecitations: (students[raterId]?.ratedRecitations || []).concat([ratedId])
+                }
+            };
         }
 
         users = {
             ...teachers,
             ...students
-        }
+        };
 
-        res(raterId, ratedId, rating)
-    }, 1000)
-})
+        setSessionData('recitations', recitations);
+        setSessionData('teachers', teachers);
+        setSessionData('students', students);
+        setSessionData('users', users);
+
+        setTimeout(() => {
+            res(raterId, ratedId, rating);
+        }, 200);
+    });
 }
 
 export function savePics({
         id,
         pic
     }) {
-    return new Promise((res,rej) => {
-        
-        setTimeout(() => {
+    return new Promise((res) => {
+        users = getSessionData('users', users);
+        teachers = getSessionData('teachers', teachers);
+        students = getSessionData('students', students);
 
-            users[id].description === "teacher" ?
+        if (users[id] && users[id].description === "teacher") {
             teachers = {
                 ...teachers,
                 [id]: {
                     ...teachers[id],
                     avatar: pic
                 }
-            } : students = {
+            };
+        } else if (students[id]) {
+            students = {
                 ...students,
                 [id]: {
                     ...students[id],
                     avatar: pic
                 }
             };
+        }
 
-            users = {
-                ...teachers,
-                ...students
-            }
+        users = {
+            ...teachers,
+            ...students
+        };
 
-            res(pic)
-        }, 1000)
-    })
+        setSessionData('teachers', teachers);
+        setSessionData('students', students);
+        setSessionData('users', users);
+
+        setTimeout(() => {
+            res(pic);
+        }, 200);
+    });
 }
 
 export function saveBlocks({
         id,
         authed
     }) {
-    return new Promise((res,rej) => {
+    return new Promise((res) => {
+        users = getSessionData('users', users);
+        teachers = getSessionData('teachers', teachers);
+        students = getSessionData('students', students);
 
-        setTimeout(() => {
+        if (users[authed] && users[authed].description === "teacher") {
+            teachers = {
+                ...teachers,
+                [authed]: {
+                    ...teachers[authed],
+                    blockList: (teachers[authed]?.blockList || []).concat([id])
+                }
+            };
 
-            if (users[authed].description === "teacher") {
-
-                teachers = {
-                    ...teachers,
-                    [authed]: {
-                        ...teachers[authed],
-                        blockList: teachers[authed].blockList.concat([id])
-                    }
-                };
-
+            if (students[id]) {
                 students = {
                     ...students,
                     [id]: {
                         ...students[id],
                         active: false
                     }
-                }
-            } else {
-                students = {
-                    ...students,
-                    [authed]: {
-                        ...students[authed],
-                        blockList: students[authed].blockList.concat([id])
-                    }
-                }
+                };
             }
+        } else if (students[authed]) {
+            students = {
+                ...students,
+                [authed]: {
+                    ...students[authed],
+                    blockList: (students[authed]?.blockList || []).concat([id])
+                }
+            };
+        }
 
-            users = {
-                ...teachers,
-                ...students
-            }
+        users = {
+            ...teachers,
+            ...students
+        };
 
-            res(id)
-        }, 1000)
-    })
+        setSessionData('teachers', teachers);
+        setSessionData('students', students);
+        setSessionData('users', users);
+
+        setTimeout(() => {
+            res(id);
+        }, 200);
+    });
 }
 
 export function saveUnblocks({
         id,
         authed
     }) {
-    return new Promise((res,rej) => {
+    return new Promise((res) => {
+        users = getSessionData('users', users);
+        teachers = getSessionData('teachers', teachers);
+        students = getSessionData('students', students);
 
-        setTimeout(() => {
+        if (users[authed] && users[authed].description === "teacher") {
+            teachers = {
+                ...teachers,
+                [authed]: {
+                    ...teachers[authed],
+                    blockList: (teachers[authed]?.blockList || []).filter((i) => i !== id)
+                }
+            };
 
-            if (users[authed].description === "teacher") {
-
-                teachers = {
-                    ...teachers,
-                    [authed]: {
-                        ...teachers[authed],
-                        blockList: teachers[authed].blockList.filter((i) => i !== id)
-                    }
-                };
-
+            if (students[id]) {
                 students = {
                     ...students,
                     [id]: {
                         ...students[id],
                         active: true
                     }
-                }
-            } else {
-                students = {
-                    ...students,
-                    [authed]: {
-                        ...students[authed],
-                        blockList: students[authed].blockList.filter((i) => i !== id)
-                    }
-                }
+                };
             }
+        } else if (students[authed]) {
+            students = {
+                ...students,
+                [authed]: {
+                    ...students[authed],
+                    blockList: (students[authed]?.blockList || []).filter((i) => i !== id)
+                }
+            };
+        }
 
-            users = {
-                ...teachers,
-                ...students
-            }
+        users = {
+            ...teachers,
+            ...students
+        };
 
-            res(id)
-        }, 1000)
-    })
+        setSessionData('teachers', teachers);
+        setSessionData('students', students);
+        setSessionData('users', users);
+
+        setTimeout(() => {
+            res(id);
+        }, 200);
+    });
 }
 
 export function saveEvaluations({
@@ -862,10 +976,13 @@ export function saveEvaluations({
         avatar,
         report
     }) {
-    return new Promise((res,rej) => {
+    return new Promise((res) => {
+        users = getSessionData('users', users);
+        teachers = getSessionData('teachers', teachers);
+        students = getSessionData('students', students);
+        recitations = getSessionData('recitations', recitations);
 
-        setTimeout(() => {
-
+        if (recitations[id]) {
             recitations = {
                 ...recitations,
                 [id]: {
@@ -878,46 +995,59 @@ export function saveEvaluations({
                     },
                     report
                 }
-            }
+            };
+        }
 
+        if (teachers[authed]) {
             teachers = {
                 ...teachers,
                 [authed]: {
                     ...teachers[authed],
-                    evaluatedRecitations: teachers[authed].evaluatedRecitations
-                    .concat([id])
+                    evaluatedRecitations: (teachers[authed]?.evaluatedRecitations || []).concat([id])
                 }
-            }
+            };
+        }
 
-            users = {
-                ...teachers,
-                ...students
-            }
+        users = {
+            ...teachers,
+            ...students
+        };
 
-            res(id)
-        }, 1000)
-    })
+        setSessionData('recitations', recitations);
+        setSessionData('teachers', teachers);
+        setSessionData('users', users);
+
+        setTimeout(() => {
+            res(id);
+        }, 200);
+    });
 }
 
 export function saveTeacherEvaluation({id, status}) {
-    return new Promise((res, rej) => {
+    return new Promise((res) => {
+        teachers = getSessionData('teachers', teachers);
+        students = getSessionData('students', students);
 
-        setTimeout(() => {
-
+        if (teachers[id]) {
             teachers = {
                 ...teachers,
                 [id]: {
                     ...teachers[id],
                     status
                 }
-            }
+            };
+        }
 
-            users = {
-                ...teachers,
-                ...students
-            }
+        users = {
+            ...teachers,
+            ...students
+        };
 
-            res(id, status)
-        })
-    }) 
+        setSessionData('teachers', teachers);
+        setSessionData('users', users);
+
+        setTimeout(() => {
+            res(id, status);
+        }, 200);
+    });
 }

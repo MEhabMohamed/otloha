@@ -16,7 +16,7 @@ export default function validateUser(
     if (usermails.includes(email)) {
         if (users[id].password === pass) {
             dispatch(setAuthedUser(id));
-            localStorage.setItem("authedUser", JSON.stringify([id, Date.now()]))
+            sessionStorage.setItem("authedUser", JSON.stringify([id, Date.now()]))
             navigate('/');
             $('#get-pic').show();
         } else {
