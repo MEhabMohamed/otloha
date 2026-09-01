@@ -44,6 +44,62 @@ function SignInSide({ users }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const handleSocialLogin = (provider) => {
+    if (provider === 'google') {
+      const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID || '185798045507-mabt0pd37023l4vt0qupra8frgvsgmgm.apps.googleusercontent.com';
+      const rootUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
+      const options = {
+        redirect_uri: window.location.origin,
+        client_id: clientId,
+        access_type: 'offline',
+        response_type: 'code',
+        prompt: 'consent',
+        state: 'google',
+        scope: [
+          'https://www.googleapis.com/auth/userinfo.profile',
+          'https://www.googleapis.com/auth/userinfo.email',
+        ].join(' '),
+      };
+      const qs = new URLSearchParams(options);
+      window.location.href = `${rootUrl}?${qs.toString()}`;
+      return;
+    }
+
+    if (provider === 'facebook') {
+      const appId = process.env.REACT_APP_FACEBOOK_APP_ID || '1362513349344023';
+      const rootUrl = 'https://www.facebook.com/v18.0/dialog/oauth';
+      const options = {
+        redirect_uri: window.location.origin,
+        client_id: appId,
+        response_type: 'code',
+        scope: 'email,public_profile',
+        state: 'facebook',
+      };
+      const qs = new URLSearchParams(options);
+      window.location.href = `${rootUrl}?${qs.toString()}`;
+      return;
+    }
+
+    if (provider === 'twitter') {
+      const clientId = process.env.REACT_APP_TWITTER_CLIENT_ID || 'YXBFWk9xdE5MMmt6ZkpiOHV4VFk6MTpjaQ';
+      const rootUrl = 'https://twitter.com/i/oauth2/authorize';
+      const codeVerifier = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      localStorage.setItem('twitter_code_verifier', codeVerifier);
+      const options = {
+        response_type: 'code',
+        client_id: clientId,
+        redirect_uri: window.location.origin,
+        scope: 'users.read tweet.read offline.access',
+        state: 'twitter',
+        code_challenge: codeVerifier,
+        code_challenge_method: 'plain',
+      };
+      const qs = new URLSearchParams(options);
+      window.location.href = `${rootUrl}?${qs.toString()}`;
+      return;
+    }
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -109,9 +165,9 @@ function SignInSide({ users }) {
               my: 5,
               gap: 2
             }}>
-              <SocialButton source={google} alternate="google" text="Google" />
-              <SocialButton source={fb} alternate="facebook" text="Facebook" />
-              <SocialButton source={twitter} alternate="twitter" text="Twitter" />
+              <SocialButton source={google} alternate="google" text="Google" onClick={() => handleSocialLogin('google')} />
+              <SocialButton source={fb} alternate="facebook" text="Facebook" onClick={() => handleSocialLogin('facebook')} />
+              <SocialButton source={twitter} alternate="twitter" text="Twitter" onClick={() => handleSocialLogin('twitter')} />
             </Box>
             <Typography component="span" sx={{ fontSize: 12}}>
               or using Email

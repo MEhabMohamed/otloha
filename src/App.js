@@ -28,6 +28,9 @@ import EditLevel from './Component Libraries/Tajweed/EditLevel';
 import AddLesson from './Component Libraries/Tajweed/AddLesson';
 import EditLesson from './Component Libraries/Tajweed/EditLesson';
 
+import { setAuthedUser } from './actions/authedUsers';
+import { handleAddStudent } from './actions/user';
+
 const PrivateWrapper = ({ auth: isAuthenticated }) => {
   if (isAuthenticated !== null) {
     return <Outlet />
@@ -42,7 +45,7 @@ function NotFound () {
     )
 }
 
-function App({ initial, authedUser, recitations, levels, lessons }) {
+function App({ initial, authedUser, recitations, levels, lessons, users, dispatch }) {
 
   const isAuthed = authedUser;
   let checkAuth = useRef(null);
@@ -56,8 +59,38 @@ function App({ initial, authedUser, recitations, levels, lessons }) {
   };
 
   useEffect(() => {
-    initial();
-  }, [initial]);
+    initial().then(() => {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get('code');
+      const state = params.get('state');
+      if (code) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        const provider = state || 'google';
+        const userId = `${provider}_user`;
+        if (!users || !users[userId]) {
+          dispatch(
+            handleAddStudent(
+              userId,
+              `${provider.charAt(0).toUpperCase() + provider.slice(1)} User`,
+              'social_password',
+              { code: 'EG', label: 'Egypt', phone: '20' },
+              'student',
+              `${userId}@example.com`,
+              'male',
+              '',
+              'Hafs',
+              'arEG',
+              Date.now()
+            )
+          ).then(() => {
+            dispatch(setAuthedUser(userId));
+          });
+        } else {
+          dispatch(setAuthedUser(userId));
+        }
+      }
+    });
+  }, [initial, dispatch, users]);
 
   useEffect(() => {
     setAuth(isAuthed);
@@ -119,19 +152,21 @@ function App({ initial, authedUser, recitations, levels, lessons }) {
   );
 }
 
-function mapStateToProps({ authedUser, admins, recitations, tajweed }) {
+function mapStateToProps({ authedUser, admins, recitations, tajweed, users }) {
   return {
     authedUser: authedUser !== null ? authedUser[0] : null,
     admins: Object.keys(admins),
     recitations: Object.keys(recitations),
     levels: tajweed.levels !== undefined ? Object.values(tajweed.levels) : [],
-    lessons: tajweed.lessons !== undefined ? Object.values(tajweed.lessons) : []
+    lessons: tajweed.lessons !== undefined ? Object.values(tajweed.lessons) : [],
+    users: users || {}
   }
 }
 
 function mapDispatchToProps (dispatch) {
   return {
-    initial: () => dispatch(handleInitialData())
+    initial: () => dispatch(handleInitialData()),
+    dispatch
   }
 }
 
