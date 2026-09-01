@@ -14,6 +14,7 @@ import NarrationSelect from '../Narration/Narration';
 import { useNavigate } from 'react-router-dom';
 import { addUser } from "../../actions/user";
 import { setAuthedUser } from "../../actions/authedUsers";
+import { saveStudent, saveTeacher } from "../../helpers/savers";
 import BasicAlerts from '../Alert/Alert';
 import Locales from '../Language/Language';
 import DatePick from '../Date/DatePicker';
@@ -67,31 +68,18 @@ export default function CompleteProfile() {
     };
 
     try {
-      let endpoint = '/api/auth/google-register';
-      if (profile.provider === 'facebook') {
-        endpoint = '/api/auth/facebook-register';
-      } else if (profile.provider === 'twitter') {
-        endpoint = '/api/auth/twitter-register';
-      }
-      
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if (!response.ok) {
-        throw new Error('Onboarding failed');
+      let savedUser;
+      if (role === 'teacher') {
+        savedUser = await saveTeacher(payload);
+      } else {
+        savedUser = await saveStudent(payload);
       }
 
-      const data = await response.json();
-      
       // Dispatch actions to sync Redux store
-      dispatch(addUser(data.user));
-      dispatch(setAuthedUser(data.id));
-      localStorage.setItem("authedUser", JSON.stringify([data.id, Date.now()]));
+      dispatch(addUser(savedUser));
+      dispatch(setAuthedUser(savedUser.id));
+      sessionStorage.setItem("authedUser", JSON.stringify(savedUser.id));
+      localStorage.setItem("authedUser", JSON.stringify([savedUser.id, Date.now()]));
 
       // Clear onboarding session storage
       sessionStorage.removeItem('onboarding_profile');

@@ -14,8 +14,6 @@ COPY package*.json ./
 RUN npm ci --only=production --legacy-peer-deps
 COPY --from=builder /app/build ./build
 COPY server.js ./
-COPY schema.sql ./
-COPY init-db.js ./
 
 EXPOSE 8080
 CMD ["node", "server.js"]

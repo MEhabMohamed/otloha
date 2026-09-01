@@ -11,7 +11,6 @@ import AppAppBar from './Component Libraries/AppBar/AppAppBar';
 import getLPTheme from './helpers/getLPTheme';
 import dark from './Resources/dark-bg.jpg';
 import light from './Resources/light-bg.jpg';
-import useMediaQuery from '@mui/material/useMediaQuery';
 
 const TeacherDashboard = lazy(() => import('./components/TeacherDashboard'));
 const RecitationDashboard = lazy(() => import('./components/RecitationDashboard'));
@@ -51,11 +50,18 @@ function App({ initial, authedUser, recitations, levels, lessons }: any) {
   let checkAuth = useRef<any>(null);
   let [auth, setAuth] = useState<any>(null);
   checkAuth.current = auth;
-  const [mode, setMode] = useState<'light' | 'dark'>('light');
+  const [mode, setMode] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('themeMode');
+    if (saved === 'light' || saved === 'dark') return saved;
+    return 'light';
+  });
   const LPtheme = createTheme(getLPTheme(mode) as any);
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const toggleColorMode = () => {
-    setMode((prev) => (prev === 'dark' ? 'light' : 'dark'));
+    setMode((prev) => {
+      const next = prev === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('themeMode', next);
+      return next;
+    });
   };
 
   const [loading, setLoading] = useState(true);
@@ -97,7 +103,10 @@ function App({ initial, authedUser, recitations, levels, lessons }: any) {
               return res.json();
             })
             .then((data) => {
-              if (data.registered) {
+              const usersRaw = sessionStorage.getItem('users');
+              const users = usersRaw ? JSON.parse(usersRaw) : {};
+              if (users[data.id]) {
+                sessionStorage.setItem('authedUser', JSON.stringify(data.id));
                 initial().then(() => setLoading(false)).catch(() => setLoading(false));
               } else {
                 sessionStorage.setItem('onboarding_profile', JSON.stringify({
@@ -123,8 +132,7 @@ function App({ initial, authedUser, recitations, levels, lessons }: any) {
 
   useEffect(() => {
     setAuth(isAuthed);
-    prefersDarkMode ? setMode('dark') : setMode('light');
-  }, [isAuthed, prefersDarkMode]);
+  }, [isAuthed]);
 
   if (loading) {
     return (

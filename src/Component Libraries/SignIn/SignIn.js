@@ -14,7 +14,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import validateUser from './userValidation';
 import { setAuthedUser } from '../../actions/authedUsers';
-import { addUser } from '../../actions/user';
 import BasicAlerts from '../Alert/Alert';
 import google from '../../Resources/google.png';
 import fb from '../../Resources/facebook.png';
