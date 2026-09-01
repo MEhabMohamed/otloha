@@ -12,11 +12,10 @@ import { connect, useDispatch } from 'react-redux';
 import readURL from '../../helpers/getPic';
 import cam from '../../Resources/cam.jpg'
 import $ from 'jquery';
-import { Input, Paper } from '@mui/material';
+import { Input, Paper, InputAdornment } from '@mui/material';
 import CountrySelector from '../CountrySelect/CountrySelector';
 import NarrationSelect from '../Narration/Narration';
 import { Link, useNavigate } from 'react-router-dom';
-import showPass from '../../helpers/showpass';
 import eye from '../../Resources/eye.png';
 import handleNewUser from './handelNewUser';
 import { handleAddStudent, handleAddTeacher } from "../../actions/user";
@@ -30,17 +29,8 @@ const userPic = {
   display: 'none'
 }
 
-const showPassStyle = {
-  width: '15px',
-  height: '15px',
-  cursor: 'pointer',
-  position: 'absolute',
-  marginTop: '0.8rem',
-  marginLeft: '25.1rem',
-  display: 'none'
-}
 
-function SignUp({ users = {} }) {
+function SignUp({ users }) {
 
     let [newFirstName, setnewFirstName] = React.useState('');
     let [newLastName, setnewLastName] = React.useState('');
@@ -53,11 +43,8 @@ function SignUp({ users = {} }) {
     let [bDate, setBDate] = React.useState(null);
     let [emailAlert, setEmailAlert] = React.useState('');
     let [passAlert, setPassAlert] = React.useState('');
-    let sessionUsers = users && Object.keys(users).length > 0
-      ? users
-      : (typeof window !== 'undefined' && window.sessionStorage ? JSON.parse(window.sessionStorage.getItem("users") || '{}') : {});
-    let usermails = sessionUsers
-      ? Object.values(sessionUsers).map(({email}) => email) : [];
+    let usermails = users !== (undefined || null)
+    ? Object.values(users).map(({email}) => email) : [];
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -340,13 +327,6 @@ function SignUp({ users = {} }) {
                 />
               </Grid>
               <Grid item xs={12}>
-                <img 
-                src={eye} 
-                style={showPassStyle} 
-                alt="show-password"
-                id='signup-show-pass'
-                onClick={() => showPass('signup-password')}
-                />
                 <TextField
                   required
                   fullWidth
@@ -355,10 +335,25 @@ function SignUp({ users = {} }) {
                   type="password"
                   id="signup-password"
                   autoComplete="new-password"
-                  onChange={(e) => {
-                    $('#signup-show-pass').show()
-                    e.target.value === '' && $('#signup-show-pass').hide()
-                    return setnewPass(e.target.value)}}
+                  value={newPass}
+                  onChange={(e) => setnewPass(e.target.value)}
+                  InputProps={{
+                    endAdornment: newPass && (
+                      <InputAdornment position="end">
+                        <img
+                          src={eye}
+                          alt="show-password"
+                          style={{ width: '15px', height: '15px', cursor: 'pointer' }}
+                          onClick={() => {
+                            const input = document.getElementById('signup-password');
+                            if (input) {
+                              input.type = input.type === 'password' ? 'text' : 'password';
+                            }
+                          }}
+                        />
+                      </InputAdornment>
+                    )
+                  }}
                 />
               </Grid>
               <Grid item xs={12} sx={{ display: "none"}} id="pass-alert">
@@ -387,10 +382,10 @@ function SignUp({ users = {} }) {
   );
 }
 
-function mapStateToProps ({ users }) {
+function mapStateToProps({ users }) {
   return {
-    users: users || {}
+    users
   };
 }
 
-export default connect(mapStateToProps)(SignUp);
+export default connect(mapStateToProps)(SignUp)

@@ -11,18 +11,15 @@ export default function AyahSelect({
     setter,
     label,
     numberSetter,
-    mushaf
+    ayahsList
   }) {
 
-  const ayahs = mushaf !== ("" && undefined)
-  ? mushaf.data.surahs.filter((s) => s.name === surah)[0].ayahs
-  : 0;
+  const ayahs = ayahsList || [];
 
   const handleChange = (event) => {
     setter(event.target.value);
-    numberSetter(mushaf !== ("" && undefined)
-    ? ayahs.filter(({text}) => text === event.target.value)[0].numberInSurah
-    : 0)
+    const selectedAyah = ayahs.find(({text}) => text === event.target.value);
+    numberSetter(selectedAyah ? selectedAyah.numberInSurah : 0);
   };
 
   return (

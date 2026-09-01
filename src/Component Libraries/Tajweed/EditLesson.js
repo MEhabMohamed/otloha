@@ -1,7 +1,7 @@
-import { Button, Container, Grid, TextField } from '@mui/material';
+import { Button, Container, Grid, TextField, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -9,12 +9,25 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { handleEditLesson } from '../../actions/tajweed';
 
-function EditLesson({ id, levels, lessons }) {
+function EditLesson({ id: propId, levels, lessons }) {
+    const { id: paramId } = useParams();
+    const id = propId || paramId;
 
-    let [newTitle, setNewTitle] = useState(lessons[id].title);
-    let [newContent, setNewContent] = useState(lessons[id].content);
-    let [newLevel, setNewLevel] = useState(lessons[id].level);
-    let [newParentLesson, setNewParentLesson] = useState(lessons[id].parentLesson);
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    let [newTitle, setNewTitle] = useState(lessons[id]?.title || '');
+    let [newContent, setNewContent] = useState(lessons[id]?.content || '');
+    let [newLevel, setNewLevel] = useState(lessons[id]?.level || '');
+    let [newParentLesson, setNewParentLesson] = useState(lessons[id]?.parentLesson || '');
+
+    if (!lessons[id] || !levels) {
+        return (
+            <Container sx={{ pt: 12, px: 1 }}>
+                <Typography>Loading lesson...</Typography>
+            </Container>
+        );
+    }
 
     const handleChangeLevel = (event) => {
         setNewLevel(event.target.value);
@@ -24,8 +37,7 @@ function EditLesson({ id, levels, lessons }) {
         setNewParentLesson(event.target.value);
     };
 
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
+
 
     return (
         <Container

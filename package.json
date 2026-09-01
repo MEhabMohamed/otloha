@@ -17,7 +17,10 @@
     "@testing-library/user-event": "^13.5.0",
     "ajv-formats": "^3.0.1",
     "bindings": "^1.5.0",
+    "cors": "^2.8.6",
     "dayjs": "^1.11.10",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
     "gapi-script": "^1.2.0",
     "gaxios": "^6.5.0",
     "geojson": "^0.5.0",
@@ -27,6 +30,8 @@
     "libxmljs": "^1.0.11",
     "node": "^20.13.1",
     "node-gyp": "^8.4.1",
+    "nodemailer": "^9.0.3",
+    "pg": "^8.22.0",
     "quran": "^0.0.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -42,7 +47,8 @@
     "webpack": "^5.91.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "concurrently \"npm run server\" \"react-scripts start\"",
+    "server": "node server.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -65,7 +71,15 @@
       "last 1 safari version"
     ]
   },
+  "proxy": "http://localhost:5000",
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "*"
+    "@babel/plugin-proposal-private-property-in-object": "*",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.25",
+    "@types/pg": "^8.20.0",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "concurrently": "^10.0.3",
+    "typescript": "4.9.5"
   }
 }

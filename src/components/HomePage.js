@@ -165,7 +165,7 @@ function HomePage ({ theme, users, recitations }) {
                     }}
                 >
                     <WorldMap
-                        color={theme === "light" ? "blue" : "yellow"}
+                        color={theme === "light" ? "#10B981" : "#34D399"}
                         value-suffix="people"
                         backgroundColor="transparent"
                         size="md"
@@ -190,16 +190,16 @@ function HomePage ({ theme, users, recitations }) {
                             value: filteredUser().students.length,
                             label: 'Students',
                             color: theme === "light"
-                            ? "rgba(147, 136, 17, 0.8)"
-                            : "rgba(241, 225, 51, 0.8)"
+                            ? "#D97706"
+                            : "#FBBF24"
                         },
                         {
                             id: 1,
                             value: filteredUser().teachers.length,
                             label: 'Teachers' ,
                             color: theme === "light"
-                            ? "rgba(49, 57, 48, 0.8)"
-                            : "rgba(192, 207, 191, 0.8)"
+                            ? "#059669"
+                            : "#34D399"
                         },
                     ]}
                 />
@@ -213,20 +213,20 @@ function HomePage ({ theme, users, recitations }) {
                         { 
                             id: 0,
                             value: filteredUser().teachers.filter((teacher) =>
-                            teacher.active).length,
+                                teacher.active).length,
                             label: 'Active',
                             color: theme === "light"
-                            ? "rgba(147, 136, 17, 0.8)"
-                            : "rgba(241, 225, 51, 0.8)"
+                            ? "#059669"
+                            : "#34D399"
                         },
                         {
                             id: 1,
                             value: filteredUser().teachers.filter((teacher) =>
-                            !teacher.active).length,
+                                !teacher.active).length,
                             label: 'Blocked',
                             color: theme === "light"
-                            ? "rgba(49, 57, 48, 0.8)"
-                            : "rgba(192, 207, 191, 0.8)"
+                            ? "#E11D48"
+                            : "#FB7185"
                         },
                     ]}
                 />
@@ -240,20 +240,20 @@ function HomePage ({ theme, users, recitations }) {
                         {
                             id: 0,
                             value: filteredUser().students.filter((student) =>
-                            student.active).length,
+                                student.active).length,
                             label: 'Active',
                             color: theme === "light"
-                            ? "rgba(147, 136, 17, 0.8)"
-                            : "rgba(241, 225, 51, 0.8)"
+                            ? "#059669"
+                            : "#34D399"
                         },
                         {
                             id: 1,
                             value: filteredUser().students.filter((student) =>
-                            !student.active).length,
+                                !student.active).length,
                             label: 'Blocked',
                             color: theme === "light"
-                            ? "rgba(49, 57, 48, 0.8)"
-                            : "rgba(192, 207, 191, 0.8)"
+                            ? "#E11D48"
+                            : "#FB7185"
                         },
                     ]} 
                 />
@@ -263,33 +263,33 @@ function HomePage ({ theme, users, recitations }) {
                     ? "Teacher Profile"
                     : "Teachers Profiles"}
                     size={5.7}
-                        data={[
+                    data={[
                         {
                             id: 0,
                             value: filteredUser().teachers.filter((teacher) =>
-                            teacher.status === "Pending").length,
+                                teacher.status === "Pending").length,
                             label: 'Pending',
                             color: theme === "light"
-                            ? "rgba(147, 136, 17, 0.8)"
-                            : "rgba(241, 225, 51, 0.8)"
+                            ? "#D97706"
+                            : "#FBBF24"
                         },
                         {
                             id: 1,
                             value: filteredUser().teachers.filter((teacher) =>
-                            teacher.status === "Approved").length,
+                                teacher.status === "Approved").length,
                             label: 'Approved',
                             color: theme === "light"
-                            ? "rgba(8, 117, 56, 0.8)"
-                            : "rgba(37, 245, 128, 0.8)"
+                            ? "#059669"
+                            : "#34D399"
                         },
                         {
                             id: 2,
                             value: filteredUser().teachers.filter((teacher) =>
-                            teacher.status === "Rejected").length,
+                                teacher.status === "Rejected").length,
                             label: 'Rejected',
                             color: theme === "light"
-                            ? "rgba(112, 10, 22, 0.8)"
-                            : "rgba(255, 46, 70, 0.8)"
+                            ? "#E11D48"
+                            : "#FB7185"
                         },
                     ]}
                 />
@@ -305,20 +305,20 @@ function HomePage ({ theme, users, recitations }) {
                         {
                             id: 0,
                             value: filteredUser().teachers.filter((teacher) =>
-                            teacher.due === "paid").length,
+                                teacher.due === "paid").length,
                             label: 'Paid',
                             color: theme === "light"
-                            ? "rgba(147, 136, 17, 0.8)"
-                            : "rgba(241, 225, 51, 0.8)"
+                            ? "#059669"
+                            : "#34D399"
                         },
                         {
                             id: 1,
                             value: filteredUser().teachers.filter((teacher) =>
-                            teacher.due === "volunteer").length,
+                                teacher.due === "volunteer").length,
                             label: 'Volunteer',
                             color: theme === "light"
-                            ? "rgba(49, 57, 48, 0.8)"
-                            : "rgba(192, 207, 191, 0.8)"
+                            ? "#D97706"
+                            : "#FBBF24"
                         },
                     ]} 
                 />
@@ -332,38 +332,38 @@ function HomePage ({ theme, users, recitations }) {
                         {
                             id: 0,
                             value: Object.values(recitations).filter((recitation) =>
-                            recitation.status === "Pending").length,
+                                recitation.status === "Pending").length,
                             label: 'Pending',
                             color: theme === "light"
-                            ? "rgba(147, 136, 17, 0.8)"
-                            : "rgba(241, 225, 51, 0.8)"
+                            ? "#D97706"
+                            : "#FBBF24"
                         },
                         {
                             id: 1,
                             value: Object.values(recitations).filter((recitation) =>
-                            recitation.status === "Accepted").length,
+                                recitation.status === "Accepted").length,
                             label: 'Accepted',
                             color: theme === "light"
-                            ? "rgba(8, 117, 56, 0.8)"
-                            : "rgba(37, 245, 128, 0.8)"
+                            ? "#059669"
+                            : "#34D399"
                         },
                         {
                             id: 2,
                             value: Object.values(recitations).filter((recitation) =>
-                            recitation.status === "Rejected").length,
+                                recitation.status === "Rejected").length,
                             label: 'Rejected',
                             color: theme === "light"
-                            ? "rgba(112, 10, 22, 0.8)"
-                            : "rgba(255, 46, 70, 0.8)"
+                            ? "#E11D48"
+                            : "#FB7185"
                         },
                         {
                             id: 3,
                             value: Object.values(recitations).filter((recitation) =>
-                            recitation.status === "Reported").length,
+                                recitation.status === "Reported").length,
                             label: 'Reported',
                             color: theme === "light"
-                            ? "rgba(119, 35, 10, 0.8)"
-                            : "rgba(255, 75, 21, 0.8)"
+                            ? "#EA580C"
+                            : "#FB923C"
                         },
                     ]}  
                 />

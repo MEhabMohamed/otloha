@@ -4,5 +4,7 @@ build
 .gitignore
 .env
 app.log
-npm-debug.log
-yarn-error.log
+*.md
+yarn.lock
+Dockerfile
+.dockerignore

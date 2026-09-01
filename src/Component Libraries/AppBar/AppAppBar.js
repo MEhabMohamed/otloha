@@ -15,7 +15,6 @@ import ToggleColorMode from '../ToggleColorMode/ToggleColorMode';
 import otloha from '../../Resources/otloha.png';
 import { useNavigate } from 'react-router-dom';
 import SignOut from '../SignOut/SignOut';
-import EditUser from '../EditUser/EditUser';
 import { connect } from 'react-redux';
 import { Menu, Stack } from '@mui/material';
 
@@ -25,7 +24,7 @@ const logoStyle = {
   cursor: 'pointer',
 };
 
-function AppAppBar({ mode , toggleColorMode , auth , admins }) {
+function AppAppBar({ mode, toggleColorMode, auth, admins }) {
 
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
@@ -33,10 +32,10 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const openMenu = Boolean(anchorEl);
   const handleClick = (event) => {
-      setAnchorEl(event.currentTarget);
+    setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
-      setAnchorEl(null);
+    setAnchorEl(null);
   };
 
   const toggleDrawer = (newOpen) => () => {
@@ -99,166 +98,166 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
                 onClick={() => navigate('./')}
               />
               {auth !== null &&
-              <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                <MenuItem
-                  onClick={() => navigate('./teachers')}
-                  sx={{ py: '6px', px: '12px' }}
-                >
-                  <Typography
-                    sx={{
-                      font: "bold 14px Monotype corsiva, cursive"
-                    }}
-                    color="text.primary"
-                    fontWeight="bolder"
+                <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+                  <MenuItem
+                    onClick={() => navigate('./teachers')}
+                    sx={{ py: '6px', px: '12px' }}
                   >
-                    Teachers
-                  </Typography>
-                </MenuItem>
-                <MenuItem
-                  onClick={() => navigate('./students')}
-                  sx={{ py: '6px', px: '12px' }}
-                >
-                  <Typography
-                    sx={{
-                      font: "bold 14px Monotype corsiva, cursive"
-                    }}
-                    color="text.primary"
-                    fontWeight="bolder"
-                  >
-                    Students
-                  </Typography>
-                </MenuItem>
-                <MenuItem
-                  onClick={() => navigate('./recitations')}
-                  sx={{ py: '6px', px: '12px' }}
-                >
-                  <Typography
-                    sx={{
-                      font: "bold 14px Monotype corsiva, cursive"
-                    }}
-                    color="text.primary"
-                    fontWeight="bolder"
-                  >
-                    Recitations
-                  </Typography>
-                </MenuItem>
-                <MenuItem
-                  onClick={() => navigate('./new-recitation')}
-                  sx={{ py: '6px', px: '12px' }}
-                >
-                  <Typography
-                    sx={{
-                      font: "bold 14px Monotype corsiva, cursive"
-                    }}
-                    color="text.primary"
-                    fontWeight="bolder"
-                  >
-                    New recitation
-                  </Typography>
-                </MenuItem>
-                <MenuItem
-                  onClick={() => navigate('./blocked')}
-                  sx={{ py: '6px', px: '12px' }}
-                >
-                  <Typography
-                    sx={{
-                      font: "bold 14px Monotype corsiva, cursive"
-                    }}
-                    color="text.primary"
-                    fontWeight="bolder"
-                  >
-                    Block List
-                  </Typography>
-                </MenuItem>
-                <MenuItem
-                  sx={{ py: '6px', px: '12px' }}
-                >
-                  <Stack
-                      id={`tajweed-chooser`}
-                  >
-                  <Typography
-                      id={`tajweed-chooser-button`}
-                      aria-controls={openMenu ? 'edited-positioned-menu' : undefined}
-                      aria-haspopup="true"
-                      aria-expanded={openMenu ? 'true' : undefined}
-                      onClick={handleClick}
+                    <Typography
                       sx={{
                         font: "bold 14px Monotype corsiva, cursive"
                       }}
                       color="text.primary"
                       fontWeight="bolder"
+                    >
+                      Teachers
+                    </Typography>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => navigate('./students')}
+                    sx={{ py: '6px', px: '12px' }}
                   >
-                      Tajweed
-                  </Typography>
-                  <Menu
-                          id="tajweed-positioned-menu"
-                          aria-labelledby="tajweed-positioned-button"
-                          anchorEl={anchorEl}
-                          open={openMenu}
-                          onClose={handleClose}
-                          anchorOrigin={{
-                          vertical: 'bottom',
-                          horizontal: 'center',
-                          }}
-                          transformOrigin={{
-                          vertical: 'bottom',
-                          horizontal: 'center',
-                          }}
-                          sx={{
-                              px: 2
-                          }}
+                    <Typography
+                      sx={{
+                        font: "bold 14px Monotype corsiva, cursive"
+                      }}
+                      color="text.primary"
+                      fontWeight="bolder"
+                    >
+                      Students
+                    </Typography>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => navigate('./recitations')}
+                    sx={{ py: '6px', px: '12px' }}
+                  >
+                    <Typography
+                      sx={{
+                        font: "bold 14px Monotype corsiva, cursive"
+                      }}
+                      color="text.primary"
+                      fontWeight="bolder"
+                    >
+                      Recitations
+                    </Typography>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => navigate('./new-recitation')}
+                    sx={{ py: '6px', px: '12px' }}
+                  >
+                    <Typography
+                      sx={{
+                        font: "bold 14px Monotype corsiva, cursive"
+                      }}
+                      color="text.primary"
+                      fontWeight="bolder"
+                    >
+                      New recitation
+                    </Typography>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => navigate('./blocked')}
+                    sx={{ py: '6px', px: '12px' }}
+                  >
+                    <Typography
+                      sx={{
+                        font: "bold 14px Monotype corsiva, cursive"
+                      }}
+                      color="text.primary"
+                      fontWeight="bolder"
+                    >
+                      Block List
+                    </Typography>
+                  </MenuItem>
+                  <MenuItem
+                    sx={{ py: '6px', px: '12px' }}
+                  >
+                    <Stack
+                      id={`tajweed-chooser`}
+                    >
+                      <Typography
+                        id={`tajweed-chooser-button`}
+                        aria-controls={openMenu ? 'edited-positioned-menu' : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={openMenu ? 'true' : undefined}
+                        onClick={handleClick}
+                        sx={{
+                          font: "bold 14px Monotype corsiva, cursive"
+                        }}
+                        color="text.primary"
+                        fontWeight="bolder"
                       >
-                          <MenuItem>
-                              <Typography
-                                  sx={{
-                                    font: "bold 14px Monotype corsiva, cursive"
-                                  }}
-                                  color="text.primary"
-                                  fontWeight="bolder"
-                                  onClick={() => {
-                                      navigate(`../tajweed/levels`)
-                                      handleClose()
-                                  }}
-                                  id={`levels-button`}>
-                                  Levels
-                              </Typography>
-                          </MenuItem>
-                          <MenuItem>
+                        Tajweed
+                      </Typography>
+                      <Menu
+                        id="tajweed-positioned-menu"
+                        aria-labelledby="tajweed-positioned-button"
+                        anchorEl={anchorEl}
+                        open={openMenu}
+                        onClose={handleClose}
+                        anchorOrigin={{
+                          vertical: 'bottom',
+                          horizontal: 'center',
+                        }}
+                        transformOrigin={{
+                          vertical: 'bottom',
+                          horizontal: 'center',
+                        }}
+                        sx={{
+                          px: 2
+                        }}
+                      >
+                        <MenuItem>
+                          <Typography
+                            sx={{
+                              font: "bold 14px Monotype corsiva, cursive"
+                            }}
+                            color="text.primary"
+                            fontWeight="bolder"
+                            onClick={() => {
+                              navigate(`../tajweed/levels`)
+                              handleClose()
+                            }}
+                            id={`levels-button`}>
+                            Levels
+                          </Typography>
+                        </MenuItem>
+                        <MenuItem>
                           <React.Fragment>
-                              <Typography
-                                  sx={{
-                                    font: "bold 14px Monotype corsiva, cursive"
-                                  }}
-                                  color="text.primary"
-                                  fontWeight="bolder"
-                                  onClick={() => {
-                                    navigate(`../tajweed/lessons`)
-                                    handleClose()
-                                  }}
-                                  id={`lessons-button`}>
-                                  Lessons
-                              </Typography>
-                              </React.Fragment>
-                          </MenuItem>
+                            <Typography
+                              sx={{
+                                font: "bold 14px Monotype corsiva, cursive"
+                              }}
+                              color="text.primary"
+                              fontWeight="bolder"
+                              onClick={() => {
+                                navigate(`../tajweed/lessons`)
+                                handleClose()
+                              }}
+                              id={`lessons-button`}>
+                              Lessons
+                            </Typography>
+                          </React.Fragment>
+                        </MenuItem>
                       </Menu>
-                </Stack>
-                </MenuItem>
-                {admins !== (null || undefined) //&& (Object.keys(admins).includes(auth)
-                && <MenuItem
-                  onClick={() => navigate('./new-admin')}
-                  sx={{ py: '6px', px: '12px' }}
-                >
-                  <Typography
-                    sx={{
-                      font: "bold 14px Monotype corsiva, cursive"
-                    }}
-                    color="text.primary"
-                    fontWeight="bolder"
-                  >
-                    &#43;/&#8722; Admins
-                  </Typography>
-                </MenuItem>}
-              </Box>}
+                    </Stack>
+                  </MenuItem>
+                  {admins !== (null || undefined) //&& (Object.keys(admins).includes(auth)
+                    && <MenuItem
+                      onClick={() => navigate('./new-admin')}
+                      sx={{ py: '6px', px: '12px' }}
+                    >
+                      <Typography
+                        sx={{
+                          font: "bold 14px Monotype corsiva, cursive"
+                        }}
+                        color="text.primary"
+                        fontWeight="bolder"
+                      >
+                        &#43;/&#8722; Admins
+                      </Typography>
+                    </MenuItem>}
+                </Box>}
             </Box>
             <Box
               sx={{
@@ -277,16 +276,25 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
                 color="primary"
                 variant="text"
               >
-                { auth !== null && <EditUser widthSet="auto"/> }
+                {auth !== null && (
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    size="small"
+                    onClick={() => navigate('./edit-user')}
+                  >
+                    Edit Profile
+                  </Button>
+                )}
               </Box>
               <Box
                 color="primary"
                 variant="text"
               >
-               {auth !== null ? <SignOut /> : <Button
-                color="primary"
-                variant="text"
-                onClick={() => navigate('./')}
+                {auth !== null ? <SignOut /> : <Button
+                  color="primary"
+                  variant="text"
+                  onClick={() => navigate('./')}
                 >
                   Sign in
                 </Button>}
@@ -333,8 +341,8 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
                     <ToggleColorMode mode={mode} toggleColorMode={toggleColorMode} />
                   </Box>
                   {auth !== null &&
-                  <Box>
-                    <MenuItem
+                    <Box>
+                      <MenuItem
                         onClick={() => navigate('./teachers')}
                         sx={{ py: '6px', px: '12px' }}
                       >
@@ -345,20 +353,20 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
                         >
                           Teachers
                         </Typography>
-                    </MenuItem>
-                    <MenuItem
-                      onClick={() => navigate('./students')}
-                      sx={{ py: '6px', px: '12px' }}
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() => navigate('./students')}
+                        sx={{ py: '6px', px: '12px' }}
                       >
-                      <Typography
-                        variant="body2"
-                        color="text.primary"
-                        fontWeight="bolder"
-                      >
-                        Students
-                      </Typography>
-                    </MenuItem>
-                    <MenuItem
+                        <Typography
+                          variant="body2"
+                          color="text.primary"
+                          fontWeight="bolder"
+                        >
+                          Students
+                        </Typography>
+                      </MenuItem>
+                      <MenuItem
                         onClick={() => navigate('./recitations')}
                         sx={{ py: '6px', px: '12px' }}
                       >
@@ -369,87 +377,85 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
                         >
                           Recitations
                         </Typography>
-                    </MenuItem>
-                    <MenuItem
-                      onClick={() => navigate('./new-recitation')}
-                      sx={{ py: '6px', px: '12px' }}
-                    >
-                      <Typography
-                        variant="body2"
-                        color="text.primary"
-                        fontWeight="bolder"
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() => navigate('./new-recitation')}
+                        sx={{ py: '6px', px: '12px' }}
                       >
-                        New recitation
-                      </Typography>
-                    </MenuItem>
-                    <MenuItem
-                    onClick={() => navigate('./blocked')}
-                    sx={{ py: '6px', px: '12px' }}
-                  >
-                    <Typography
-                      variant="body2"
-                      color="text.primary"
-                      fontWeight="bolder"
-                    >
-                      Block List
-                    </Typography>
-                  </MenuItem>
-                  <MenuItem
-                    sx={{ py: '6px', px: '12px' }}
-                  >
-                  <Stack
-                      id={`tajweed-chooser`}
-                  >
-                  <Typography
-                      id={`tajweed-chooser-button`}
-                      aria-controls={openMenu ? 'edited-positioned-menu' : undefined}
-                      aria-haspopup="true"
-                      aria-expanded={openMenu ? 'true' : undefined}
-                      onClick={handleClick}
-                      sx={{
-                        font: "bold 14px Monotype corsiva, cursive"
-                      }}
-                      color="text.primary"
-                      fontWeight="bolder"
-                  >
-                      Tajweed
-                  </Typography>
-                  <Menu
-                          id="tajweed-positioned-menu"
-                          aria-labelledby="tajweed-positioned-button"
-                          anchorEl={anchorEl}
-                          open={openMenu}
-                          onClose={handleClose}
-                          anchorOrigin={{
-                          vertical: 'bottom',
-                          horizontal: 'center',
-                          }}
-                          transformOrigin={{
-                          vertical: 'bottom',
-                          horizontal: 'center',
-                          }}
-                          sx={{
+                        <Typography
+                          variant="body2"
+                          color="text.primary"
+                          fontWeight="bolder"
+                        >
+                          New recitation
+                        </Typography>
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() => navigate('./blocked')}
+                        sx={{ py: '6px', px: '12px' }}
+                      >
+                        <Typography
+                          variant="body2"
+                          color="text.primary"
+                          fontWeight="bolder"
+                        >
+                          Block List
+                        </Typography>
+                      </MenuItem>
+                      <MenuItem
+                        sx={{ py: '6px', px: '12px' }}
+                      >
+                        <Stack
+                          id={`tajweed-chooser`}
+                        >
+                          <Typography
+                            id={`tajweed-chooser-button`}
+                            aria-controls={openMenu ? 'edited-positioned-menu' : undefined}
+                            aria-haspopup="true"
+                            aria-expanded={openMenu ? 'true' : undefined}
+                            onClick={handleClick}
+                            variant="body2"
+                            color="text.primary"
+                            fontWeight="bolder"
+                          >
+                            Tajweed
+                          </Typography>
+                          <Menu
+                            id="tajweed-positioned-menu"
+                            aria-labelledby="tajweed-positioned-button"
+                            anchorEl={anchorEl}
+                            open={openMenu}
+                            onClose={handleClose}
+                            anchorOrigin={{
+                              vertical: 'bottom',
+                              horizontal: 'center',
+                            }}
+                            transformOrigin={{
+                              vertical: 'bottom',
+                              horizontal: 'center',
+                            }}
+                            sx={{
                               px: 2
-                          }}
-                      >
-                          <MenuItem>
+                            }}
+                          >
+                            <MenuItem>
                               <Typography
-                                  sx={{
-                                    font: "bold 14px Monotype corsiva, cursive"
-                                  }}
-                                  color="text.primary"
-                                  fontWeight="bolder"
-                                  onClick={() => {
-                                      navigate(`../tajweed/levels`)
-                                      handleClose()
-                                  }}
-                                  id={`levels-button`}>
-                                  Levels
+                                sx={{
+                                  font: "bold 14px Monotype corsiva, cursive"
+                                }}
+                                color="text.primary"
+                                fontWeight="bolder"
+                                onClick={() => {
+                                  navigate(`../tajweed/levels`)
+                                  handleClose()
+                                }}
+                                id={`levels-button`}>
+                                Levels
                               </Typography>
-                          </MenuItem>
-                          <MenuItem>
-                          <React.Fragment>
-                              <Typography
+                            </MenuItem>
+                            <MenuItem>
+                              <React.Fragment>
+                                <Typography
                                   sx={{
                                     font: "bold 14px Monotype corsiva, cursive"
                                   }}
@@ -461,17 +467,29 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
                                   }}
                                   id={`lessons-button`}>
                                   Lessons
-                              </Typography>
+                                </Typography>
                               </React.Fragment>
-                          </MenuItem>
-                      </Menu>
-                </Stack>
-                </MenuItem>
-                </Box>}
+                            </MenuItem>
+                          </Menu>
+                        </Stack>
+                      </MenuItem>
+                    </Box>}
                   <Divider />
-                  <MenuItem>
-                    { auth !== null && <EditUser widthSet="100%"/>}
-                  </MenuItem>
+                  {auth !== null && (
+                    <MenuItem>
+                      <Button
+                        color="primary"
+                        variant="contained"
+                        onClick={() => {
+                          navigate('./edit-user');
+                          setOpen(false);
+                        }}
+                        fullWidth
+                      >
+                        Edit Profile
+                      </Button>
+                    </MenuItem>
+                  )}
                   <MenuItem>
                     <Button
                       color="primary"
@@ -489,11 +507,11 @@ function AppAppBar({ mode , toggleColorMode , auth , admins }) {
                     {auth !== null ? <SignOut /> : <Button
                       color="primary"
                       variant="text"
-                      sx={{ width: '100%'}}
+                      sx={{ width: '100%' }}
                       onClick={() => navigate('./')}
-                      >
-                        Sign in
-                      </Button>
+                    >
+                      Sign in
+                    </Button>
                     }
                   </MenuItem>
                 </Box>
@@ -511,9 +529,9 @@ AppAppBar.propTypes = {
   toggleColorMode: PropTypes.func.isRequired,
 };
 
-function mapStateToProps({admins}) {
+function mapStateToProps({ admins }) {
   return {
-      admins
+    admins
   }
 }
 

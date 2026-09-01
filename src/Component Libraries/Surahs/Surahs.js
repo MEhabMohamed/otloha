@@ -6,7 +6,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import CircularIndeterminate from '../Loading/Loading';
 
-export default function SurahSelect({ surah , setter , mushaf}) {
+export default function SurahSelect({ surah , setter , surahsList}) {
 
   const handleChange = (event) => {
     setter(event.target.value);
@@ -26,7 +26,7 @@ export default function SurahSelect({ surah , setter , mushaf}) {
           label="Surah"
           onChange={handleChange}
         >
-        {mushaf !== ("" && undefined) ? mushaf.data.surahs
+        {surahsList && surahsList.length > 0 ? surahsList
         .map(({name , number}) =>
           <MenuItem
             key={number}

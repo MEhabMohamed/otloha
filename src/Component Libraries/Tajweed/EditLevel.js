@@ -1,17 +1,27 @@
 import { Button, Container, Grid, TextField, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { handleEditLevel } from '../../actions/tajweed';
 
-function EditLevel({ id, levels }) {
-
-    let [newName, setNewName] = useState(levels[id].name);
-    let [newColor, setNewColor] = useState(levels[id].color);
-    let [newValue, setNewValue] = useState(levels[id].value);
+function EditLevel({ id: propId, levels }) {
+    const { id: paramId } = useParams();
+    const id = propId || paramId;
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
+    let [newName, setNewName] = useState(levels[id]?.name || '');
+    let [newColor, setNewColor] = useState(levels[id]?.color || '#000000');
+    let [newValue, setNewValue] = useState(levels[id]?.value || '');
+
+    if (!levels[id]) {
+        return (
+            <Container sx={{ pt: 12, px: 1 }}>
+                <Typography>Loading level...</Typography>
+            </Container>
+        );
+    }
 
     return (
         <Container

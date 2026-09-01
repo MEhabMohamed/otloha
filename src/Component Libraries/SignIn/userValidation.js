@@ -10,13 +10,23 @@ export default function validateUser(
         setAuthedUser,
         navigate,
         setEmailValidateAlert,
-        setPassValidateAlert
+        setPassValidateAlert,
+        remember
     ) {
     const id = email.split('@')[0].replace(/\s+/g, '').trim().toLowerCase();
     if (usermails.includes(email)) {
         if (users[id].password === pass) {
             dispatch(setAuthedUser(id));
-            sessionStorage.setItem("authedUser", JSON.stringify([id, Date.now()]))
+            localStorage.setItem("authedUser", JSON.stringify([id, Date.now()]));
+            
+            if (remember) {
+                localStorage.setItem("rememberedEmail", email);
+                localStorage.setItem("rememberedPassword", pass);
+            } else {
+                localStorage.removeItem("rememberedEmail");
+                localStorage.removeItem("rememberedPassword");
+            }
+
             navigate('/');
             $('#get-pic').show();
         } else {

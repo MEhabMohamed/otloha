@@ -1,17 +1,21 @@
-# Build stage for React frontend
-FROM node:20-alpine AS build
+# Build React Frontend
+FROM node:18-alpine AS builder
 WORKDIR /app
-
 COPY package*.json ./
-RUN npm install --legacy-peer-deps
-
+RUN npm ci --legacy-peer-deps
 COPY . .
 RUN npm run build
 
-# Production stage using Nginx
-FROM nginx:alpine
-COPY --from=build /app/build /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Run Production Server
+FROM node:18-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+COPY package*.json ./
+RUN npm ci --only=production --legacy-peer-deps
+COPY --from=builder /app/build ./build
+COPY server.js ./
+COPY schema.sql ./
+COPY init-db.js ./
 
 EXPOSE 8080
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["node", "server.js"]

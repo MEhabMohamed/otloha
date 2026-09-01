@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
@@ -14,7 +14,8 @@ import BasicRating from '../Rating/Rating';
 import { Link } from 'react-router-dom';
 import mushaf from '../../Resources/mushaf.png';
 import star from '../../Resources/star-light.png';
-import { handleAddRecitationRating } from '../../actions/recitation';
+import { handleAddRecitationRating, handleDeleteRecitation } from '../../actions/recitation';
+import { Button } from '@mui/material';
 
 const Img = styled('img')({
   margin: 'auto',
@@ -24,17 +25,31 @@ const Img = styled('img')({
   borderRadius: '50%',
 });
 
-function Recitation({id, users, recitations, authedUser}) {
+function Recitation({id, users, recitations, authedUser, admins}) {
+  const dispatch = useDispatch();
 
   let ratingSum = 0;
 
   let recitation = recitations[id];
 
-  let index = Object.keys(recitations).length - Object.keys(recitations)
-  .sort((a, b,) =>
-  recitations[b].createdAt - recitations[a].createdAt).indexOf(id);
+  if (!recitation || !users[recitation.authed] || !users[authedUser]) {
+    return null;
+  }
 
-  recitation.raters.map(({rating}) => ratingSum += rating);
+  let index = Object.keys(recitations).length - Object.keys(recitations)
+  .sort((a, b) =>
+  (recitations[b]?.createdAt || 0) - (recitations[a]?.createdAt || 0)).indexOf(id);
+
+  const teacherId = Object.keys(users).find(
+    (uid) => users[uid] && users[uid].name === (recitation.teacher && recitation.teacher.name)
+  );
+  const teacherUser = teacherId ? users[teacherId] : null;
+
+  if (recitation.raters) {
+    recitation.raters.forEach(({ rating }) => {
+      ratingSum += rating;
+    });
+  }
 
   return (
       <Paper
@@ -161,6 +176,26 @@ function Recitation({id, users, recitations, authedUser}) {
                   }}
                 />
                 </Link>
+                {admins.includes(authedUser) && (
+                  <Button
+                    size="small"
+                    color="error"
+                    variant="outlined"
+                    onClick={() => {
+                      if (window.confirm("Are you sure you want to delete this recitation?")) {
+                        dispatch(handleDeleteRecitation(id));
+                      }
+                    }}
+                    sx={{
+                      ml: 2,
+                      height: '28px',
+                      fontSize: '11px',
+                      textTransform: 'none',
+                    }}
+                  >
+                    Delete
+                  </Button>
+                )}
               </Grid>
             </Grid>
             <Grid item sx={{
@@ -215,7 +250,7 @@ function Recitation({id, users, recitations, authedUser}) {
             >
               <MediaPlayer id={id} />
             </Stack>
-            {((recitation.teacher !== undefined && recitation.teacher.name !== "")) &&
+            {((recitation.teacher && recitation.teacher.name)) &&
             <Grid item container mt={1}>
                 <Grid item xs={12} md={5} sx={{
                   height: 75,
@@ -232,18 +267,13 @@ function Recitation({id, users, recitations, authedUser}) {
                     <Img
                       sx={{ width: 70, height: 70 }}
                       alt="teacher-pic"
-                      src={(recitation.teacher.name && 
-                        users[Object.keys(users)
-                       .filter((id) => users[id].name === recitation.teacher.name)
-                       .toString()].avatar) !== "" ?
-                       users[Object.keys(users)
-                       .filter((id) => users[id].name === recitation.teacher.name)
-                       .toString()].avatar :
-                        (recitation.teacher.avatar !== "" ? recitation.teacher.avatar : 
-                        (users[Object.keys(users)
-                       .filter((id) => users[id].name === recitation.teacher.name)
-                       .toString()]
-                       .gender === 'male' ? male : female))}
+                      src={
+                        (teacherUser && teacherUser.avatar !== "")
+                        ? teacherUser.avatar
+                        : (recitation.teacher.avatar !== ""
+                          ? recitation.teacher.avatar
+                          : (teacherUser && teacherUser.gender === 'female' ? female : male))
+                      }
                     />
                   </ButtonBase>
                 </Grid>
@@ -276,11 +306,12 @@ function Recitation({id, users, recitations, authedUser}) {
   );
 }
 
-function mapStateToProps({users, authedUser, recitations}) {
+function mapStateToProps({users, authedUser, recitations, admins}) {
   return {
       users,
       authedUser: authedUser !== null ? authedUser[0] : null,
-      recitations
+      recitations,
+      admins: Object.keys(admins)
   }
 }
 

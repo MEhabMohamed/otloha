@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { connect, useDispatch } from "react-redux";
 import { handleAddRecitation } from "../../actions/recitation";
 import $ from "jquery";
@@ -11,7 +11,6 @@ import plus from "../../Resources/plus.png";
 import AlertShow from "../Alert/AlertShow";
 import BasicAlerts from "../Alert/Alert";
 import { useNavigate } from 'react-router-dom';
-import mushaf from '../../helpers/Mushaf.json'
 
 function NewRecitation({ authedUser }) {
 
@@ -24,6 +23,45 @@ function NewRecitation({ authedUser }) {
     let [fromAyahNumber, setFromAyahNumber] = useState(0);
     let [toAyah, setToAyah] = useState('');
     let [toAyahNumber, setToAyahNumber] = useState(0);
+
+    let [surahsList, setSurahsList] = useState([]);
+    let [ayahsList, setAyahsList] = useState([]);
+
+    useEffect(() => {
+        fetch('https://api.alquran.cloud/v1/surah')
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.code === 200) {
+                    setSurahsList(data.data);
+                }
+            })
+            .catch(err => console.error("Failed to fetch surahs:", err));
+    }, []);
+
+    useEffect(() => {
+        if (!surah) {
+            setAyahsList([]);
+            return;
+        }
+        const selectedSurah = surahsList.find(s => s.name === surah);
+        if (selectedSurah) {
+            fetch(`https://api.alquran.cloud/v1/surah/${selectedSurah.number}/quran-uthmani`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.code === 200) {
+                        setAyahsList(data.data.ayahs);
+                      }
+                })
+                .catch(err => console.error("Failed to fetch ayahs:", err));
+        }
+    }, [surah, surahsList]);
+
+    useEffect(() => {
+        setFromAyah('');
+        setFromAyahNumber(0);
+        setToAyah('');
+        setToAyahNumber(0);
+    }, [surah]);
     verse.current = {
         from: `...${fromAyah.substring(0, 40)}`,
         to: `...${toAyah.substring(0, 40)}`,
@@ -163,7 +201,7 @@ function NewRecitation({ authedUser }) {
                             <SurahSelect
                                 surah={surah}
                                 setter={setSurah}
-                                mushaf={mushaf}
+                                surahsList={surahsList}
                             />
                         </Grid>
                         {surah !== "" && <Grid item xs={12}>
@@ -174,7 +212,7 @@ function NewRecitation({ authedUser }) {
                                 setter={setFromAyah}
                                 label="Ayah From"
                                 numberSetter={setFromAyahNumber}
-                                mushaf={mushaf}
+                                ayahsList={ayahsList}
                             />
                         </Grid>}
                         {surah !== "" && <Grid item xs={12}>
@@ -185,7 +223,7 @@ function NewRecitation({ authedUser }) {
                                 setter={setToAyah}
                                 label="Ayah To"
                                 numberSetter={setToAyahNumber}
-                                mushaf={mushaf}
+                                ayahsList={ayahsList}
                             />
                         </Grid>}
                         <Grid item xs={12}>
