@@ -71,7 +71,7 @@ function App({ initial, authedUser, recitations, levels, lessons }: any) {
           setLoading(true);
           
           let endpoint = '/api/auth/google-login';
-          let bodyPayload: any = { code };
+          let bodyPayload: any = { code, redirectUri: window.location.origin };
           let provider = 'google';
           
           if (state === 'facebook') {

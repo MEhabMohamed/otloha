@@ -798,7 +798,7 @@ app.post('/api/auth/google-login', async (req, res) => {
     return res.status(400).json({ error: 'Code is required' });
   }
 
-  const redirectUri = req.headers.origin || (req.get('host') && req.get('host').includes('localhost') ? 'http://localhost:3000' : 'https://otloha-app-185798045507.us-central1.run.app');
+  const redirectUri = req.body.redirectUri || req.headers.origin || (req.get('host') && req.get('host').includes('localhost') ? 'http://localhost:3000' : 'https://otloha-app-185798045507.us-central1.run.app');
 
   try {
     const tokenRes = await fetch(process.env.GOOGLE_TOKEN_URI || 'https://oauth2.googleapis.com/token', {
@@ -928,7 +928,7 @@ app.post('/api/auth/facebook-login', async (req, res) => {
     return res.status(400).json({ error: 'Code is required' });
   }
 
-  const redirectUri = req.headers.origin || (req.get('host') && req.get('host').includes('localhost') ? 'http://localhost:3000' : 'https://otloha-app-185798045507.us-central1.run.app');
+  const redirectUri = req.body.redirectUri || req.headers.origin || (req.get('host') && req.get('host').includes('localhost') ? 'http://localhost:3000' : 'https://otloha-app-185798045507.us-central1.run.app');
 
   try {
     const tokenRes = await fetch('https://graph.facebook.com/v18.0/oauth/access_token?' + new URLSearchParams({
@@ -1050,7 +1050,7 @@ app.post('/api/auth/twitter-login', async (req, res) => {
     return res.status(400).json({ error: 'Code and codeVerifier are required' });
   }
 
-  const redirectUri = req.headers.origin || (req.get('host') && req.get('host').includes('localhost') ? 'http://localhost:3000' : 'https://otloha-app-185798045507.us-central1.run.app');
+  const redirectUri = req.body.redirectUri || req.headers.origin || (req.get('host') && req.get('host').includes('localhost') ? 'http://localhost:3000' : 'https://otloha-app-185798045507.us-central1.run.app');
 
   try {
     const authHeader = 'Basic ' + Buffer.from(`${process.env.TWITTER_CLIENT_ID || ''}:${process.env.TWITTER_CLIENT_SECRET || ''}`).toString('base64');
