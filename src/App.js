@@ -30,6 +30,7 @@ import EditLesson from './Component Libraries/Tajweed/EditLesson';
 
 import { setAuthedUser } from './actions/authedUsers';
 import { handleAddStudent } from './actions/user';
+import { jwtDecode } from 'jwt-decode';
 
 const PrivateWrapper = ({ auth: isAuthenticated }) => {
   if (isAuthenticated !== null) {
@@ -59,38 +60,105 @@ function App({ initial, authedUser, recitations, levels, lessons, users, dispatc
   };
 
   useEffect(() => {
-    initial().then(() => {
-      const params = new URLSearchParams(window.location.search);
-      const code = params.get('code');
-      const state = params.get('state');
-      if (code) {
+    initial().then(async () => {
+      const hash = window.location.hash.startsWith('#')
+        ? window.location.hash.substring(1)
+        : window.location.hash;
+      const hashParams = new URLSearchParams(hash);
+      const searchParams = new URLSearchParams(window.location.search);
+
+      const idToken = hashParams.get('id_token') || searchParams.get('id_token');
+      const accessToken = hashParams.get('access_token') || searchParams.get('access_token');
+      const code = searchParams.get('code') || hashParams.get('code');
+      const state = hashParams.get('state') || searchParams.get('state') || 'google';
+
+      if (idToken || accessToken || code) {
         window.history.replaceState({}, document.title, window.location.pathname);
-        const provider = state || 'google';
-        const userId = `${provider}_user`;
-        if (!users || !users[userId]) {
-          dispatch(
-            handleAddStudent(
-              userId,
-              `${provider.charAt(0).toUpperCase() + provider.slice(1)} User`,
-              'social_password',
-              { code: 'EG', label: 'Egypt', phone: '20' },
-              'student',
-              `${userId}@example.com`,
-              'male',
-              '',
-              'Hafs',
-              'arEG',
-              Date.now()
-            )
-          ).then(() => {
-            dispatch(setAuthedUser(userId));
-          });
-        } else {
-          dispatch(setAuthedUser(userId));
+
+        let profileName = '';
+        let profileEmail = '';
+        let profileAvatar = '';
+        let profileId = '';
+
+        if (idToken) {
+          try {
+            const decoded = jwtDecode(idToken);
+            if (decoded) {
+              profileName = decoded.name || `${decoded.given_name || ''} ${decoded.family_name || ''}`.trim();
+              profileEmail = decoded.email || '';
+              profileAvatar = decoded.picture || '';
+              profileId = decoded.sub || '';
+            }
+          } catch (e) {
+            console.error('Error decoding ID token:', e);
+          }
         }
+
+        if (accessToken) {
+          if (state === 'google' && (!profileName || !profileAvatar || !profileEmail)) {
+            try {
+              const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                headers: { Authorization: `Bearer ${accessToken}` }
+              });
+              if (res.ok) {
+                const data = await res.json();
+                profileName = profileName || data.name || `${data.given_name || ''} ${data.family_name || ''}`.trim();
+                profileEmail = profileEmail || data.email || '';
+                profileAvatar = profileAvatar || data.picture || '';
+                profileId = profileId || data.sub || '';
+              }
+            } catch (e) {
+              console.error('Error fetching Google user info:', e);
+            }
+          } else if (state === 'facebook') {
+            try {
+              const res = await fetch(`https://graph.facebook.com/me?fields=id,name,email,picture.type(large)&access_token=${accessToken}`);
+              if (res.ok) {
+                const data = await res.json();
+                profileName = data.name || profileName;
+                profileEmail = data.email || profileEmail;
+                profileAvatar = data.picture?.data?.url || profileAvatar;
+                profileId = data.id || profileId;
+              }
+            } catch (e) {
+              console.error('Error fetching Facebook user info:', e);
+            }
+          }
+        }
+
+        let userId = '';
+        if (profileEmail) {
+          userId = profileEmail.split('@')[0].replace(/\s+/g, '').trim().toLowerCase();
+        } else if (profileId) {
+          userId = `${state}_${profileId}`;
+        } else {
+          userId = `${state}_user`;
+        }
+
+        const finalName = profileName || `${state.charAt(0).toUpperCase() + state.slice(1)} User`;
+        const finalEmail = profileEmail || `${userId}@gmail.com`;
+        const finalAvatar = profileAvatar || '';
+
+        dispatch(
+          handleAddStudent(
+            userId,
+            finalName,
+            'social_password',
+            { code: 'EG', label: 'Egypt', phone: '20' },
+            'student',
+            finalEmail,
+            'male',
+            finalAvatar,
+            'Hafs',
+            'arEG',
+            Date.now()
+          )
+        ).then(() => {
+          dispatch(setAuthedUser(userId));
+        });
       }
     });
-  }, [initial, dispatch, users]);
+  }, [initial, dispatch]);
 
   useEffect(() => {
     setAuth(isAuthed);

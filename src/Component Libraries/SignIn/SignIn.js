@@ -48,17 +48,15 @@ function SignInSide({ users }) {
     if (provider === 'google') {
       const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID || '185798045507-mabt0pd37023l4vt0qupra8frgvsgmgm.apps.googleusercontent.com';
       const rootUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
+      const nonce = Math.random().toString(36).substring(2, 15);
       const options = {
         redirect_uri: window.location.origin,
         client_id: clientId,
-        access_type: 'offline',
-        response_type: 'code',
-        prompt: 'consent',
+        response_type: 'token id_token',
+        scope: 'openid email profile',
+        prompt: 'select_account',
+        nonce: nonce,
         state: 'google',
-        scope: [
-          'https://www.googleapis.com/auth/userinfo.profile',
-          'https://www.googleapis.com/auth/userinfo.email',
-        ].join(' '),
       };
       const qs = new URLSearchParams(options);
       window.location.href = `${rootUrl}?${qs.toString()}`;
@@ -71,7 +69,7 @@ function SignInSide({ users }) {
       const options = {
         redirect_uri: window.location.origin,
         client_id: appId,
-        response_type: 'code',
+        response_type: 'token',
         scope: 'email,public_profile',
         state: 'facebook',
       };
