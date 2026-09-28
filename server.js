@@ -268,6 +268,51 @@ app.post('/api/auth/facebook-login', async (req, res) => {
   }
 });
 
+// User Data Deletion Request Endpoint
+app.post('/api/auth/request-data-deletion', (req, res) => {
+  const { email, provider, reason } = req.body;
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
+  }
+
+  const confirmationCode = 'DEL-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+  const timestamp = new Date().toISOString();
+  const logMessage = `[${timestamp}] DATA_DELETION_REQUEST | Email: ${email} | Provider: ${provider || 'unknown'} | Reason: ${reason || 'N/A'} | ConfirmationCode: ${confirmationCode}\n`;
+
+  try {
+    fs.appendFileSync(path.join(__dirname, 'app.log'), logMessage);
+  } catch (err) {
+    console.error('Failed to log data deletion request:', err);
+  }
+
+  res.json({
+    success: true,
+    confirmationCode,
+    message: 'Data deletion request registered successfully. All associated data will be deleted within 30 days.',
+  });
+});
+
+// Meta / Facebook Data Deletion Callback URL endpoint
+app.post('/api/auth/facebook-data-deletion', (req, res) => {
+  const confirmationCode = 'FB-DEL-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+  const origin = req.headers.origin || (req.get('host') && req.get('host').includes('localhost') ? 'http://localhost:3000' : 'https://otloha-app-185798045507.us-central1.run.app');
+  const statusUrl = `${origin}/user-data-deletion?code=${confirmationCode}`;
+
+  const timestamp = new Date().toISOString();
+  const logMessage = `[${timestamp}] META_DATA_DELETION_CALLBACK | ConfirmationCode: ${confirmationCode}\n`;
+  try {
+    fs.appendFileSync(path.join(__dirname, 'app.log'), logMessage);
+  } catch (err) {
+    console.error('Failed to log Meta data deletion callback:', err);
+  }
+
+  res.json({
+    url: statusUrl,
+    confirmation_code: confirmationCode,
+  });
+});
+
+
 // Twitter OAuth Login / Code Exchange
 app.post('/api/auth/twitter-login', async (req, res) => {
   const { code, codeVerifier } = req.body;

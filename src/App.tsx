@@ -11,6 +11,7 @@ import AppAppBar from './Component Libraries/AppBar/AppAppBar';
 import getLPTheme from './helpers/getLPTheme';
 import dark from './Resources/dark-bg.jpg';
 import light from './Resources/light-bg.jpg';
+import Footer from './Component Libraries/Footer/Footer';
 
 const TeacherDashboard = lazy(() => import('./components/TeacherDashboard'));
 const RecitationDashboard = lazy(() => import('./components/RecitationDashboard'));
@@ -32,6 +33,9 @@ const EditLesson = lazy(() => import('./Component Libraries/Tajweed/EditLesson')
 const ForgotPassword = lazy(() => import('./Component Libraries/SignIn/ForgotPassword'));
 const ResetPassword = lazy(() => import('./Component Libraries/SignIn/ResetPassword'));
 const EditUser = lazy(() => import('./Component Libraries/EditUser/EditUser'));
+const PrivacyPolicy = lazy(() => import('./Component Libraries/Legal/PrivacyPolicy'));
+const UserDataDeletion = lazy(() => import('./Component Libraries/Legal/UserDataDeletion'));
+
 
 const PrivateWrapper = ({ auth: isAuthenticated }: { auth: any }) => {
   if (isAuthenticated !== null) {
@@ -167,6 +171,9 @@ function App({ initial, authedUser, recitations, levels, lessons }: any) {
         <Box
           sx={(theme) => ({
             width: '100%',
+            minHeight: '100vh',
+            display: 'flex',
+            flexDirection: 'column',
             backgroundImage:
               theme.palette.mode === 'light' ? `url(${light})` : `url(${dark})`,
             backgroundRepeat: 'no-repeat',
@@ -174,47 +181,57 @@ function App({ initial, authedUser, recitations, levels, lessons }: any) {
             backgroundSize: 'cover',
           })}
         >
-          <Suspense fallback={
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '80vh',
-                width: '100vw',
-              }}
-            >
-              <CircularProgress size={40} thickness={4} />
-            </Box>
-          }>
-            <Routes>
-              {isAuthed === null && <Route path="/createuser" element={<SignUp />} />}
-              {isAuthed === null && <Route path="/" element={<SignInSide />} />}
-              {isAuthed === null && <Route path="/complete-profile" element={<CompleteProfile />} />}
-              {isAuthed === null && <Route path="/forgot-password" element={<ForgotPassword />} />}
-              {isAuthed === null && <Route path="/reset-password" element={<ResetPassword />} />}
-              <Route element={<PrivateWrapper auth={isAuthed} />}>
-                <Route path="*" element={<NotFound />} />
-                <Route path="/" element={<HomePage theme={mode} />} />
-                <Route path="/createuser" element={<SignUp />} />
-                <Route path="/complete-profile" element={<CompleteProfile />} />
-                <Route path="/new-recitation" element={<NewRecitation />} />
-                <Route path="new-admin" element={<SetNewAdmin />} />
-                <Route path="/teachers" element={<TeacherDashboard />} />
-                <Route path="/students" element={<StudentDashboard />} />
-                <Route path="/recitations" element={<RecitationDashboard />} />
-                <Route path="/blocked" element={<BlockList />} />
-                <Route path="/tajweed/levels" element={<TajweedLevels />} />
-                <Route path="/tajweed/lessons" element={<TajweedLessons />} />
-                <Route path="/tajweed/level" element={<AddLevel />} />
-                <Route path="/tajweed/lesson" element={<AddLesson />} />
-                <Route path="/tajweed/edit-level/:id" element={<EditLevel id={undefined as any} />} />
-                <Route path="/tajweed/edit-lesson/:id" element={<EditLesson id={undefined as any} />} />
-                <Route path="/recitations/:id" element={<RecitationProfile id={undefined as any} />} />
-                <Route path="/edit-user" element={<EditUser />} />
-              </Route>
-            </Routes>
-          </Suspense>
+          <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <Suspense fallback={
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  height: '80vh',
+                  width: '100vw',
+                }}
+              >
+                <CircularProgress size={40} thickness={4} />
+              </Box>
+            }>
+              <Routes>
+                {/* Public Legal Compliance Routes (Accessible regardless of auth state) */}
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/user-data-deletion" element={<UserDataDeletion />} />
+
+                {/* Unauthenticated Routes */}
+                {isAuthed === null && <Route path="/createuser" element={<SignUp />} />}
+                {isAuthed === null && <Route path="/" element={<SignInSide />} />}
+                {isAuthed === null && <Route path="/complete-profile" element={<CompleteProfile />} />}
+                {isAuthed === null && <Route path="/forgot-password" element={<ForgotPassword />} />}
+                {isAuthed === null && <Route path="/reset-password" element={<ResetPassword />} />}
+
+                {/* Authenticated Routes */}
+                <Route element={<PrivateWrapper auth={isAuthed} />}>
+                  <Route path="*" element={<NotFound />} />
+                  <Route path="/" element={<HomePage theme={mode} />} />
+                  <Route path="/createuser" element={<SignUp />} />
+                  <Route path="/complete-profile" element={<CompleteProfile />} />
+                  <Route path="/new-recitation" element={<NewRecitation />} />
+                  <Route path="new-admin" element={<SetNewAdmin />} />
+                  <Route path="/teachers" element={<TeacherDashboard />} />
+                  <Route path="/students" element={<StudentDashboard />} />
+                  <Route path="/recitations" element={<RecitationDashboard />} />
+                  <Route path="/blocked" element={<BlockList />} />
+                  <Route path="/tajweed/levels" element={<TajweedLevels />} />
+                  <Route path="/tajweed/lessons" element={<TajweedLessons />} />
+                  <Route path="/tajweed/level" element={<AddLevel />} />
+                  <Route path="/tajweed/lesson" element={<AddLesson />} />
+                  <Route path="/tajweed/edit-level/:id" element={<EditLevel id={undefined as any} />} />
+                  <Route path="/tajweed/edit-lesson/:id" element={<EditLesson id={undefined as any} />} />
+                  <Route path="/recitations/:id" element={<RecitationProfile id={undefined as any} />} />
+                  <Route path="/edit-user" element={<EditUser />} />
+                </Route>
+              </Routes>
+            </Suspense>
+          </Box>
+          <Footer />
         </Box>
       </Router>
     </ThemeProvider>

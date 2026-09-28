@@ -3,17 +3,20 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
+import { Link as RouterLink } from 'react-router-dom';
 import Copyright from '../Copyright/Copyright';
 
 export default function Footer() {
   return (
     <Container
+      component="footer"
+      maxWidth="lg"
       sx={{
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: { xs: 4, sm: 8 },
-        py: { xs: 8, sm: 10 },
+        gap: { xs: 2, sm: 3 },
+        py: { xs: 4, sm: 6 },
         textAlign: { sm: 'center', md: 'left' },
       }}
     >
@@ -21,24 +24,53 @@ export default function Footer() {
         sx={{
           display: 'flex',
           justifyContent: 'space-between',
-          pt: { xs: 4, sm: 8 },
+          alignItems: 'center',
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: 2,
+          pt: 3,
           width: '100%',
           borderTop: '1px solid',
           borderColor: 'divider',
         }}
       >
-        <div>
-          <Link color="text.secondary" href="#">
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.5,
+            flexWrap: 'wrap',
+            justifyContent: { xs: 'center', sm: 'flex-start' },
+          }}
+        >
+          <Link
+            component={RouterLink}
+            to="/privacy-policy"
+            color="text.secondary"
+            sx={{
+              fontSize: '0.875rem',
+              textDecoration: 'none',
+              '&:hover': { textDecoration: 'underline', color: 'primary.main' },
+            }}
+          >
             Privacy Policy
           </Link>
-          <Typography display="inline" sx={{ mx: 0.5, opacity: 0.5 }}>
-            &nbsp;•&nbsp;
+          <Typography display="inline" sx={{ opacity: 0.5, fontSize: '0.875rem' }}>
+            •
           </Typography>
-          <Link color="text.secondary" href="#">
-            Terms of Service
+          <Link
+            component={RouterLink}
+            to="/user-data-deletion"
+            color="text.secondary"
+            sx={{
+              fontSize: '0.875rem',
+              textDecoration: 'none',
+              '&:hover': { textDecoration: 'underline', color: 'primary.main' },
+            }}
+          >
+            User Data Deletion
           </Link>
-          <Copyright />
-        </div>
+        </Box>
+        <Copyright />
       </Box>
     </Container>
   );
