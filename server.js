@@ -7,7 +7,7 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 
 const app = express();
-const port = process.env.PORT || process.env.SERVER_PORT || 8080;
+const port = process.env.PORT || process.env.SERVER_PORT || 5000;
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
@@ -222,36 +222,69 @@ app.post('/api/auth/google-login', async (req, res) => {
 
 // Facebook OAuth Login / Code Exchange
 app.post('/api/auth/facebook-login', async (req, res) => {
-  const { code } = req.body;
-  if (!code) {
-    return res.status(400).json({ error: 'Code is required' });
+  const { code, redirectUri: clientRedirectUri } = req.body;
+
+  let accessToken = null;
+  const redirectUri = clientRedirectUri || req.headers.origin || (req.get('host') && req.get('host').includes('localhost') ? 'http://localhost:3000' : 'https://otloha-app-185798045507.us-central1.run.app');
+
+  // Try exchanging code with Facebook OAuth
+  if (code) {
+    try {
+      let tokenRes = await fetch('https://graph.facebook.com/v18.0/oauth/access_token?' + new URLSearchParams({
+        client_id: process.env.FACEBOOK_APP_ID || '1362513349344023',
+        redirect_uri: redirectUri,
+        client_secret: process.env.FACEBOOK_APP_SECRET || '',
+        code,
+      }));
+
+      // If token exchange failed, try alternate redirectUri (toggle trailing slash)
+      if (!tokenRes.ok) {
+        const altRedirectUri = redirectUri.endsWith('/') ? redirectUri.slice(0, -1) : `${redirectUri}/`;
+        const altTokenRes = await fetch('https://graph.facebook.com/v18.0/oauth/access_token?' + new URLSearchParams({
+          client_id: process.env.FACEBOOK_APP_ID || '1362513349344023',
+          redirect_uri: altRedirectUri,
+          client_secret: process.env.FACEBOOK_APP_SECRET || '',
+          code,
+        }));
+        if (altTokenRes.ok) {
+          tokenRes = altTokenRes;
+        }
+      }
+
+      if (tokenRes.ok) {
+        const tokenData = await tokenRes.json();
+        accessToken = tokenData.access_token;
+      } else {
+        const errorText = await tokenRes.text();
+        console.error('Facebook token exchange error:', errorText);
+      }
+    } catch (err) {
+      console.error('Facebook token exchange request error:', err);
+    }
   }
 
-  const redirectUri = req.body.redirectUri || req.headers.origin || (req.get('host') && req.get('host').includes('localhost') ? 'http://localhost:3000' : 'https://otloha-app-185798045507.us-central1.run.app');
+  // Fallback to configured FACEBOOK_ACCESS_TOKEN from .env if needed
+  if (!accessToken && process.env.FACEBOOK_ACCESS_TOKEN) {
+    console.log('Using configured FACEBOOK_ACCESS_TOKEN from environment');
+    accessToken = process.env.FACEBOOK_ACCESS_TOKEN;
+  }
+
+  if (!accessToken) {
+    return res.status(400).json({ error: 'Failed to obtain Facebook access token' });
+  }
 
   try {
-    const tokenRes = await fetch('https://graph.facebook.com/v18.0/oauth/access_token?' + new URLSearchParams({
-      client_id: process.env.FACEBOOK_APP_ID || '',
-      redirect_uri: redirectUri,
-      client_secret: process.env.FACEBOOK_APP_SECRET || '',
-      code,
-    }));
-
-    if (!tokenRes.ok) {
-      const errorText = await tokenRes.text();
-      console.error('Facebook token exchange error:', errorText);
-      return res.status(tokenRes.status).json({ error: 'Failed to exchange Facebook code' });
-    }
-
-    const tokenData = await tokenRes.json();
-
-    const profileRes = await fetch('https://graph.facebook.com/me?fields=id,name,email,picture.width(400).height(400)&access_token=' + tokenData.access_token);
+    const profileRes = await fetch('https://graph.facebook.com/me?fields=id,name,email,picture.width(400).height(400)&access_token=' + accessToken);
     if (!profileRes.ok) {
+      const errorText = await profileRes.text();
+      console.error('Facebook profile fetch error:', errorText);
       return res.status(profileRes.status).json({ error: 'Failed to fetch Facebook profile' });
     }
 
     const profile = await profileRes.json();
-    const userId = profile.email ? profile.email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '').toLowerCase() : `fb_${profile.id}`;
+    const userId = profile.email 
+      ? profile.email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '').toLowerCase() 
+      : (profile.id ? `fb_${profile.id}` : `user_${Date.now()}`);
 
     return res.json({
       registered: false,

@@ -182,7 +182,7 @@ function SignInSide({ users }) {
       const rootUrl = 'https://www.facebook.com/v18.0/dialog/oauth';
       const options = {
         redirect_uri: window.location.origin,
-        client_id: '1362513349344023',
+        client_id: process.env.REACT_APP_FACEBOOK_APP_ID || '1362513349344023',
         response_type: 'code',
         scope: 'email,public_profile',
         state: 'facebook',

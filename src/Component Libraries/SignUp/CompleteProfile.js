@@ -25,6 +25,7 @@ export default function CompleteProfile() {
   const dispatch = useDispatch();
 
   const [profile, setProfile] = React.useState(null);
+  const [email, setEmail] = React.useState('');
   const [gender, setGender] = React.useState('');
   const [role, setRole] = React.useState('');
   const [due, setDue] = React.useState('');
@@ -40,7 +41,9 @@ export default function CompleteProfile() {
       navigate('/');
       return;
     }
-    setProfile(JSON.parse(profileStr));
+    const parsed = JSON.parse(profileStr);
+    setProfile(parsed);
+    if (parsed.email) setEmail(parsed.email);
   }, [navigate]);
 
   if (!profile) return null;
@@ -48,7 +51,8 @@ export default function CompleteProfile() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!gender || !role || !country || !bDate) {
+    const userEmail = email.trim() || (profile && profile.email) || '';
+    if (!gender || !role || !country || !bDate || !userEmail) {
       AlertShow($('#onboarding-alert'), setAlertText, "Please complete all inputs!");
       return;
     }
@@ -56,7 +60,7 @@ export default function CompleteProfile() {
     const payload = {
       id: profile.id,
       name: profile.name,
-      email: profile.email,
+      email: userEmail,
       avatar: profile.avatar,
       gender,
       country,
@@ -115,6 +119,28 @@ export default function CompleteProfile() {
         <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3, width: '100%' }}>
           <Grid container spacing={2}>
             
+            {/* Email input if missing from provider */}
+            {(!profile.email) && (
+              <Grid item xs={12}>
+                <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, textAlign: 'center' }}>
+                  Email Address:
+                </Typography>
+                <Input
+                  fullWidth
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  sx={{
+                    p: 1,
+                    border: '1px solid #ccc',
+                    borderRadius: 1,
+                  }}
+                  disableUnderline
+                />
+              </Grid>
+            )}
+
             {/* Gender Selection */}
             <Grid item xs={12}>
               <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, textAlign: 'center' }}>
