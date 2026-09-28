@@ -23,6 +23,10 @@ import BasicAlerts from '../Alert/Alert';
 import Locales from '../Language/Language';
 import DatePick from '../Date/DatePicker';
 import AlertShow from '../Alert/AlertShow';
+import SocialButton from '../SocialButton/SocialButton';
+import google from '../../Resources/google.png';
+import fb from '../../Resources/facebook.png';
+import twitter from '../../Resources/twitter.png';
 
 const userPic = {
   borderRadius: '50%',
@@ -43,17 +47,92 @@ function SignUp({ users }) {
     let [bDate, setBDate] = React.useState(null);
     let [emailAlert, setEmailAlert] = React.useState('');
     let [passAlert, setPassAlert] = React.useState('');
-    let usermails = users !== (undefined || null)
-    ? Object.values(users).map(({email}) => email) : [];
+
+    const sessionUsers = React.useMemo(() => {
+      try {
+        const raw = sessionStorage.getItem('users');
+        return raw ? JSON.parse(raw) : {};
+      } catch {
+        return {};
+      }
+    }, []);
+    const allUsers = { ...sessionUsers, ...(users || {}) };
+    const usermails = Object.values(allUsers).map(({ email }) => (email ? email.trim().toLowerCase() : ''));
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    React.useEffect(() => {
+      const socialError = sessionStorage.getItem('social_auth_error');
+      if (socialError) {
+        sessionStorage.removeItem('social_auth_error');
+        AlertShow($('#email-alert'), setEmailAlert, socialError);
+      }
+    }, []);
+
+    const handleSocialLogin = async (provider) => {
+      if (provider === 'google') {
+        const rootUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
+        const options = {
+          redirect_uri: window.location.origin,
+          client_id: '185798045507-mabt0pd37023l4vt0qupra8frgvsgmgm.apps.googleusercontent.com',
+          access_type: 'offline',
+          response_type: 'code',
+          prompt: 'consent',
+          state: 'google',
+          scope: [
+            'https://www.googleapis.com/auth/userinfo.profile',
+            'https://www.googleapis.com/auth/userinfo.email',
+          ].join(' '),
+        };
+        const qs = new URLSearchParams(options);
+        window.location.href = `${rootUrl}?${qs.toString()}`;
+        return;
+      }
+
+      if (provider === 'facebook') {
+        const rootUrl = 'https://www.facebook.com/v18.0/dialog/oauth';
+        const options = {
+          redirect_uri: window.location.origin,
+          client_id: process.env.REACT_APP_FACEBOOK_APP_ID || '1362513349344023',
+          response_type: 'code',
+          scope: 'email,public_profile',
+          state: 'facebook',
+        };
+        const qs = new URLSearchParams(options);
+        window.location.href = `${rootUrl}?${qs.toString()}`;
+        return;
+      }
+
+      if (provider === 'twitter') {
+        const rootUrl = 'https://twitter.com/i/oauth2/authorize';
+        const codeVerifier = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        localStorage.setItem('twitter_code_verifier', codeVerifier);
+        const options = {
+          response_type: 'code',
+          client_id: 'YXBFWk9xdE5MMmt6ZkpiOHV4VFk6MTpjaQ',
+          redirect_uri: window.location.origin,
+          scope: 'users.read tweet.read offline.access',
+          state: 'twitter',
+          code_challenge: codeVerifier,
+          code_challenge_method: 'plain',
+        };
+        const qs = new URLSearchParams(options);
+        window.location.href = `${rootUrl}?${qs.toString()}`;
+        return;
+      }
+
+      console.error(`Unsupported social login provider: ${provider}`);
+    };
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const username = newFirstName.concat(` ${newLastName}`);
-    if (usermails.includes(newEmail)) {
-        AlertShow($('#email-alert'), setEmailAlert, "Email already registered!")
+    const emailToCheck = newEmail.trim().toLowerCase();
+    if (usermails.includes(emailToCheck)) {
+        AlertShow($('#email-alert'), setEmailAlert, "Email already exists!");
+        return;
     } else if (data.get('description') === "teacher") {
       handleNewUser(
         username,
@@ -119,11 +198,23 @@ function SignUp({ users }) {
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
+          <Box sx={{ display: 'flex', gap: 2, mt: 2, mb: 1 }}>
+            <SocialButton source={google} alternate="google" text="Google" onClick={() => handleSocialLogin('google')} />
+            <SocialButton source={fb} alternate="facebook" text="Facebook" onClick={() => handleSocialLogin('facebook')} />
+            <SocialButton source={twitter} alternate="twitter" text="Twitter" onClick={() => handleSocialLogin('twitter')} />
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', my: 2 }}>
+            <Box sx={{ flex: 1, height: '1px', bgcolor: 'divider' }} />
+            <Typography variant="body2" color="text.secondary" sx={{ px: 2 }}>
+              OR
+            </Typography>
+            <Box sx={{ flex: 1, height: '1px', bgcolor: 'divider' }} />
+          </Box>
           <Box
             component="form"
             noValidate
             onSubmit={handleSubmit}
-            sx={{ mt: 3 }}
+            sx={{ mt: 1 }}
           >
             <Grid container spacing={2}>
               <Grid item xs={12} textAlign="center">

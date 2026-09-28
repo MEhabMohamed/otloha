@@ -6,7 +6,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Copyright from '../Copyright/Copyright';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import $ from 'jquery';
 import { Input, Paper } from '@mui/material';
 import CountrySelector from '../CountrySelect/CountrySelector';
@@ -23,6 +23,17 @@ import AlertShow from '../Alert/AlertShow';
 export default function CompleteProfile() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const reduxUsers = useSelector((state) => state.users);
+
+  const existingUsers = React.useMemo(() => {
+    try {
+      const raw = sessionStorage.getItem('users');
+      const parsed = raw ? JSON.parse(raw) : {};
+      return { ...parsed, ...(reduxUsers || {}) };
+    } catch {
+      return { ...(reduxUsers || {}) };
+    }
+  }, [reduxUsers]);
 
   const [profile, setProfile] = React.useState(null);
   const [email, setEmail] = React.useState('');
@@ -43,8 +54,33 @@ export default function CompleteProfile() {
     }
     const parsed = JSON.parse(profileStr);
     setProfile(parsed);
-    if (parsed.email) setEmail(parsed.email);
-  }, [navigate]);
+    if (parsed.email) {
+      setEmail(parsed.email);
+      const emailExists = Object.values(existingUsers).some(
+        (u) => u && u.email && u.email.trim().toLowerCase() === parsed.email.trim().toLowerCase()
+      );
+      if (emailExists) {
+        AlertShow($('#onboarding-alert'), setAlertText, "Email already exists!");
+      }
+    }
+  }, [navigate, existingUsers]);
+
+  const handleEmailChange = (e) => {
+    const val = e.target.value;
+    setEmail(val);
+    if (val.trim()) {
+      const emailExists = Object.values(existingUsers).some(
+        (u) => u && u.email && u.email.trim().toLowerCase() === val.trim().toLowerCase()
+      );
+      if (emailExists) {
+        AlertShow($('#onboarding-alert'), setAlertText, "Email already exists!");
+      } else {
+        $('#onboarding-alert').hide();
+      }
+    } else {
+      $('#onboarding-alert').hide();
+    }
+  };
 
   if (!profile) return null;
 
@@ -54,6 +90,14 @@ export default function CompleteProfile() {
     const userEmail = email.trim() || (profile && profile.email) || '';
     if (!gender || !role || !country || !bDate || !userEmail) {
       AlertShow($('#onboarding-alert'), setAlertText, "Please complete all inputs!");
+      return;
+    }
+
+    const emailExists = Object.values(existingUsers).some(
+      (u) => u && u.email && u.email.trim().toLowerCase() === userEmail.toLowerCase()
+    );
+    if (emailExists) {
+      AlertShow($('#onboarding-alert'), setAlertText, "Email already exists!");
       return;
     }
 
@@ -91,7 +135,7 @@ export default function CompleteProfile() {
       navigate('/');
     } catch (err) {
       console.error(err);
-      AlertShow($('#onboarding-alert'), setAlertText, "Registration failed, please try again.");
+      AlertShow($('#onboarding-alert'), setAlertText, err.message || "Registration failed, please try again.");
     }
   };
 
@@ -119,27 +163,25 @@ export default function CompleteProfile() {
         <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3, width: '100%' }}>
           <Grid container spacing={2}>
             
-            {/* Email input if missing from provider */}
-            {(!profile.email) && (
-              <Grid item xs={12}>
-                <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, textAlign: 'center' }}>
-                  Email Address:
-                </Typography>
-                <Input
-                  fullWidth
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  sx={{
-                    p: 1,
-                    border: '1px solid #ccc',
-                    borderRadius: 1,
-                  }}
-                  disableUnderline
-                />
-              </Grid>
-            )}
+            {/* Email input */}
+            <Grid item xs={12}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, textAlign: 'center' }}>
+                Email Address:
+              </Typography>
+              <Input
+                fullWidth
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={handleEmailChange}
+                sx={{
+                  p: 1,
+                  border: '1px solid #ccc',
+                  borderRadius: 1,
+                }}
+                disableUnderline
+              />
+            </Grid>
 
             {/* Gender Selection */}
             <Grid item xs={12}>

@@ -15,6 +15,7 @@ import { connect, useDispatch } from 'react-redux';
 import validateUser from './userValidation';
 import { setAuthedUser } from '../../actions/authedUsers';
 import BasicAlerts from '../Alert/Alert';
+import AlertShow from '../Alert/AlertShow';
 import google from '../../Resources/google.png';
 import fb from '../../Resources/facebook.png';
 import twitter from '../../Resources/twitter.png';
@@ -57,6 +58,14 @@ function SignInSide({ users }) {
       $('#signin-show-pass').show();
     }
   }, [savedPassword]);
+
+  React.useEffect(() => {
+    const socialError = sessionStorage.getItem('social_auth_error');
+    if (socialError) {
+      sessionStorage.removeItem('social_auth_error');
+      AlertShow($('#email-validate-alert'), setEmailValidateAlert, socialError);
+    }
+  }, []);
 
   const handleRememberChange = (e) => {
     const checked = e.target.checked;

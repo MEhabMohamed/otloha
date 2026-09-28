@@ -402,10 +402,21 @@ export function saveRecitations({ verse, narration, playback, authed }: any): Pr
 }
 
 export function saveStudent(user: any): Promise<any> {
-  return new Promise((res) => {
+  return new Promise((res, rej) => {
     const formattedUser = formatStudent(user);
     students = getSessionData('students', students);
     teachers = getSessionData('teachers', teachers);
+    users = getSessionData('users', { ...students, ...teachers });
+
+    const emailToSave = formattedUser.email ? formattedUser.email.trim().toLowerCase() : '';
+    const emailConflict = emailToSave && Object.values(users).some(
+      (u: any) => u && u.id !== formattedUser.id && u.email && u.email.trim().toLowerCase() === emailToSave
+    );
+
+    if (emailConflict) {
+      rej(new Error('Email already exists!'));
+      return;
+    }
 
     students = {
       ...students,
@@ -421,10 +432,21 @@ export function saveStudent(user: any): Promise<any> {
 }
 
 export function saveTeacher(user: any): Promise<any> {
-  return new Promise((res) => {
+  return new Promise((res, rej) => {
     const formattedUser = formatTeacher(user);
     teachers = getSessionData('teachers', teachers);
     students = getSessionData('students', students);
+    users = getSessionData('users', { ...students, ...teachers });
+
+    const emailToSave = formattedUser.email ? formattedUser.email.trim().toLowerCase() : '';
+    const emailConflict = emailToSave && Object.values(users).some(
+      (u: any) => u && u.id !== formattedUser.id && u.email && u.email.trim().toLowerCase() === emailToSave
+    );
+
+    if (emailConflict) {
+      rej(new Error('Email already exists!'));
+      return;
+    }
 
     teachers = {
       ...teachers,

@@ -113,6 +113,18 @@ function App({ initial, authedUser, recitations, levels, lessons }: any) {
                 sessionStorage.setItem('authedUser', JSON.stringify(data.id));
                 initial().then(() => setLoading(false)).catch(() => setLoading(false));
               } else {
+                const incomingEmail = data.profile?.email ? data.profile.email.trim().toLowerCase() : '';
+                const emailAlreadyExists = incomingEmail && Object.values(users).some((u: any) => 
+                  u && u.email && u.email.trim().toLowerCase() === incomingEmail
+                );
+
+                if (emailAlreadyExists) {
+                  sessionStorage.setItem('social_auth_error', 'Email already exists!');
+                  setLoading(false);
+                  window.location.href = '/';
+                  return;
+                }
+
                 sessionStorage.setItem('onboarding_profile', JSON.stringify({
                   id: data.id,
                   name: data.profile.name,
