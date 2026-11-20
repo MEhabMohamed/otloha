@@ -24,3 +24,5 @@ yarn-debug.log*
 yarn-error.log*
 
 app.log
+
+SEEDED_USERS.md

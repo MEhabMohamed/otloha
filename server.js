@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 require('dotenv').config();
 const express = require('express');
 const { Pool } = require('pg');
@@ -1225,3 +1226,16 @@ if (process.env.NODE_ENV === 'production') {
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+=======
+const { createApp } = require('./server/app');
+const { env } = require('./server/lib/config/env');
+
+const app = createApp();
+const server = app.listen(env.port, () => {
+  console.log(`Otloha backend running on port ${env.port} (${env.nodeEnv})`);
+});
+
+const shutdown = () => server.close(() => process.exit(0));
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
+>>>>>>> Stashed changes

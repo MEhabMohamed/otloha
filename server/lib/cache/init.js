@@ -1,0 +1,27 @@
+const Redis = require('ioredis');
+const { RedisCacheProvider } = require('../../pkg/cache/redis.js');
+
+const redisClient = new Redis({
+  host: process.env.REDIS_HOST || 'localhost',
+  port: parseInt(process.env.REDIS_PORT || '6379', 10),
+  password: process.env.REDIS_PASSWORD || undefined,
+  lazyConnect: true,
+  maxRetriesPerRequest: 3,
+});
+
+redisClient.on('error', (err) => console.error('[redis] Error:', err.message));
+if (process.env.NODE_ENV !== 'test') {
+  redisClient.connect().catch((err) => console.error('[redis] Connect Error:', err.message));
+}
+
+const cacheProvider = new RedisCacheProvider(redisClient);
+
+async function closeRedis() {
+  try {
+    await redisClient.quit();
+  } catch {
+    redisClient.disconnect();
+  }
+}
+
+module.exports = { redisClient, cacheProvider, closeRedis };

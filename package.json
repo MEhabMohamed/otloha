@@ -25,8 +25,10 @@
     "gaxios": "^6.5.0",
     "geojson": "^0.5.0",
     "http2": "^3.3.7",
+    "ioredis": "^6.0.0",
     "jquery": "^3.7.1",
     "jwt-decode": "^4.0.0",
+    "knex": "^3.3.0",
     "libxmljs": "^1.0.11",
     "node": "^20.13.1",
     "node-gyp": "^8.4.1",
@@ -52,7 +54,9 @@
     "server": "node server.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "migrate": "knex --knexfile server/lib/knex/knexfile.js migrate:latest",
+    "seed:users": "node server/scripts/seed-users.js"
   },
   "eslintConfig": {
     "extends": [
